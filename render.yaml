@@ -1,0 +1,21 @@
+services:
+  - type: web
+    name: cti-risk-platform
+    runtime: python
+    plan: free
+    region: singapore
+    buildCommand: pip install --upgrade pip && pip install -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /api/v1/health
+    autoDeploy: true
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.7
+      - key: ALLOWED_ORIGINS
+        value: "*"
+      - key: LOG_LEVEL
+        value: INFO
+      # SQLite lives on the container's ephemeral disk. The app re-seeds the
+      # 100-record corpus on boot, so a restart only loses runtime writes.
+      # For durable storage attach a Render disk and point the DB at it:
+      #   DATABASE_URL = sqlite:////var/data/cti.db

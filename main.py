@@ -1,0 +1,295 @@
+"""FastAPI application entrypoint for the CTI risk decision-support platform.
+
+Run locally:  uvicorn main:app --reload
+On Render:    uvicorn main:app --host 0.0.0.0 --port $PORT
+"""
+
+from __future__ import annotations
+
+import logging
+import os
+import uuid
+from contextlib import asynccontextmanager
+from datetime import datetime, timezone
+from pathlib import Path
+from typing import Any, Literal
+
+from fastapi import APIRouter, Depends, FastAPI, HTTPException, Query, status
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse, Response
+from fastapi.staticfiles import StaticFiles
+from sqlalchemy import func, select
+from sqlalchemy.orm import Session
+
+import database
+import schemas
+from services import analytics, risk_engine
+
+logging.basicConfig(level=os.getenv("LOG_LEVEL", "INFO"),
+                    format="%(asctime)s %(levelname)s %(name)s %(message)s")
+logger = logging.getLogger("cti.api")
+
+BASE_DIR = Path(__file__).resolve().parent
+STATIC_DIR = BASE_DIR / "static"
+VERSION = "1.0.0"
+
+
+# --------------------------------------------------------------------------- #
+# App lifecycle
+# --------------------------------------------------------------------------- #
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    seeded = database.init_db()
+    logger.info("CTI platform ready (seeded %s records)", seeded)
+    yield
+    logger.info("CTI platform shutting down")
+
+
+app = FastAPI(
+    title="CTI 資安風險決策支援平台 API",
+    description=(
+        "基於 TF-IDF + K-Means 情資分析的可解釋風險評分服務。"
+        "提供總覽統計、即時風險評估與 P1-P3 情資篩選。"
+    ),
+    version=VERSION,
+    lifespan=lifespan,
+    docs_url="/api/docs",
+    redoc_url=None,
+    openapi_url="/api/openapi.json",
+)
+
+_origins = [origin.strip() for origin in os.getenv("ALLOWED_ORIGINS", "*").split(",") if origin.strip()]
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=_origins or ["*"],
+    allow_credentials=False,
+    allow_methods=["GET", "POST", "OPTIONS"],
+    allow_headers=["*"],
+)
+
+api = APIRouter(prefix="/api/v1", tags=["cti"])
+
+
+# --------------------------------------------------------------------------- #
+# Health
+# --------------------------------------------------------------------------- #
+
+
+@api.get("/health", response_model=schemas.HealthResponse, summary="健康檢查")
+def health(db: Session = Depends(database.get_db)) -> schemas.HealthResponse:
+    count = db.scalar(select(func.count()).select_from(database.Threat)) or 0
+    dialect = database.engine.dialect.name
+    return schemas.HealthResponse(
+        status="ok",
+        database=f"{dialect}://{database.engine.url.database}",
+        threats=count,
+        version=VERSION,
+    )
+
+
+# --------------------------------------------------------------------------- #
+# Overview statistics
+# --------------------------------------------------------------------------- #
+
+
+@api.get("/stats", response_model=schemas.StatsResponse, summary="全球 / 台灣情資統計與 Meta-Category 分布")
+def stats(db: Session = Depends(database.get_db)) -> schemas.StatsResponse:
+    threats = db.scalars(select(database.Threat)).all()
+    if not threats:
+        raise HTTPException(status_code=503, detail="情資資料庫尚未初始化，請稍後重試。")
+    payload = analytics.build_stats(threats)
+    return schemas.StatsResponse(**payload)
+
+
+# --------------------------------------------------------------------------- #
+# Live assessment
+# --------------------------------------------------------------------------- #
+
+
+@api.post("/assess", response_model=schemas.AssessResponse, summary="即時風險評估與 P1-P3 處置建議")
+def assess(payload: schemas.AssessRequest, db: Session = Depends(database.get_db)) -> schemas.AssessResponse:
+    result = risk_engine.assess(
+        asset_type=payload.asset_type,
+        threat_source=payload.threat_source,
+        category=payload.category,
+        region=payload.region,
+        cvss=payload.cvss,
+        exploit_status=payload.exploit_status,
+        exposure=payload.exposure,
+        controls=payload.controls,
+        data_sensitivity=payload.data_sensitivity,
+    )
+    matched = _match_corpus(db, cve_id=payload.cve_id, category=payload.category)
+
+    # Corroboration bonus: a CVE that already appears in the intel corpus is
+    # materially more actionable than a hypothetical one.
+    bonus = (2.0 if payload.cve_id else 0.0) + min(6.0, 2.0 * matched["cve_hits"])
+    adjustments = list(result.adjustments)
+    if bonus:
+        adjustments.append(
+            {
+                "key": "corpus_corroboration",
+                "label": f"情資語料佐證（{matched['cve_hits']} 筆命中）",
+                "points": round(bonus, 2),
+            }
+        )
+
+    score = round(min(result.score + bonus, 99.0), 1)
+    final_priority = risk_engine.priority_for(score)
+    if payload.cvss is not None and payload.cvss >= 9.0 and payload.exploit_status == "active":
+        final_priority = "P1"
+
+    meta = risk_engine.PRIORITY_META[final_priority]
+    plan = risk_engine.playbook(risk_engine.meta_of(payload.category), final_priority)
+    summary = _summarise(payload, score, final_priority, matched)
+
+    return schemas.AssessResponse(
+        assessment_id=uuid.uuid4().hex[:12],
+        asset_name=payload.asset_name,
+        cve_id=payload.cve_id,
+        score=score,
+        risk_level=risk_engine.risk_level_for(score),
+        priority=final_priority,
+        priority_label=meta["label"],
+        headline=meta["headline"],
+        criteria=meta["criteria"],
+        sla_hours=meta["sla_hours"],
+        owner=meta["owner"],
+        confidence=result.confidence,
+        factors=[factor.as_dict() for factor in result.factors],
+        adjustments=adjustments,
+        action_plan=[schemas.ActionStep(**step) for step in plan],
+        summary=summary,
+        generated_at=datetime.now(timezone.utc),
+    )
+
+
+def _match_corpus(db: Session, *, cve_id: str | None, category: str) -> dict[str, Any]:
+    """Find how many seeded intel items corroborate this assessment."""
+    category_hits = db.scalar(
+        select(func.count()).select_from(database.Threat).where(
+            database.Threat.category == category
+        )
+    ) or 0
+    cve_hits = 0
+    if cve_id:
+        cve_hits = db.scalar(
+            select(func.count())
+            .select_from(database.Threat)
+            .where(func.upper(database.Threat.title).like(f"%{cve_id}%"))
+        ) or 0
+    return {"category_hits": category_hits, "cve_hits": cve_hits}
+
+
+def _summarise(payload: schemas.AssessRequest, score: float, priority: str,
+               matched: dict[str, Any]) -> str:
+    asset = risk_engine.ASSET_TYPES[payload.asset_type]["label"]
+    threat = risk_engine.THREAT_SOURCES[payload.threat_source]["label"]
+    region = "台灣在地" if payload.region == "taiwan" else "國際來源"
+    parts = [
+        f"以「{asset}」面對「{threat}」進行評估，綜合風險分數 {score:.1f}，判定為 {priority}。",
+        f"情資語料中有 {matched['category_hits']} 筆同類別事件",
+    ]
+    if payload.cve_id:
+        parts.append(f"，其中 {matched['cve_hits']} 筆直接提及 {payload.cve_id}")
+    parts.append(f"；在地關聯採計{region} 50 筆語料。")
+    return "".join(parts)
+
+
+# --------------------------------------------------------------------------- #
+# Threat list with query filters
+# --------------------------------------------------------------------------- #
+
+
+@api.get("/threats", response_model=schemas.ThreatListResponse, summary="情資列表（Priority / Region 篩選）")
+def list_threats(
+    priority: Literal["P1", "P2", "P3"] | None = Query(None, description="處置優先級"),
+    region: Literal["taiwan", "global"] | None = Query(None, description="情資來源地區"),
+    category: Literal["Vulnerability", "Malware", "SupplyChain", "Research"] | None = Query(None),
+    meta_category: Literal["VULN", "MALWARE", "RESEARCH"] | None = Query(None),
+    source: str | None = Query(None, max_length=32, description="情資來源，例如 TWCERT"),
+    q: str | None = Query(None, max_length=120, description="標題關鍵字"),
+    min_score: float | None = Query(None, ge=0, le=100),
+    sort: Literal["risk", "date"] = Query("risk", description="排序依據"),
+    limit: int = Query(50, ge=1, le=200),
+    offset: int = Query(0, ge=0),
+    db: Session = Depends(database.get_db),
+) -> schemas.ThreatListResponse:
+    stmt = select(database.Threat)
+    conditions = []
+    if priority:
+        conditions.append(database.Threat.priority == priority)
+    if region:
+        conditions.append(database.Threat.region == region)
+    if category:
+        conditions.append(database.Threat.category == category)
+    if meta_category:
+        conditions.append(database.Threat.meta_category == meta_category)
+    if source:
+        conditions.append(database.Threat.source == source)
+    if q:
+        conditions.append(database.Threat.title.ilike(f"%{q.strip()}%"))
+    if min_score is not None:
+        conditions.append(database.Threat.risk_score >= min_score)
+    if conditions:
+        stmt = stmt.where(*conditions)
+
+    total = db.scalar(
+        select(func.count()).select_from(database.Threat).where(*conditions)
+    ) or 0
+
+    if sort == "date":
+        stmt = stmt.order_by(database.Threat.published_at.desc(), database.Threat.risk_score.desc())
+    else:
+        stmt = stmt.order_by(database.Threat.risk_score.desc(), database.Threat.published_at.desc())
+
+    rows = db.scalars(stmt.limit(limit).offset(offset)).all()
+    items = [schemas.threat_to_schema(row) for row in rows]
+    return schemas.ThreatListResponse(
+        total=total,
+        limit=limit,
+        offset=offset,
+        returned=len(items),
+        filters={
+            "priority": priority,
+            "region": region,
+            "category": category,
+            "meta_category": meta_category,
+            "source": source,
+            "q": q,
+            "min_score": min_score,
+            "sort": sort,
+        },
+        items=items,
+    )
+
+
+@api.get("/threats/{threat_id}", response_model=schemas.ThreatOut, summary="單筆情資明細")
+def get_threat(threat_id: int, db: Session = Depends(database.get_db)) -> schemas.ThreatOut:
+    row = db.get(database.Threat, threat_id)
+    if row is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="查無此情資項目")
+    return schemas.threat_to_schema(row)
+
+
+app.include_router(api)
+
+
+# --------------------------------------------------------------------------- #
+# Static dashboard
+# --------------------------------------------------------------------------- #
+
+if STATIC_DIR.exists():
+    app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
+
+
+@app.get("/", include_in_schema=False)
+def index() -> FileResponse:
+    return FileResponse(STATIC_DIR / "index.html")
+
+
+@app.get("/favicon.ico", include_in_schema=False)
+def favicon() -> Response:
+    return Response(status_code=status.HTTP_204_NO_CONTENT)

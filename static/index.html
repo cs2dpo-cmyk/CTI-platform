@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CTI 資安風險決策支援平台 · CISO Dashboard</title>
+  <meta name="description" content="基於 TF-IDF + K-Means 的跨平台網路威脅情資分析與 P1-P3 決策支援儀表板。" />
+  <meta name="color-scheme" content="dark" />
+
+  <!-- Tailwind CSS (Play CDN: fine for the PoC; compile for production) -->
+  <script src="https://cdn.tailwindcss.com/3.4.16"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'Noto Sans TC', 'Microsoft JhengHei', 'system-ui', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'ui-monospace', 'monospace'],
+          },
+          colors: {
+            ink: { 950: '#060a11', 900: '#0c1320', 800: '#101a2a', 700: '#1b2739' },
+            accent: { cyan: '#22d3ee', teal: '#2dd4bf', violet: '#a78bfa' },
+          },
+        },
+      },
+    };
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap"
+    rel="stylesheet"
+  />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.6/dist/chart.umd.min.js" defer></script>
+  <link rel="stylesheet" href="/static/css/styles.css" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23060a11'/%3E%3Cpath d='M16 5l9 4v7c0 5.5-3.8 10-9 11-5.2-1-9-5.5-9-11V9l9-4z' fill='none' stroke='%2322d3ee' stroke-width='2'/%3E%3C/svg%3E" />
+</head>
+
+<body class="font-sans antialiased min-h-screen">
+  <a href="#main" class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[100] focus:px-3 focus:py-2 focus:rounded-lg focus:bg-cyan-400 focus:text-black focus:text-sm">跳至主要內容</a>
+
+  <!-- Icon sprite: one inline symbol set, no icon-font request -->
+  <svg width="0" height="0" class="absolute" aria-hidden="true" focusable="false">
+    <defs>
+      <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3l7.5 3.2v6.1c0 4.6-3.1 8.3-7.5 9.2-4.4-.9-7.5-4.6-7.5-9.2V6.2L12 3z"/><path d="M9.2 12.2l2 2 3.7-4"/></symbol>
+      <symbol id="i-radar" viewBox="0 0 24 24"><path d="M19.1 4.9A10 10 0 1 0 21 12"/><path d="M12 12l6.4-6.4"/><circle cx="12" cy="12" r="3.6"/><path d="M12 3v2M3 12h2"/></symbol>
+      <symbol id="i-pulse" viewBox="0 0 24 24"><path d="M2.5 12h4l2.2-6 3.4 12 2.4-7 1.8 4h5.2"/></symbol>
+      <symbol id="i-target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="1"/></symbol>
+      <symbol id="i-layers" viewBox="0 0 24 24"><path d="M12 3.5l8 4.2-8 4.3-8-4.3 8-4.2z"/><path d="M4 12.2l8 4.3 8-4.3"/><path d="M4 16.3l8 4.2 8-4.2"/></symbol>
+      <symbol id="i-chart" viewBox="0 0 24 24"><path d="M4 20h16"/><rect x="5.5" y="11" width="3.6" height="6" rx="1"/><rect x="10.6" y="6.5" width="3.6" height="10.5" rx="1"/><rect x="15.7" y="9" width="3.6" height="8" rx="1"/></symbol>
+      <symbol id="i-list" viewBox="0 0 24 24"><path d="M9 6h11M9 12h11M9 18h11"/><circle cx="4.6" cy="6" r="1.1"/><circle cx="4.6" cy="12" r="1.1"/><circle cx="4.6" cy="18" r="1.1"/></symbol>
+      <symbol id="i-sliders" viewBox="0 0 24 24"><path d="M5 5v14M12 5v14M19 5v14"/><circle cx="5" cy="9" r="2"/><circle cx="12" cy="15" r="2"/><circle cx="19" cy="8" r="2"/></symbol>
+      <symbol id="i-search" viewBox="0 0 24 24"><circle cx="10.8" cy="10.8" r="6.3"/><path d="M20 20l-4.4-4.4"/></symbol>
+      <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M20 11a8 8 0 1 0-2.4 5.6"/><path d="M20 5v6h-6"/></symbol>
+      <symbol id="i-chevron" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></symbol>
+      <symbol id="i-alert" viewBox="0 0 24 24"><path d="M12 4.5l8.2 14.2H3.8L12 4.5z"/><path d="M12 10v4"/><circle cx="12" cy="16.6" r=".7" fill="currentColor" stroke="none"/></symbol>
+      <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 1.8"/></symbol>
+      <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8.4" r="3.4"/><path d="M5.2 19.4a6.9 6.9 0 0 1 13.6 0"/></symbol>
+      <symbol id="i-cpu" viewBox="0 0 24 24"><rect x="6.5" y="6.5" width="11" height="11" rx="2"/><path d="M10 3.5v2M14 3.5v2M10 18.5v2M14 18.5v2M3.5 10h2M3.5 14h2M18.5 10h2M18.5 14h2"/></symbol>
+      <symbol id="i-check" viewBox="0 0 24 24"><path d="M4.5 12.5l4.6 4.6L19.5 6.7"/></symbol>
+      <symbol id="i-close" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></symbol>
+      <symbol id="i-arrow-right" viewBox="0 0 24 24"><path d="M4.5 12h15M13.5 6l6 6-6 6"/></symbol>
+      <symbol id="i-flow" viewBox="0 0 24 24"><rect x="3.5" y="4" width="6" height="5" rx="1.4"/><rect x="14.5" y="15" width="6" height="5" rx="1.4"/><path d="M9.5 6.5h4a2 2 0 0 1 2 2v7"/><path d="M13 13l2.5 2.6L18 13"/></symbol>
+      <symbol id="i-book" viewBox="0 0 24 24"><path d="M4.5 5.5A2 2 0 0 1 6.5 3.5H19v17H6.5a2 2 0 0 0-2 2v-17z"/><path d="M8 7.5h7M8 11h7"/></symbol>
+      <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 4v10"/><path d="M8 10.5l4 4 4-4"/><path d="M4.5 17.5v1a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2v-1"/></symbol>
+    </defs>
+  </svg>
+
+  <!-- ===================== Top bar ===================== -->
+  <header class="sticky top-0 z-50 border-b border-[#1b2739]/90 bg-[#060a11]/78 backdrop-blur-xl">
+    <div class="mx-auto flex h-16 max-w-[1440px] items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
+      <div class="flex min-w-0 items-center gap-3">
+        <div class="icon-chip h-9 w-9 rounded-[11px]" aria-hidden="true">
+          <svg class="ico"><use href="#i-shield" /></svg>
+        </div>
+        <div class="min-w-0">
+          <h1 class="truncate text-[15px] font-semibold tracking-tight text-white sm:text-base">
+            CTI <span class="grad-text">資安風險決策支援</span>平台
+          </h1>
+          <p class="kicker hidden sm:block">Cyber Threat Intelligence · Decision Radar</p>
+        </div>
+      </div>
+
+      <nav class="hidden items-center gap-1 lg:flex" aria-label="區塊導覽">
+        <a class="nav-link" href="#overview">總覽</a>
+        <a class="nav-link" href="#assess">即時評估</a>
+        <a class="nav-link" href="#matrix">決策矩陣</a>
+        <a class="nav-link" href="#feed">情資流</a>
+      </nav>
+
+      <div class="flex items-center gap-2">
+        <span class="hidden items-center gap-2 rounded-full border border-emerald-500/25 bg-emerald-500/10 px-2.5 py-1 text-[11px] font-medium text-emerald-300 sm:inline-flex">
+          <span class="live-dot" aria-hidden="true"></span>
+          <span id="apiStatus">API 連線中</span>
+        </span>
+        <button id="refreshBtn" class="btn" type="button" title="重新取得最新統計">
+          <svg class="ico ico-sm" id="refreshIcon"><use href="#i-refresh" /></svg>
+          <span class="hidden sm:inline">同步情資</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main id="main" class="mx-auto max-w-[1440px] space-y-5 px-4 py-6 sm:px-6 lg:space-y-6 lg:px-8 lg:py-8">
+
+    <!-- ===================== Hero ===================== -->
+    <section class="panel reveal overflow-hidden" aria-labelledby="heroTitle">
+      <div class="grid gap-6 p-5 sm:p-6 lg:grid-cols-[1.55fr_1fr] lg:gap-8">
+        <div class="space-y-3">
+          <div class="flex flex-wrap items-center gap-2">
+            <span class="badge badge-p3">
+              <span class="dot"></span>研究 PoC · v1.0
+            </span>
+            <span class="badge" data-tone="low">平衡語料 50 台灣 : 50 國際</span>
+          </div>
+          <h2 id="heroTitle" class="headline text-xl font-semibold text-white sm:text-2xl lg:text-[26px]">
+            全球預警 × 在地落地，
+            <span class="text-cyan-300">把情資聲量換算成可執行的優先級</span>
+          </h2>
+          <p class="prose-cap text-[13px] leading-relaxed text-[color:var(--muted)]">
+            以 TF-IDF 向量化與 K-Means 分群降噪 100 篇跨平台情資，透過可解釋的加權風險模型，
+            即時輸出 P1–P3 處置建議與回應 SLA，讓 CISO 在時間差中提前部署防禦資源。
+          </p>
+          <div class="flex flex-wrap items-center gap-x-5 gap-y-2 pt-1 text-[11px] text-[color:var(--faint)]">
+            <span class="mono">TF-IDF · 1,000 dims</span>
+            <span class="h-3 w-px bg-[#27384f]"></span>
+            <span class="mono">K-Means · K=3</span>
+            <span class="h-3 w-px bg-[#27384f]"></span>
+            <span class="mono">降噪 95.8%</span>
+            <span class="h-3 w-px bg-[#27384f]"></span>
+            <span class="mono">FastAPI + SQLite</span>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-2.5 self-center">
+          <div class="rounded-xl border border-[#1b2739] bg-[#0a111c]/70 p-3">
+            <div class="kicker">P1 回應 SLA</div>
+            <div class="mt-1.5 font-mono text-lg font-semibold text-rose-300">24<span class="ml-1 text-[11px] text-[color:var(--faint)]">hrs</span></div>
+            <p class="mt-1 text-[10.5px] text-[color:var(--faint)]">零日 / 勒索軟體</p>
+          </div>
+          <div class="rounded-xl border border-[#1b2739] bg-[#0a111c]/70 p-3">
+            <div class="kicker">情資語料</div>
+            <div class="mt-1.5 font-mono text-lg font-semibold text-cyan-300" id="heroCorpus">100<span class="ml-1 text-[11px] text-[color:var(--faint)]">篇</span></div>
+            <p class="mt-1 text-[10.5px] text-[color:var(--faint)]">TWCERT · iThome · THN</p>
+          </div>
+          <div class="rounded-xl border border-[#1b2739] bg-[#0a111c]/70 p-3">
+            <div class="kicker">風險模型</div>
+            <div class="mt-1.5 font-mono text-lg font-semibold text-teal-300">5<span class="ml-1 text-[11px] text-[color:var(--faint)]">factors</span></div>
+            <p class="mt-1 text-[10.5px] text-[color:var(--faint)]">加權可解釋評分</p>
+          </div>
+          <div class="rounded-xl border border-[#1b2739] bg-[#0a111c]/70 p-3">
+            <div class="kicker">資料庫</div>
+            <div class="mt-1.5 flex items-center gap-1.5 font-mono text-lg font-semibold text-violet-300">
+              <span class="live-dot" aria-hidden="true"></span>SQLite
+            </div>
+            <p class="mt-1 text-[10.5px] text-[color:var(--faint)]">PoC schema · Render 就緒</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== KPI row ===================== -->
+    <section id="overview" class="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4 stagger" aria-label="關鍵指標">
+      <article class="panel kpi panel-hover">
+        <div class="kpi-label"><span>解析情資樣本</span><span class="mono text-[10px] text-[color:var(--faint)]">CORPUS</span></div>
+        <div class="kpi-value" id="kpiTotal">—</div>
+        <div class="kpi-foot"><span class="badge" data-tone="tw">台灣 <b id="kpiTw" class="ml-1 font-mono">—</b></span><span class="badge" data-tone="global">國際 <b id="kpiGlobal" class="ml-1 font-mono">—</b></span></div>
+        <div class="spark" id="kpiSpark" aria-hidden="true"></div>
+      </article>
+
+      <article class="panel kpi panel-hover">
+        <div class="kpi-label"><span>P1 立即處置</span><svg class="ico ico-sm text-rose-400"><use href="#i-alert" /></svg></div>
+        <div class="kpi-value text-rose-200" id="kpiP1">—</div>
+        <div class="kpi-foot"><span class="mono text-[10px]" id="kpiP1Share">—</span><span>需於 24 小時內完成阻斷</span></div>
+        <div class="spark" id="kpiP1Spark" aria-hidden="true"></div>
+      </article>
+
+      <article class="panel kpi panel-hover">
+        <div class="kpi-label"><span>最大 Meta-Category</span><svg class="ico ico-sm text-cyan-400"><use href="#i-layers" /></svg></div>
+        <div class="mt-2 truncate text-[15px] font-semibold text-white" id="kpiTopMeta">—</div>
+        <div class="kpi-foot"><span class="mono text-[10px] text-cyan-300" id="kpiTopMetaShare">—</span><span id="kpiTopMetaNote">—</span></div>
+        <div class="mt-2.5 flex h-1 overflow-hidden rounded-full bg-white/5" id="kpiMetaBar" aria-hidden="true"></div>
+      </article>
+
+      <article class="panel kpi panel-hover">
+        <div class="kpi-label"><span>平均風險分數</span><svg class="ico ico-sm text-teal-300"><use href="#i-target" /></svg></div>
+        <div class="kpi-value text-teal-200" id="kpiAvgScore">—</div>
+        <div class="kpi-foot"><span class="mono text-[10px]" id="kpiCritical">—</span><span>CRITICAL 等級事件</span></div>
+        <div class="mt-2.5 h-1 overflow-hidden rounded-full bg-white/5">
+          <div class="h-full rounded-full bg-gradient-to-r from-teal-400/60 to-cyan-300 transition-[width] duration-700" id="kpiAvgBar" style="width:0%"></div>
+        </div>
+      </article>
+    </section>
+
+    <!-- ===================== Charts ===================== -->
+    <section class="grid grid-cols-1 gap-4 lg:grid-cols-12 lg:gap-5" aria-label="情資視覺化">
+      <article class="panel panel-hover lg:col-span-5 reveal">
+        <div class="panel-head">
+          <div>
+            <h3 class="panel-title"><svg class="ico ico-sm text-cyan-400"><use href="#i-layers" /></svg>威脅主題分群</h3>
+            <p class="kicker mt-1">Meta-Category Distribution</p>
+          </div>
+          <span class="badge" data-tone="low"><span class="mono" id="metaTotalBadge">—</span></span>
+        </div>
+        <div class="panel-body">
+          <div class="chart-frame mx-auto aspect-square w-full max-w-[248px]">
+            <canvas id="clusterPieChart" role="img" aria-label="Meta-Category 佔比圓餅圖"></canvas>
+            <div class="pointer-events-none absolute inset-0 grid place-items-center">
+              <div class="text-center">
+                <div class="mono text-2xl font-semibold text-white" id="pieCenterTotal">—</div>
+                <div class="kicker mt-0.5">articles</div>
+              </div>
+            </div>
+          </div>
+          <div class="mt-4" id="metaLegend"></div>
+          <div class="mt-3 border-t border-[#1b2739] pt-3">
+            <p class="kicker mb-2">4 類原始分類明細</p>
+            <div class="flex flex-wrap gap-1.5" id="categoryStrip" aria-label="四類原始分類統計"></div>
+          </div>
+        </div>
+      </article>
+
+      <article class="panel panel-hover lg:col-span-7 reveal">
+        <div class="panel-head">
+          <div>
+            <h3 class="panel-title"><svg class="ico ico-sm text-teal-300"><use href="#i-chart" /></svg>跨平台威脅對比</h3>
+            <p class="kicker mt-1">Taiwan vs Global · by Meta-Category</p>
+          </div>
+          <span class="badge" data-tone="tw"><span class="mono">TWCERT + iThome</span> vs <span class="mono">THN</span></span>
+        </div>
+        <div class="panel-body">
+          <div class="chart-frame h-[248px]">
+            <canvas id="comparisonBarChart" role="img" aria-label="台灣與國際 Meta-Category 對比長條圖"></canvas>
+          </div>
+          <div class="callout mt-3">
+            <svg class="ico ico-sm mt-0.5 shrink-0 text-amber-300"><use href="#i-alert" /></svg>
+            <p id="comparisonInsight">正在取得情資洞察…</p>
+          </div>
+        </div>
+      </article>
+
+      <article class="panel panel-hover lg:col-span-8 reveal">
+        <div class="panel-head">
+          <div>
+            <h3 class="panel-title"><svg class="ico ico-sm text-cyan-400"><use href="#i-pulse" /></svg>情資發布節奏</h3>
+            <p class="kicker mt-1">Daily Volume · 2026-09-10 → 2026-10-29</p>
+          </div>
+          <div class="flex items-center gap-3 text-[10.5px] text-[color:var(--faint)]">
+            <span class="inline-flex items-center gap-1.5"><span class="legend-swatch bg-teal-400"></span>台灣</span>
+            <span class="inline-flex items-center gap-1.5"><span class="legend-swatch bg-blue-400"></span>國際</span>
+          </div>
+        </div>
+        <div class="panel-body">
+          <div class="chart-frame h-[212px]">
+            <canvas id="timelineChart" role="img" aria-label="每日情資發布量折線圖"></canvas>
+          </div>
+        </div>
+      </article>
+
+      <article class="panel panel-hover lg:col-span-4 reveal">
+        <div class="panel-head">
+          <div>
+            <h3 class="panel-title"><svg class="ico ico-sm text-violet-300"><use href="#i-sliders" /></svg>處置優先級</h3>
+            <p class="kicker mt-1">P1 / P2 / P3 Split</p>
+          </div>
+        </div>
+        <div class="panel-body">
+          <div class="chart-frame h-[212px]">
+            <canvas id="priorityChart" role="img" aria-label="P1 至 P3 情資數量長條圖"></canvas>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <!-- ===================== Risk console ===================== -->
+    <section id="assess" class="grid grid-cols-1 gap-4 lg:grid-cols-12 lg:gap-5" aria-labelledby="assessTitle">
+      <article class="panel lg:col-span-7">
+        <div class="panel-head">
+          <div>
+            <h3 id="assessTitle" class="panel-title"><svg class="ico ico-sm text-cyan-400"><use href="#i-target" /></svg>即時風險查詢</h3>
+            <p class="kicker mt-1">Live Risk Assessment → <span class="text-cyan-300/80">POST /api/v1/assess</span></p>
+          </div>
+          <button type="button" class="btn btn-ghost" id="resetFormBtn">
+            <svg class="ico ico-sm"><use href="#i-refresh" /></svg>重設
+          </button>
+        </div>
+
+        <form class="panel-body space-y-4" id="assessForm" novalidate>
+          <div class="grid grid-cols-1 gap-3.5 sm:grid-cols-2">
+            <div class="field">
+              <label class="field-label" for="assetType">資產類型 <span class="field-hint">asset_type</span></label>
+              <select class="select" id="assetType" name="asset_type">
+                <option value="core_datacenter">核心機房 / 資料庫</option>
+                <option value="ot_ics">OT / ICS 工控環境</option>
+                <option value="identity_idp">身分驗證 / AD / IdP</option>
+                <option value="cloud_infra">雲端基礎設施</option>
+                <option value="dev_pipeline">CI/CD 與開發供應鏈</option>
+                <option value="web_app" selected>對外網站 / API 服務</option>
+                <option value="endpoint">端點與辦公環境</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label class="field-label" for="threatSource">威脅來源 <span class="field-hint">threat_source</span></label>
+              <select class="select" id="threatSource" name="threat_source">
+                <option value="zero_day">零日漏洞利用</option>
+                <option value="ransomware">勒索軟體</option>
+                <option value="apt">國家級 APT 持續滲透</option>
+                <option value="supply_chain">軟體供應鏈投毒</option>
+                <option value="malware">惡意程式 / 後門</option>
+                <option value="credential_theft">憑證竊取 / 帳號盜用</option>
+                <option value="phishing" selected>社交工程與網釣</option>
+                <option value="ddos">DDoS 阻斷服務</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label class="field-label" for="category">情資類別 <span class="field-hint">category</span></label>
+              <select class="select" id="category" name="category">
+                <option value="Vulnerability" selected>系統漏洞與修補對策</option>
+                <option value="Malware">惡意威脅與主動攻擊</option>
+                <option value="SupplyChain">供應鏈與資安威脅</option>
+                <option value="Research">前瞻研究與平台治理</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label class="field-label" for="exposure">暴露程度 <span class="field-hint">exposure</span></label>
+              <select class="select" id="exposure" name="exposure">
+                <option value="public">公開網際網路</option>
+                <option value="partner">合作夥伴 / VPN 通道</option>
+                <option value="internal" selected>僅內網</option>
+              </select>
+            </div>
+
+            <div class="field sm:col-span-2">
+              <span class="field-label">情資地區 <span class="field-hint">region</span></span>
+              <div class="flex flex-wrap gap-2" role="group" aria-label="情資地區">
+                <button type="button" class="chip" data-form-region="taiwan" aria-pressed="true">
+                  台灣在地 <span class="chip-count">50 筆語料</span>
+                </button>
+                <button type="button" class="chip" data-form-region="global" aria-pressed="false">
+                  國際來源 <span class="chip-count">50 筆語料</span>
+                </button>
+              </div>
+            </div>
+
+            <div class="field sm:col-span-2">
+              <label class="field-label" for="cveId">
+                <span>CVE 編號 <span class="field-hint">選填 · 例 CVE-2026-111497</span></span>
+                <span class="field-hint" id="cveHint">比對情資語料</span>
+              </label>
+              <input class="input mono" id="cveId" name="cve_id" type="text" inputmode="text"
+                     placeholder="CVE-2026-111497" pattern="^CVE-\d{4}-\d{4,7}$"
+                     aria-describedby="cveError" autocomplete="off" spellcheck="false" />
+              <p class="error-text hidden" id="cveError">
+                <svg class="ico ico-sm"><use href="#i-alert" /></svg>
+                <span>格式應為 CVE-YYYY-NNNN</span>
+              </p>
+            </div>
+
+            <div class="field">
+              <label class="field-label" for="cvss">
+                <span>CVSS 分數 <span class="field-hint">0 – 10</span></span>
+                <span class="mono text-[11px] text-cyan-300" id="cvssValue">未提供</span>
+              </label>
+              <input class="range mt-3" id="cvss" name="cvss" type="range" min="0" max="10" step="0.1" value="7.5" />
+              <div class="mt-2 flex items-center justify-between">
+                <span class="mono text-[10px] text-[color:var(--faint)]">0.0</span>
+                <label class="inline-flex items-center gap-1.5 text-[10.5px] text-[color:var(--faint)]">
+                  <input type="checkbox" id="cvssEnabled" class="accent-cyan-400" checked />
+                  納入評分
+                </label>
+                <span class="mono text-[10px] text-[color:var(--faint)]">10.0</span>
+              </div>
+            </div>
+
+            <div class="field">
+              <label class="field-label" for="exploitStatus">利用成熟度 <span class="field-hint">exploit_status</span></label>
+              <select class="select" id="exploitStatus" name="exploit_status">
+                <option value="active">已在野利用</option>
+                <option value="poc_public">PoC 已公開</option>
+                <option value="unknown" selected>尚未確認</option>
+                <option value="none">尚無可行利用</option>
+              </select>
+            </div>
+
+            <div class="field sm:col-span-2">
+              <span class="field-label">資料敏感度 <span class="field-hint">data_sensitivity</span></span>
+              <div class="flex gap-2" role="group" aria-label="資料敏感度">
+                <button type="button" class="chip" data-group="sensitivity" data-value="high" aria-pressed="false">高（個資 / 營業秘密）</button>
+                <button type="button" class="chip" data-group="sensitivity" data-value="medium" aria-pressed="true">中</button>
+                <button type="button" class="chip" data-group="sensitivity" data-value="low" aria-pressed="false">低</button>
+              </div>
+            </div>
+
+            <div class="field sm:col-span-2">
+              <span class="field-label">已佈建控制項 <span class="field-hint">每項折減風險分數</span></span>
+              <div class="flex flex-wrap gap-2" id="controlsGroup" role="group" aria-label="已佈建控制項">
+                <button type="button" class="chip" data-control="edr" aria-pressed="false">EDR 端點偵測</button>
+                <button type="button" class="chip" data-control="mfa" aria-pressed="false">MFA 全面強制</button>
+                <button type="button" class="chip" data-control="waf" aria-pressed="false">WAF / IPS</button>
+                <button type="button" class="chip" data-control="segmentation" aria-pressed="false">網段隔離</button>
+                <button type="button" class="chip" data-control="backup" aria-pressed="false">3-2-1 備份</button>
+                <button type="button" class="chip" data-control="patch_pipeline" aria-pressed="false">自動化修補</button>
+              </div>
+            </div>
+
+            <div class="field sm:col-span-2">
+              <label class="field-label" for="assetName">資產名稱 <span class="field-hint">選填，僅用於顯示</span></label>
+              <input class="input" id="assetName" name="asset_name" type="text" maxlength="120"
+                     placeholder="例：tw-fintech-prod-api-01" autocomplete="off" />
+            </div>
+          </div>
+
+          <div class="flex flex-wrap items-center justify-between gap-3 border-t border-[#1b2739] pt-4">
+            <div class="flex items-center gap-2 text-[10.5px] text-[color:var(--faint)]">
+              <svg class="ico ico-sm text-cyan-400"><use href="#i-flow" /></svg>
+              <span class="mono">POST /api/v1/assess</span>
+            </div>
+            <button class="btn btn-primary min-w-[168px]" type="submit" id="assessBtn">
+              <svg class="ico ico-sm" id="assessIcon"><use href="#i-pulse" /></svg>
+              <span id="assessBtnLabel">執行風險評估</span>
+            </button>
+          </div>
+        </form>
+      </article>
+
+      <article class="panel lg:col-span-5">
+        <div class="panel-head">
+          <div>
+            <h3 class="panel-title"><svg class="ico ico-sm text-teal-300"><use href="#i-cpu" /></svg>評估結果</h3>
+            <p class="kicker mt-1">Explainable Scoring · Playbook</p>
+          </div>
+          <span class="badge" data-tone="low" id="assessIdBadge">待評估</span>
+        </div>
+        <div class="panel-body">
+          <div id="assessEmpty" class="empty">
+            <svg class="ico h-6 w-6 text-[color:var(--faint)]"><use href="#i-radar" /></svg>
+            <p>調整左側參數後執行評估，<br />系統將回傳分數、影響因子與處置劇本。</p>
+          </div>
+
+          <div id="assessResult" class="hidden space-y-4" aria-live="polite">
+            <div class="flex items-center gap-4">
+              <div class="ring" id="scoreRing" style="--pct:0">
+                <div class="ring-inner">
+                  <div class="ring-score" id="scoreValue">0</div>
+                  <div class="ring-caption">RISK</div>
+                </div>
+              </div>
+              <div class="min-w-0 space-y-1.5">
+                <span class="badge badge-p1" id="priorityBadge">P1</span>
+                <h4 class="text-[13.5px] font-semibold leading-snug text-white" id="resultHeadline">—</h4>
+                <div class="flex flex-wrap gap-x-3 gap-y-1 text-[10.5px] text-[color:var(--faint)]">
+                  <span class="mono" id="resultLevel">—</span>
+                  <span class="mono" id="resultSla">—</span>
+                  <span class="mono" id="resultConfidence">—</span>
+                </div>
+              </div>
+            </div>
+
+            <p class="rounded-lg border border-[#1b2739] bg-[#08101b]/80 p-2.5 text-[11.5px] leading-relaxed text-[color:var(--muted)]" id="resultSummary">—</p>
+
+            <div>
+              <div class="mb-1 flex items-center justify-between">
+                <span class="kicker">Factor Contribution</span>
+                <span class="mono text-[10px] text-[color:var(--faint)]" id="resultOwner">—</span>
+              </div>
+              <div id="factorList"></div>
+            </div>
+
+            <div id="adjustmentList" class="flex flex-wrap gap-1.5"></div>
+
+            <div>
+              <div class="mb-2 flex items-center justify-between">
+                <span class="kicker">Recommended Playbook</span>
+                <span class="mono text-[10px] text-[color:var(--faint)]" id="planCount">—</span>
+              </div>
+              <ol class="steps" id="resultPlan"></ol>
+            </div>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <!-- ===================== Decision matrix ===================== -->
+    <section id="matrix" class="panel" aria-labelledby="matrixTitle">
+      <div class="panel-head flex-wrap">
+        <div>
+          <h3 id="matrixTitle" class="panel-title"><svg class="ico ico-sm text-amber-300"><use href="#i-sliders" /></svg>P1–P3 決策矩陣</h3>
+          <p class="kicker mt-1">Click a lane to filter the feed</p>
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="hidden text-[10.5px] text-[color:var(--faint)] sm:inline" id="matrixHint">依風險分數自動分派</span>
+          <button class="btn btn-ghost" type="button" id="clearMatrixBtn" hidden>
+            <svg class="ico ico-sm"><use href="#i-close" /></svg>取消篩選
+          </button>
+        </div>
+      </div>
+      <div class="panel-body grid grid-cols-1 gap-3 md:grid-cols-3" id="matrixGrid">
+        <div class="skeleton h-[190px]"></div>
+        <div class="skeleton h-[190px]"></div>
+        <div class="skeleton h-[190px]"></div>
+      </div>
+    </section>
+
+    <!-- ===================== Feed ===================== -->
+    <section id="feed" class="panel" aria-labelledby="feedTitle">
+      <div class="panel-head flex-col gap-3 md:flex-row md:items-center">
+        <div>
+          <h3 id="feedTitle" class="panel-title"><svg class="ico ico-sm text-cyan-400"><use href="#i-list" /></svg>情資流與 AI 分群明細</h3>
+          <p class="kicker mt-1">GET /api/v1/threats?priority=&amp;region=</p>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-2">
+          <div class="relative">
+            <svg class="ico ico-sm pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 text-[color:var(--faint)]"><use href="#i-search" /></svg>
+            <input class="input w-[190px] pl-8" id="searchInput" type="search" placeholder="搜尋標題 / CVE…"
+                   aria-label="搜尋情資標題" autocomplete="off" />
+          </div>
+          <select class="select w-[150px]" id="categoryFilter" aria-label="依類別篩選">
+            <option value="">所有類別</option>
+            <option value="Vulnerability">系統漏洞與修補</option>
+            <option value="Malware">惡意威脅與攻擊</option>
+            <option value="SupplyChain">供應鏈與資安</option>
+            <option value="Research">前瞻研究與治理</option>
+          </select>
+          <select class="select w-[126px]" id="sortSelect" aria-label="排序方式">
+            <option value="risk">依風險分數</option>
+            <option value="date">依發布日期</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="flex flex-wrap items-center gap-2 border-b border-[#1b2739] px-4 py-2.5 sm:px-5">
+        <span class="kicker mr-1">Priority</span>
+        <button class="chip" data-priority="" aria-pressed="true">全部 <span class="chip-count" id="cntAll">—</span></button>
+        <button class="chip" data-priority="P1" aria-pressed="false">P1 <span class="chip-count" id="cntP1">—</span></button>
+        <button class="chip" data-priority="P2" aria-pressed="false">P2 <span class="chip-count" id="cntP2">—</span></button>
+        <button class="chip" data-priority="P3" aria-pressed="false">P3 <span class="chip-count" id="cntP3">—</span></button>
+        <span class="mx-1 hidden h-4 w-px bg-[#27384f] sm:block"></span>
+        <span class="kicker mr-1">Region</span>
+        <button class="chip" data-region="" aria-pressed="true">全部</button>
+        <button class="chip" data-region="taiwan" aria-pressed="false">台灣</button>
+        <button class="chip" data-region="global" aria-pressed="false">國際</button>
+      </div>
+
+      <div class="scroll-y max-h-[560px] overflow-x-auto">
+        <table class="feed-table">
+          <thead>
+            <tr>
+              <th class="w-[92px]">來源</th>
+              <th>情資標題</th>
+              <th class="w-[150px]">Meta-Category</th>
+              <th class="w-[86px]">分數</th>
+              <th class="w-[78px]">優先級</th>
+              <th class="w-[96px]">日期</th>
+            </tr>
+          </thead>
+          <tbody id="feedBody">
+            <tr><td colspan="6" class="py-10"><div class="skeleton mx-auto h-4 w-2/3"></div></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="flex flex-wrap items-center justify-between gap-3 border-t border-[#1b2739] px-4 py-3 text-[11px] text-[color:var(--faint)] sm:px-5">
+        <span>顯示 <strong class="mono text-white" id="feedCount">0</strong> / <span class="mono" id="feedTotal">0</span> 筆情資</span>
+        <div class="flex items-center gap-2">
+          <button class="btn btn-ghost" id="prevPageBtn" type="button" disabled>上一頁</button>
+          <span class="mono text-[10.5px]" id="pageLabel">1 / 1</span>
+          <button class="btn btn-ghost" id="nextPageBtn" type="button" disabled>下一頁</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== Insights ===================== -->
+    <section class="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-4 stagger" id="insightGrid" aria-label="AI 洞察"></section>
+
+  </main>
+
+  <footer class="mt-8 border-t border-[#1b2739]/80 bg-[#060a11]/70">
+    <div class="mx-auto flex max-w-[1440px] flex-col items-center justify-between gap-3 px-4 py-6 text-center sm:flex-row sm:px-6 sm:text-left lg:px-8">
+      <div class="space-y-1">
+        <p class="text-[11.5px] text-[color:var(--muted)]">
+          嶺東 SmartTech AI 創新應用挑戰賽 · 基於機器學習之跨平台 CTI 分析與決策支援平台
+        </p>
+        <p class="mono text-[10px] text-[color:var(--faint)]">
+          FastAPI · SQLite · Chart.js — PoC deployment ready for Render
+        </p>
+      </div>
+      <div class="flex items-center gap-2">
+        <a class="btn btn-ghost" href="/api/docs" target="_blank" rel="noopener">
+          <svg class="ico ico-sm"><use href="#i-book" /></svg>API Docs
+        </a>
+        <a class="btn btn-ghost" href="/api/v1/stats" target="_blank" rel="noopener">
+          <svg class="ico ico-sm"><use href="#i-download" /></svg>Raw JSON
+        </a>
+      </div>
+    </div>
+  </footer>
+
+  <div class="toast-stack" id="toastStack" aria-live="polite" aria-atomic="false"></div>
+
+  <script src="/static/js/charts.js" defer></script>
+  <script src="/static/js/app.js" defer></script>
+</body>
+</html>
