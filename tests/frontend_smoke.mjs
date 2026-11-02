@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Headless DOM smoke test for the dashboard bundle.
  *
  * jsdom cannot paint, so this does not test visuals. It does execute the real
@@ -50,6 +50,8 @@ function makeChartStub(win) {
     }
     update() { this.updated = true; }
     destroy() { this.destroyed = true; }
+    isDatasetVisible() { return true; }
+    setDatasetVisibility() {}
   }
   Chart.defaults = {
     font: {},
@@ -125,10 +127,13 @@ assert($('#kpiTopMeta').textContent.trim() !== '—', 'KPI top meta-category ren
 assert($('#kpiAvgScore').textContent.trim() !== '—', 'KPI average score rendered');
 
 assert($$('#metaLegend .legend-row').length === 3, `meta legend rows (got ${$$('#metaLegend .legend-row').length})`);
-assert($$('#categoryStrip .tally').length === 4, `category tallies (got ${$$('#categoryStrip .tally').length})`);
+assert($$('#categoryStrip .tally').length === 6, `cluster tallies (got ${$$('#categoryStrip .tally').length})`);
 assert(
-  $$('#categoryStrip .tally').map((node) => node.textContent.trim().split(/\s+/)[0]).join(',') === '漏洞修補,惡意攻擊,供應鏈,研究治理',
-  'category tallies carry the 4-way breakdown'
+  $$('#categoryStrip .tally')
+    .map((node) => node.textContent.replace(/\s+/g, ' ').trim())
+    .join('|')
+    .includes('C0'),
+  'cluster tallies expose the raw cluster ids'
 );
 assert($('#pieCenterTotal').textContent.trim() === '100', 'pie centre total rendered');
 
@@ -142,6 +147,52 @@ assert($('#pageLabel').textContent.includes('1 / 4'), `pagination label (got "${
 assert($$('#insightGrid article').length === 4, `insight cards (got ${$$('#insightGrid article').length})`);
 assert(window.Chart.instances?.length === 4, `chart instances (got ${window.Chart.instances?.length})`);
 assert($('#apiStatus').textContent.includes('已連線'), 'API status pill updated');
+
+// --------------------------------------------- comparison chart: alignment + legend
+{
+  const statsNow = await globalThis.fetch(`${BASE}/api/v1/stats`).then((response) => response.json());
+  const metaByKey = Object.fromEntries(statsNow.meta_categories.map((item) => [item.key, item]));
+  const AXIS = { VULN: '漏洞與修補', MALWARE: '惡意與攻擊', RESEARCH: '研究與治理' };
+  const bar = window.Chart.instances.find(
+    (chart) => chart.config.type === 'bar' && chart.data.datasets.length === 2
+  );
+
+  assert(!!bar, 'comparison chart exists');
+  assert(
+    bar.data.labels.length === 3 && bar.data.datasets[0].data.length === 3,
+    `comparison has three categories (got ${bar.data.labels.length})`
+  );
+  assert(
+    Object.keys(AXIS).every(
+      (key, index) =>
+        bar.data.labels[index] === AXIS[key] &&
+        bar.data.datasets[0].data[index] === (metaByKey[key]?.by_region?.taiwan ?? 0) &&
+        bar.data.datasets[1].data[index] === (metaByKey[key]?.by_region?.global ?? 0)
+    ),
+    `comparison series align to category by key (labels=${bar.data.labels.join('|')}, tw=${bar.data.datasets[0].data.join('|')}, gl=${bar.data.datasets[1].data.join('|')})`
+  );
+
+  const legend = bar.options.plugins.legend;
+  assert(legend.display === true, 'comparison legend is enabled');
+  assert(legend.position === 'top', `legend position (got ${legend.position})`);
+
+  const series = { tw: bar.data.datasets[0].data, gl: bar.data.datasets[1].data };
+  assert(series.tw.join(',') === '16,34,0', `Taiwan CSV series (got ${series.tw.join(',')})`);
+  assert(series.gl.join(',') === '41,9,0', `Global CSV series (got ${series.gl.join(',')})`);
+  assert($('#baselineNote').textContent.includes('dataset_cleaned.csv'), 'dataset provenance is displayed');
+
+  const items = legend.labels.generateLabels(bar);
+  assert(items.length === 2, `legend entries (got ${items.length})`);
+  assert(
+    items[0].text.includes('台灣 (TWCERT + iThome)'),
+    `legend names the Taiwan source (got "${items[0].text}")`
+  );
+  assert(
+    items[1].text.includes('國際 (The Hacker News)'),
+    `legend names the global source (got "${items[1].text}")`
+  );
+  assert(/·\s*\d+\s*篇/.test(items[0].text), `legend shows totals (got "${items[0].text}")`);
+}
 
 // ------------------------------------------------------------ interaction: chips
 const p1Chip = $('[data-priority="P1"].chip');
@@ -168,7 +219,7 @@ assert(p2Card.getAttribute('aria-expanded') === 'true', 'matrix accordion expand
 const form = $('#assessForm');
 $('#assetType').value = 'core_datacenter';
 $('#threatSource').value = 'ransomware';
-$('#category').value = 'Malware';
+$('#category').value = 'MALWARE';
 $('#exposure').value = 'public';
 $('#exploitStatus').value = 'active';
 $('#cvssEnabled').checked = true;
@@ -198,4 +249,5 @@ if (errors.length) {
   process.exit(1);
 }
 console.log('\nAll dashboard smoke checks passed.');
+
 

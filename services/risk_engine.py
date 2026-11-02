@@ -18,16 +18,26 @@ from typing import Any, Iterable
 # --------------------------------------------------------------------------- #
 
 CATEGORY_TAXONOMY: dict[str, dict[str, Any]] = {
-    "Vulnerability": {"label": "系統漏洞與修補對策", "meta": "VULN", "severity": 0.86},
-    "Malware": {"label": "惡意威脅與主動攻擊", "meta": "MALWARE", "severity": 0.90},
-    "SupplyChain": {"label": "供應鏈與資安威脅", "meta": "MALWARE", "severity": 0.80},
-    "Research": {"label": "前瞻研究與平台治理", "meta": "RESEARCH", "severity": 0.30},
+    "VULN": {
+        "label": "系統漏洞與修補對策",
+        "label_en": "Vulnerabilities & Advisories",
+        "severity": 0.86,
+    },
+    "MALWARE": {
+        "label": "惡意威脅與主動攻擊",
+        "label_en": "Malware & Active Attacks",
+        "severity": 0.90,
+    },
+    "RESEARCH": {
+        "label": "前瞻研究與平台治理",
+        "label_en": "Research & Governance",
+        "severity": 0.30,
+    },
 }
 
 META_CATEGORY_META: dict[str, dict[str, str]] = {
-    "VULN": {"label": "系統漏洞與修補對策", "label_en": "Vulnerabilities & Advisories"},
-    "MALWARE": {"label": "惡意威脅與主動攻擊", "label_en": "Malware & Active Attacks"},
-    "RESEARCH": {"label": "前瞻研究與平台治理", "label_en": "Research & Governance"},
+    key: {"label": value["label"], "label_en": value["label_en"]}
+    for key, value in CATEGORY_TAXONOMY.items()
 }
 
 REGION_LABELS = {"taiwan": "台灣在地", "global": "國際來源"}
@@ -75,14 +85,14 @@ CONTROLS: dict[str, dict[str, Any]] = {
     "patch_pipeline": {"label": "自動化修補流程", "mitigation": 0.030},
 }
 
-PRIORITY_THRESHOLDS = {"P1": 86.0, "P2": 68.0}
+PRIORITY_THRESHOLDS = {"P1": 80.0, "P2": 66.0}
 
 PRIORITY_META: dict[str, dict[str, Any]] = {
     "P1": {
         "label": "P1 立即處置",
         "headline": "24 小時內完成阻斷與修補",
         "sla_hours": 24,
-        "criteria": "風險分數 ≥ 86，或 CVSS ≥ 9.0 且已在野利用",
+        "criteria": "風險分數 ≥ 80，或 CVSS ≥ 9.0 且已在野利用",
         "owner": "CISO / SOC 值班主管",
         "tone": "critical",
     },
@@ -90,7 +100,7 @@ PRIORITY_META: dict[str, dict[str, Any]] = {
         "label": "P2 計畫處置",
         "headline": "7 日內排入修補與監控強化",
         "sla_hours": 168,
-        "criteria": "風險分數 68–85，需排程處理並持續觀測",
+        "criteria": "風險分數 66–79，需排程處理並持續觀測",
         "owner": "資安維運團隊 (SecOps)",
         "tone": "elevated",
     },
@@ -98,7 +108,7 @@ PRIORITY_META: dict[str, dict[str, Any]] = {
         "label": "P3 觀測追蹤",
         "headline": "30 日內納入例行治理與情資觀測",
         "sla_hours": 720,
-        "criteria": "風險分數 < 68，屬情勢研究或低曝險議題",
+        "criteria": "風險分數 < 66，屬情勢研究或低曝險議題",
         "owner": "資安治理 / 情資研究組",
         "tone": "monitor",
     },
@@ -232,9 +242,9 @@ class RiskResult:
 
 
 def risk_level_for(score: float) -> str:
-    if score >= 86:
+    if score >= 80:
         return "CRITICAL"
-    if score >= 68:
+    if score >= 66:
         return "HIGH"
     if score >= 45:
         return "MEDIUM"
@@ -291,7 +301,7 @@ def assess(
     """Score one asset/threat combination and derive its P1-P3 disposition."""
     asset = ASSET_TYPES.get(asset_type, ASSET_TYPES["web_app"])
     threat = THREAT_SOURCES.get(threat_source, THREAT_SOURCES["phishing"])
-    taxonomy = CATEGORY_TAXONOMY.get(category, CATEGORY_TAXONOMY["Vulnerability"])
+    taxonomy = CATEGORY_TAXONOMY.get(category, CATEGORY_TAXONOMY["VULN"])
     exploit = EXPLOIT_STATUS.get(exploit_status, EXPLOIT_STATUS["unknown"])
     exposure_info = EXPOSURE.get(exposure, EXPOSURE["internal"])
 
@@ -359,21 +369,22 @@ def assess(
         factors=weighted,
         adjustments=adjustments + [{"key": "escalation", "label": item, "points": 0.0}
                                    for item in escalations],
-        action_plan=playbook(taxonomy["meta"], priority),
+        action_plan=playbook(taxonomy.get("meta", category), priority),
     )
     return result
 
 
 def score_seed_record(record: dict[str, Any]) -> RiskResult:
-    """Deterministic scoring for the seeded research corpus."""
-    taxonomy = CATEGORY_TAXONOMY[record["category"]]
-    hint_weight = {"HIGH": 1.0, "MEDIUM": 0.6, "LOW": 0.25}[record["risk_hint"]]
+    """Deterministic scoring for a corpus row (CSV cluster already mapped)."""
+    category = record["category"]
+    taxonomy = CATEGORY_TAXONOMY[category]
+    hint_bonus = {"HIGH": 0.18, "MEDIUM": 0.06, "LOW": 0.0}[record["risk_hint"]]
     jitter = stable_unit(record["id"], record["title"])
-    raw = 100 * (0.62 * taxonomy["severity"] + 0.22 * hint_weight + 0.16 * jitter)
+    raw = 100 * (0.55 * taxonomy["severity"] + hint_bonus + 0.30 * jitter)
     score = round(max(4.0, min(raw, 98.5)), 1)
 
     priority = priority_for(score)
-    if record["category"] == "Research" and priority == "P1":
+    if category == "RESEARCH" and priority == "P1":
         priority = "P2"
 
     return RiskResult(
@@ -383,12 +394,13 @@ def score_seed_record(record: dict[str, Any]) -> RiskResult:
         confidence=round(0.72 + 0.22 * jitter, 3),
         factors=[],
         adjustments=[],
-        action_plan=playbook(taxonomy["meta"], priority),
+        action_plan=playbook(category, priority),
     )
 
 
 def meta_of(category: str) -> str:
-    return CATEGORY_TAXONOMY.get(category, CATEGORY_TAXONOMY["Vulnerability"])["meta"]
+    """Category keys are the Meta-Category keys in this dataset."""
+    return category if category in CATEGORY_TAXONOMY else "VULN"
 
 
 def build_decision_matrix(threats: Iterable[dict[str, Any]]) -> list[dict[str, Any]]:

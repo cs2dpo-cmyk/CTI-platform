@@ -5,7 +5,6 @@ from __future__ import annotations
 import json
 import logging
 import os
-from datetime import date
 from pathlib import Path
 from typing import Iterator
 
@@ -13,8 +12,7 @@ from sqlalchemy import create_engine, func, select
 from sqlalchemy.orm import Session, sessionmaker
 
 from models import Base, Threat
-from services import risk_engine
-from services.seed_data import iter_seed_rows
+from services import dataset, risk_engine
 
 logger = logging.getLogger("cti.database")
 
@@ -56,7 +54,7 @@ def get_db() -> Iterator[Session]:
 
 
 def init_db(*, seed: bool = True) -> int:
-    """Create tables and seed the research corpus when the store is empty."""
+    """Create tables and seed the corpus from the research CSVs when empty."""
     Base.metadata.create_all(bind=engine)
     if not seed:
         return 0
@@ -67,28 +65,30 @@ def init_db(*, seed: bool = True) -> int:
             logger.info("Database already holds %s threats; skipping seed", existing)
             return 0
 
-        rows = iter_seed_rows()
-        for row in rows:
-            result = risk_engine.score_seed_record(row)
-            meta = risk_engine.meta_of(row["category"])
+        records, info = dataset.load_dataset(refresh=True)
+        for record in records:
+            result = risk_engine.score_seed_record(record.as_seed())
             db.add(
                 Threat(
-                    id=row["id"],
-                    title=row["title"],
-                    source=row["source"],
-                    region=row["region"],
-                    category=row["category"],
-                    meta_category=meta,
+                    id=record.id,
+                    title=record.title,
+                    source=record.source,
+                    region=record.region,
+                    category=record.category,
+                    meta_category=risk_engine.meta_of(record.category),
+                    cluster=record.cluster,
                     risk_score=result.score,
                     risk_level=result.risk_level,
                     priority=result.priority,
                     action_plan=json.dumps(result.action_plan, ensure_ascii=False),
-                    published_at=date.fromisoformat(row["published_at"]),
+                    published_at=record.published_at,
                 )
             )
         db.commit()
-        logger.info("Seeded %s threats", len(rows))
-        return len(rows)
+        logger.info(
+            "Seeded %s threats from %s", len(records), ", ".join(info.get("sources", []))
+        )
+        return len(records)
 
 
 if __name__ == "__main__":  # pragma: no cover - manual bootstrap helper

@@ -23,7 +23,7 @@ from sqlalchemy.orm import Session
 
 import database
 import schemas
-from services import analytics, risk_engine
+from services import analytics, dataset, risk_engine
 
 logging.basicConfig(level=os.getenv("LOG_LEVEL", "INFO"),
                     format="%(asctime)s %(levelname)s %(name)s %(message)s")
@@ -99,7 +99,8 @@ def stats(db: Session = Depends(database.get_db)) -> schemas.StatsResponse:
     threats = db.scalars(select(database.Threat)).all()
     if not threats:
         raise HTTPException(status_code=503, detail="情資資料庫尚未初始化，請稍後重試。")
-    payload = analytics.build_stats(threats)
+    _, dataset_info = dataset.load_dataset()
+    payload = analytics.build_stats(threats, dataset_info)
     return schemas.StatsResponse(**payload)
 
 
@@ -207,8 +208,8 @@ def _summarise(payload: schemas.AssessRequest, score: float, priority: str,
 def list_threats(
     priority: Literal["P1", "P2", "P3"] | None = Query(None, description="處置優先級"),
     region: Literal["taiwan", "global"] | None = Query(None, description="情資來源地區"),
-    category: Literal["Vulnerability", "Malware", "SupplyChain", "Research"] | None = Query(None),
-    meta_category: Literal["VULN", "MALWARE", "RESEARCH"] | None = Query(None),
+    category: Literal["VULN", "MALWARE", "RESEARCH"] | None = Query(None),
+    meta_category: Literal["VULN", "MALWARE", "RESEARCH"] | None = Query(None, include_in_schema=False),
     source: str | None = Query(None, max_length=32, description="情資來源，例如 TWCERT"),
     q: str | None = Query(None, max_length=120, description="標題關鍵字"),
     min_score: float | None = Query(None, ge=0, le=100),

@@ -1,0 +1,16 @@
+{
+  "provenance": {
+    "taiwan_file": "Taiwan_security_dataset_cleaned.csv",
+    "global_file": "Global_security_dataset_cleaned.csv",
+    "source_directory": "C:\\AI_Rsearch_Data",
+    "exported_at": "2026-10-30",
+    "note": "由 Taiwan_Side-Project.ipynb / Global_Side-Project.ipynb 匯出的 cleaned 資料集；原始檔未包含發布日期。"
+  },
+  "cluster_to_meta": {
+    "taiwan": { "0": "MALWARE", "1": "MALWARE", "2": "VULN" },
+    "global": { "0": "VULN", "1": "VULN", "2": "MALWARE" }
+  },
+  "mapping_note": "叢集內容比對後的人工對應：TW c2 為修補／漏洞公告、c0 與 c1 為攻擊事件與產業動態；GL c0、c1 為漏洞與資安公告、c2 為攻擊事件。若要調整，改這裡即可，無須改程式。",
+  "research_overrides": [],
+  "date_policy": "row_order_backfill"
+}

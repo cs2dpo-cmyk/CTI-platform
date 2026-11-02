@@ -202,7 +202,7 @@
             <h3 class="panel-title"><svg class="ico ico-sm text-cyan-400"><use href="#i-layers" /></svg>威脅主題分群</h3>
             <p class="kicker mt-1">Meta-Category Distribution</p>
           </div>
-          <span class="badge" data-tone="low"><span class="mono" id="metaTotalBadge">—</span></span>
+          <span class="badge" data-tone="low" id="metaSourceBadge">CSV 叢集 · K=3</span>
         </div>
         <div class="panel-body">
           <div class="chart-frame mx-auto aspect-square w-full max-w-[248px]">
@@ -216,7 +216,7 @@
           </div>
           <div class="mt-4" id="metaLegend"></div>
           <div class="mt-3 border-t border-[#1b2739] pt-3">
-            <p class="kicker mb-2">4 類原始分類明細</p>
+            <p class="kicker mb-2">叢集明細（C0 / C1 / C2）</p>
             <div class="flex flex-wrap gap-1.5" id="categoryStrip" aria-label="四類原始分類統計"></div>
           </div>
         </div>
@@ -238,6 +238,7 @@
             <svg class="ico ico-sm mt-0.5 shrink-0 text-amber-300"><use href="#i-alert" /></svg>
             <p id="comparisonInsight">正在取得情資洞察…</p>
           </div>
+          <p class="mt-2 text-[10.5px] leading-relaxed text-[color:var(--faint)]" id="baselineNote"></p>
         </div>
       </article>
 
@@ -319,10 +320,9 @@
             <div class="field">
               <label class="field-label" for="category">情資類別 <span class="field-hint">category</span></label>
               <select class="select" id="category" name="category">
-                <option value="Vulnerability" selected>系統漏洞與修補對策</option>
-                <option value="Malware">惡意威脅與主動攻擊</option>
-                <option value="SupplyChain">供應鏈與資安威脅</option>
-                <option value="Research">前瞻研究與平台治理</option>
+                <option value="VULN" selected>系統漏洞與修補對策</option>
+                <option value="MALWARE">惡意威脅與主動攻擊</option>
+                <option value="RESEARCH">前瞻研究與平台治理</option>
               </select>
             </div>
 
@@ -512,6 +512,7 @@
         <div>
           <h3 id="feedTitle" class="panel-title"><svg class="ico ico-sm text-cyan-400"><use href="#i-list" /></svg>情資流與 AI 分群明細</h3>
           <p class="kicker mt-1">GET /api/v1/threats?priority=&amp;region=</p>
+          <p class="mt-1 text-[10px] text-[color:var(--faint)]">每筆皆附原始叢集代號（C0–C2）</p>
         </div>
 
         <div class="flex flex-wrap items-center gap-2">

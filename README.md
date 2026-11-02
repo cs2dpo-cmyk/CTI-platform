@@ -26,7 +26,7 @@ cti-platform/
 ├── schemas.py                  # Pydantic v2 請求 / 回應契約
 ├── services/
 │   ├── __init__.py
-│   ├── seed_data.py            # 100 筆原始情資語料（唯一真實來源）
+│   ├── dataset.py              # 讀取 research CSV → 叢集對應 → 情資資料列
 │   ├── risk_engine.py          # 可解釋風險評分 + P1-P3 分流 + 處置劇本
 │   └── analytics.py            # 儀表板統計聚合與 AI 洞察文字
 ├── static/
@@ -36,9 +36,13 @@ cti-platform/
 │       ├── charts.js           # Chart.js 四張圖表（就地更新，不清空重建）
 │       └── app.js              # 狀態管理、Fetch、渲染、互動
 ├── tests/
-│   ├── test_api.py             # 17 個 API 契約測試
+│   ├── test_api.py             # 20 個 API 契約測試
 │   └── frontend_smoke.mjs      # jsdom 煙霧測試（需啟動本機伺服器）
-├── data/cti.db                 # 執行時自動產生（已列入 .gitignore）
+├── data/
+│   ├── Taiwan_security_dataset_cleaned.csv    # 研究語料（台灣 50 筆）
+│   ├── Global_security_dataset_cleaned.csv    # 研究語料（國際 50 筆）
+│   ├── dataset_meta.json       # 來源、叢集對應表、日期政策
+│   └── cti.db                  # 執行時自動產生（已列入 .gitignore）
 ├── dev.cmd                     # 雙擊啟動（Windows 用；會帶 ExecutionPolicy Bypass）
 ├── dev.ps1                     # 啟動邏輯：找 Python → 檢查套件 → 挑埠 → 開瀏覽器
 ├── requirements.txt            # 執行期依賴
@@ -138,7 +142,7 @@ curl -X POST http://127.0.0.1:8000/api/v1/assess \
   -d '{
         "asset_type": "core_datacenter",
         "threat_source": "ransomware",
-        "category": "Malware",
+        "category": "MALWARE",
         "region": "taiwan",
         "cve_id": "CVE-2026-111497",
         "cvss": 9.8,
@@ -169,9 +173,9 @@ score = 100 × (0.30 × 資產關鍵度
 
 | 優先級 | 分數區間 | SLA | 負責人 |
 | --- | --- | --- | --- |
-| P1 立即處置 | ≥ 86，或 CVSS ≥ 9.0 且已在野利用 | 24 h | CISO / SOC 值班主管 |
-| P2 計畫處置 | 68 – 85 | 7 日 | 資安維運團隊 (SecOps) |
-| P3 觀測追蹤 | < 68 | 30 日 | 資安治理 / 情資研究組 |
+| P1 立即處置 | ≥ 80，或 CVSS ≥ 9.0 且已在野利用 | 24 h | CISO / SOC 值班主管 |
+| P2 計畫處置 | 66 – 79 | 7 日 | 資安維運團隊 (SecOps) |
+| P3 觀測追蹤 | < 66 | 30 日 | 資安治理 / 情資研究組 |
 
 ---
 
@@ -188,6 +192,7 @@ CREATE TABLE threats (
     risk_score    FLOAT   NOT NULL,
     risk_level    VARCHAR(16)  NOT NULL,   -- CRITICAL / HIGH / MEDIUM / LOW
     priority      VARCHAR(4)   NOT NULL,   -- P1 / P2 / P3
+    cluster       VARCHAR(8),              -- K-Means 叢集代號（C0–C2）
     action_plan   TEXT    NOT NULL,        -- JSON 陣列的處置步驟
     cve_id        VARCHAR(24),
     published_at  DATE    NOT NULL,
@@ -195,42 +200,67 @@ CREATE TABLE threats (
 );
 ```
 
-### 數據口徑：一律採用資料庫實算（已定案）
+### 資料來源：直接讀取 research CSV（單一真實來源）
 
-原始靜態 `index.html` 把圓餅圖寫死為 `65 / 32 / 3`（Vulnerability / Malware / Research），
-但同一頁內嵌的 100 筆 `rawFeedData` 實際標記為：
+平台不再有任何寫死的統計數字。啟動時 `services/dataset.py` 會：
 
-- 台灣：Vulnerability 17、SupplyChain 16、Malware 17
-- 國際：Vulnerability 16、Malware 17、Research 17
+1. 讀取 `data/Taiwan_security_dataset_cleaned.csv`（platform / title / cleaned_text / cluster）與
+   `data/Global_security_dataset_cleaned.csv`（title / cluster）。
+2. 以 `data/dataset_meta.json` 的 `cluster_to_meta` 把叢集代號對應成 Meta-Category。
+3. 交給 `risk_engine` 產生 `risk_score` / `priority` / `action_plan`，寫入 SQLite。
+4. `/api/v1/stats`、`/api/v1/threats`、決策矩陣全部由同一批資料列計算，口徑一致。
 
-任何分群對應都湊不出「65 筆漏洞」，也就是說舊數字與語料本身不一致。
-**本專案的決策是：一律採用資料庫實算，儀表板、API、簡報與海報都以此為準。**
-`risk_score`、`priority`、統計圖表全部由 `services/seed_data.py` 的標記推導，
-沒有任何寫死的統計值。
+原始檔案位於 `C:\AI_Rsearch_Data`，專案內已放一份快照；要改讀原始資料夾：
 
-實算分布（`GET /api/v1/stats` 即時回傳）：
+```bash
+CTI_DATASET_DIR=C:\AI_Rsearch_Data uvicorn main:app
+```
 
-| 4 類原始分類 | 台灣 | 國際 | 合計 |
-| --- | --- | --- | --- |
-| Vulnerability（系統漏洞與修補） | 17 | 16 | **33** |
-| Malware（惡意威脅與主動攻擊） | 17 | 17 | **34** |
-| SupplyChain（供應鏈與資安威脅） | 16 | 0 | **16** |
-| Research（前瞻研究與平台治理） | 0 | 17 | **17** |
+#### 叢集 → Meta-Category 對應
 
-| 3 大 Meta-Category | 台灣 | 國際 | 合計 | 佔比 |
+| 地區 | C0 | C1 | C2 | 對應規則 |
 | --- | --- | --- | --- | --- |
-| 系統漏洞與修補對策（VULN） | 17 | 16 | **33** | 33% |
-| 惡意威脅與主動攻擊（MALWARE＝Malware＋SupplyChain） | 33 | 17 | **50** | 50% |
-| 前瞻研究與平台治理（RESEARCH） | 0 | 17 | **17** | 17% |
+| 台灣 | 7 | 27 | 16 | C0、C1 → MALWARE；C2 → VULN |
+| 國際 | 35 | 6 | 9 | C0、C1 → VULN；C2 → MALWARE |
 
-**簡報可直接引用的三個賣點**
+判定依據是叢集內容：台灣 C2 全是修補／漏洞公告（Node.js、PHP、PostgreSQL、Exchange、
+Cisco、PHP2Shell…），C0 與 C1 為攻擊事件與產業動態；國際 C0 與 C1 以漏洞與資安公告為主
+（Linux Kernel、Cisco、Adobe、Wasmtime、Tailscale…），C2 為攻擊事件（ThreatsDay、
+憑證外洩、PHP2Shell 實際利用、網釣活動…）。
 
-1. 台灣「供應鏈與資安威脅」16 筆 vs 國際 0 筆 —— 在地供應鏈曝險高度集中，這是 global 語料看不到的訊號。
-2. 台灣「前瞻研究與平台治理」0 筆 vs 國際 17 筆 —— 在地情資偏實務攻防，治理與架構研究需內部補足。
-3. P1 29 筆（29%）需 24 小時內處置，平均風險分數 73.6 —— 資源配置有明確分母，不是憑感覺。
+要調整只需改 `data/dataset_meta.json` 的 `cluster_to_meta`，不需動程式碼。
 
-> 儀表板「威脅主題分群」面板下方另有 4 類明細（Vulnerability / Malware / SupplyChain / Research），
-> 讓 33 / 50 / 17 的口徑可被追溯，評審追問時不必回頭翻程式碼。
+#### 實算結果（`GET /api/v1/stats` 即時回傳）
+
+| Meta-Category | 台灣 | 國際 | 合計 | 佔比 |
+| --- | --- | --- | --- | --- |
+| 系統漏洞與修補對策（VULN） | 16 | 41 | **57** | 57% |
+| 惡意威脅與主動攻擊（MALWARE） | 34 | 9 | **43** | 43% |
+| 前瞻研究與平台治理（RESEARCH） | 0 | 0 | **0** | 0% |
+
+| 決策分派 | P1 | P2 | P3 | 平均分數 |
+| --- | --- | --- | --- | --- |
+| 篇數 | 25 | 51 | 24 | 72.9 |
+
+> **口徑決策（已定案）：以 CSV 為準。**
+> `Global_Side-Project.ipynb` 的繪圖儲存格寫死 `meta_tw = [23, 27, 0]`、
+> `meta_en = [42, 5, 3]`，與 CSV 的叢集統計（台灣 7/27/16、國際 35/6/9）不一致。
+> 論文／海報上的 `65 / 32 / 3` 不再使用，簡報請改為 **57 / 43 / 0**。
+>
+> | 項目 | 論文原圖 | CSV 實算（現行） |
+> | --- | --- | --- |
+> | 台灣 VULN / MALWARE / RESEARCH | 23 / 27 / 0 | 16 / 34 / 0 |
+> | 國際 VULN / MALWARE / RESEARCH | 42 / 5 / 3 | 41 / 9 / 0 |
+> | 合計 | 65 / 32 / 3 | **57 / 43 / 0** |
+>
+> RESEARCH 為 0 是因為這批語料沒有形成獨立的治理／研究叢集。
+> `dataset_meta.json` 仍保留 `research_overrides`（預設空），僅在需要人工指定研究類文章時使用。
+
+#### 發布日期
+
+CSV 匯出時未保留發布日期，因此時間軸採 `row_order_backfill`：以 `exported_at`
+（2026-10-30）為基準，依擷取順序（新→舊）每日遞減回推。面板與圖表皆標示此推定方式；
+若之後取得含日期的原始檔，把 `date_policy` 改為 `none` 或改寫 `dataset.py` 的日期來源即可。
 
 ---
 
@@ -258,6 +288,7 @@ CREATE TABLE threats (
 | 變數 | 預設 | 說明 |
 | --- | --- | --- |
 | `DATABASE_URL` | `sqlite:///./data/cti.db` | 可換成 PostgreSQL 連線字串 |
+| `CTI_DATASET_DIR` | `./data` | research CSV 所在資料夾（可指向 `C:\AI_Rsearch_Data`） |
 | `ALLOWED_ORIGINS` | `*` | CORS 允許來源，逗號分隔 |
 | `LOG_LEVEL` | `INFO` | 日誌等級 |
 | `PYTHON_VERSION` | `3.12.7` | Render 建置用 Python 版本 |

@@ -1,4 +1,9 @@
-"""API contract tests for the CTI decision-support platform."""
+"""API contract tests for the CTI decision-support platform.
+
+The corpus is loaded from the two research CSVs, so the expected numbers below
+are the CSV cluster tallies (TW 7/27/16, GL 35/6/9) mapped through
+``data/dataset_meta.json``.
+"""
 
 from __future__ import annotations
 
@@ -70,6 +75,52 @@ def test_decision_matrix_covers_three_priorities(client: TestClient):
 
 
 # --------------------------------------------------------------------------- #
+# CSV-driven dataset
+# --------------------------------------------------------------------------- #
+
+
+def test_cluster_tallies_match_the_csv_files(client: TestClient):
+    body = client.get("/api/v1/stats").json()
+    counts = {(row["region"], row["cluster"]): row["count"] for row in body["clusters"]}
+    assert counts == {
+        ("taiwan", "0"): 7,
+        ("taiwan", "1"): 27,
+        ("taiwan", "2"): 16,
+        ("global", "0"): 35,
+        ("global", "1"): 6,
+        ("global", "2"): 9,
+    }
+
+
+def test_meta_categories_follow_the_cluster_mapping(client: TestClient):
+    body = client.get("/api/v1/stats").json()
+    by_key = {item["key"]: item["by_region"] for item in body["meta_categories"]}
+    # taiwan: C0 + C1 -> MALWARE (34), C2 -> VULN (16)
+    # global: C0 + C1 -> VULN (41), C2 -> MALWARE (9)
+    assert by_key["VULN"] == {"taiwan": 16, "global": 41}
+    assert by_key["MALWARE"] == {"taiwan": 34, "global": 9}
+    assert by_key["RESEARCH"] == {"taiwan": 0, "global": 0}
+
+
+def test_every_cluster_maps_to_a_known_category(client: TestClient):
+    body = client.get("/api/v1/stats").json()
+    categories = {row["category"] for row in body["clusters"]}
+    assert categories <= {"VULN", "MALWARE", "RESEARCH"}
+    for row in body["clusters"]:
+        assert row["category_label"], "每個叢集都要有可讀的分類名稱"
+
+
+def test_dataset_provenance_is_reported(client: TestClient):
+    body = client.get("/api/v1/stats").json()
+    info = body["dataset"]
+    assert info["rows"] == {"taiwan": 50, "global": 50}
+    assert info["total"] == 100
+    assert info["exported_at"] == "2026-10-30"
+    assert any("Taiwan_security_dataset_cleaned.csv" in source for source in info["sources"])
+    assert info["date_policy"] == "row_order_backfill"
+
+
+# --------------------------------------------------------------------------- #
 # Assessment
 # --------------------------------------------------------------------------- #
 
@@ -80,7 +131,7 @@ def test_assess_critical_inputs_return_p1(client: TestClient):
         json={
             "asset_type": "core_datacenter",
             "threat_source": "ransomware",
-            "category": "Malware",
+            "category": "MALWARE",
             "region": "taiwan",
             "cvss": 9.8,
             "exploit_status": "active",
@@ -105,7 +156,7 @@ def test_assess_low_risk_inputs_return_p3(client: TestClient):
         json={
             "asset_type": "endpoint",
             "threat_source": "ddos",
-            "category": "Research",
+            "category": "RESEARCH",
             "region": "global",
             "exploit_status": "none",
             "exposure": "internal",
@@ -119,7 +170,7 @@ def test_assess_low_risk_inputs_return_p3(client: TestClient):
 
 def test_assess_controls_reduce_score(client: TestClient):
     base = {"asset_type": "web_app", "threat_source": "phishing",
-            "category": "Vulnerability", "region": "taiwan"}
+            "category": "VULN", "region": "taiwan"}
     without = client.post("/api/v1/assess", json=base).json()
     with_controls = client.post(
         "/api/v1/assess", json={**base, "controls": ["mfa", "waf"]}
@@ -141,6 +192,11 @@ def test_assess_rejects_unknown_asset_type(client: TestClient):
     assert client.post("/api/v1/assess", json={"asset_type": "toaster"}).status_code == 422
 
 
+def test_assess_rejects_legacy_category_names(client: TestClient):
+    # The taxonomy now uses the K-Means meta keys.
+    assert client.post("/api/v1/assess", json={"category": "Malware"}).status_code == 422
+
+
 # --------------------------------------------------------------------------- #
 # Threat list
 # --------------------------------------------------------------------------- #
@@ -151,6 +207,7 @@ def test_threats_returns_full_corpus(client: TestClient):
     assert body["total"] == 100
     assert body["returned"] == 100
     assert all(item["action_plan"] for item in body["items"])
+    assert all(item["cluster"] in {"0", "1", "2"} for item in body["items"])
 
 
 def test_threats_filter_by_region(client: TestClient):
@@ -168,16 +225,16 @@ def test_threats_filter_by_priority(client: TestClient):
 def test_threats_filters_combine(client: TestClient):
     body = client.get(
         "/api/v1/threats",
-        params={"priority": "P3", "region": "global", "category": "Research", "limit": 200},
+        params={"region": "global", "category": "MALWARE", "limit": 200},
     ).json()
+    assert body["total"] == 9, "global cluster 2 的 9 篇就是 MALWARE"
     for item in body["items"]:
-        assert item["priority"] == "P3"
         assert item["region"] == "global"
-        assert item["category"] == "Research"
+        assert item["category"] == "MALWARE"
 
 
 def test_threats_search_and_pagination(client: TestClient):
-    body = client.get("/api/v1/threats", params={"q": "Ransomware", "limit": 5}).json()
+    body = client.get("/api/v1/threats", params={"q": "Flaw", "limit": 5}).json()
     assert body["total"] >= 1
     assert body["returned"] <= 5
     page = client.get("/api/v1/threats", params={"limit": 10, "offset": 95}).json()

@@ -39,6 +39,7 @@ class ThreatOut(BaseModel):
     category_label: str
     meta_category: str
     meta_label: str
+    cluster: str | None = None
     risk_score: float
     risk_level: RiskLevel
     priority: Priority
@@ -72,7 +73,7 @@ class AssessRequest(BaseModel):
         "zero_day", "ransomware", "apt", "supply_chain", "malware",
         "credential_theft", "phishing", "ddos",
     ] = Field("phishing", description="主要威脅來源")
-    category: Literal["Vulnerability", "Malware", "SupplyChain", "Research"] = "Vulnerability"
+    category: Literal["VULN", "MALWARE", "RESEARCH"] = "VULN"
     region: Region = "taiwan"
     cve_id: str | None = Field(default=None, description="CVE 編號，例如 CVE-2026-111497")
     cvss: float | None = Field(default=None, ge=0.0, le=10.0, description="CVSS 3.1 分數")
@@ -178,6 +179,31 @@ class BucketStat(BaseModel):
     share: float
 
 
+class ClusterStat(BaseModel):
+    """One K-Means cluster inside one region, with its mapped Meta-Category."""
+
+    region: str
+    cluster: str
+    label: str
+    category: str
+    category_label: str
+    count: int
+
+
+class DatasetInfo(BaseModel):
+    """Provenance of the CSV rows that feed every number in the dashboard."""
+
+    sources: list[str] = Field(default_factory=list)
+    source_directory: str = ""
+    exported_at: str = ""
+    note: str = ""
+    mapping_note: str = ""
+    date_policy: str = ""
+    rows: dict[str, int] = Field(default_factory=dict)
+    total: int = 0
+    overrides: list[str] = Field(default_factory=list)
+
+
 class TimelinePoint(BaseModel):
     # `global` is a Python keyword, so the field is aliased to keep the JSON
     # contract the dashboard expects.
@@ -225,7 +251,8 @@ class StatsResponse(BaseModel):
     totals: dict[str, Any]
     regions: list[RegionStat]
     meta_categories: list[MetaCategoryStat]
-    categories: list[CategoryStat]
+    clusters: list[ClusterStat]
+    dataset: DatasetInfo
     risk_levels: list[BucketStat]
     priorities: list[BucketStat]
     sources: list[BucketStat]
@@ -270,6 +297,7 @@ def threat_to_schema(threat_row: Any) -> ThreatOut:
         category_label=risk_engine.CATEGORY_TAXONOMY.get(category, {}).get("label", category),
         meta_category=meta,
         meta_label=risk_engine.META_CATEGORY_META.get(meta, {}).get("label", meta),
+        cluster=get("cluster"),
         risk_score=round(float(get("risk_score") or 0.0), 1),
         risk_level=get("risk_level", "MEDIUM"),
         priority=get("priority", "P3"),

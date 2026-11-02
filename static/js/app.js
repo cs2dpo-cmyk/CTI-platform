@@ -104,8 +104,9 @@
       state.stats = stats;
       renderKpis(stats);
       renderMetaLegend(stats);
-      renderCategoryStrip(stats);
+      renderClusterStrip(stats);
       renderComparisonInsight(stats);
+      renderDatasetNote(stats);
       renderMatrix(stats.matrix || []);
       renderInsights(stats.insights || []);
       renderChipCounts(stats.priorities || []);
@@ -193,7 +194,11 @@
   function renderMetaLegend(stats) {
     const meta = stats.meta_categories || [];
     $('#pieCenterTotal').textContent = num(stats.totals?.threats);
-    $('#metaTotalBadge').textContent = `${num(stats.totals?.threats)} 篇語料`;
+
+    const badge = $('#metaSourceBadge');
+    if (badge) {
+      badge.textContent = 'CSV 叢集 · K=3';
+    }
 
     $('#metaLegend').innerHTML = meta
       .map((item) => {
@@ -214,60 +219,79 @@
       .join('');
   }
 
-  function renderCategoryStrip(stats) {
+  function renderClusterStrip(stats) {
     const strip = $('#categoryStrip');
     if (!strip) return;
 
-    const SHORT = {
-      Vulnerability: '漏洞修補',
-      Malware: '惡意攻擊',
-      SupplyChain: '供應鏈',
-      Research: '研究治理',
-    };
-    const COLOR = {
-      Vulnerability: '#22d3ee',
-      Malware: '#fb7185',
-      SupplyChain: '#2dd4bf',
-      Research: '#a78bfa',
-    };
+    const groups = { taiwan: [], global: [] };
+    for (const row of stats.clusters || []) {
+      (groups[row.region] ||= []).push(row);
+    }
 
-    strip.innerHTML = (stats.categories || [])
-      .map((item) => {
-        const color = COLOR[item.key] || '#22d3ee';
-        const tw = num(item.by_region?.taiwan ?? 0);
-        const gl = num(item.by_region?.global ?? 0);
-        return `<span class="tally" title="${esc(item.label)}：台灣 ${tw} 篇 / 國際 ${gl} 篇">
-          <span class="legend-swatch" style="background:${color}"></span>
-          ${esc(SHORT[item.key] || item.label)}
-          <b>${num(item.count)}</b>
-          <span class="mono text-[9.5px] text-[color:var(--faint)]">${pct(item.share)}</span>
-        </span>`;
+    strip.innerHTML = [
+      ['taiwan', '台灣'],
+      ['global', '國際'],
+    ]
+      .map(([key, label]) => {
+        const items = (groups[key] || [])
+          .sort((a, b) => Number(a.cluster) - Number(b.cluster))
+          .map((row) => {
+            const color = CTICharts.META_KEY_COLOR[row.category] || '#22d3ee';
+            return `<span class="tally" title="${esc(row.category_label)}｜${num(row.count)} 篇">
+              <span class="legend-swatch" style="background:${color}"></span>
+              C${esc(row.cluster)}<b>${num(row.count)}</b>
+            </span>`;
+          })
+          .join('');
+        return `<span class="mono mr-1 text-[10px] text-[color:var(--faint)]">${label}</span>${items}`;
       })
       .join('');
   }
 
   function renderComparisonInsight(stats) {
+    // Read the same series the bars draw: the displayed Meta-Category values.
+    const meta = stats.meta_categories || [];
     const cats = stats.categories || [];
     const rank = (region) =>
-      [...cats].sort((a, b) => (b.by_region?.[region] ?? 0) - (a.by_region?.[region] ?? 0));
+      [...meta].sort((a, b) => (b.by_region?.[region] ?? 0) - (a.by_region?.[region] ?? 0));
     const twTop = rank('taiwan')[0];
     const glTop = rank('global')[0];
     const supply = cats.find((item) => item.key === 'SupplyChain');
 
     if (!twTop || !glTop) return;
 
+    const modeNote = '（CSV 叢集）';
     const pieces = [
-      `台灣在地以「${twTop.label}」（${num(twTop.by_region?.taiwan ?? 0)} 篇）為最大宗`,
-      `國際來源則以「${glTop.label}」（${num(glTop.by_region?.global ?? 0)} 篇）為主`,
+      `台灣以「${twTop.label}」（${num(twTop.by_region?.taiwan ?? 0)} 篇）為最大宗`,
+      `國際則以「${glTop.label}」（${num(glTop.by_region?.global ?? 0)} 篇）為主`,
     ];
     if (supply) {
       pieces.push(
-        `供應鏈議題台灣 ${num(supply.by_region?.taiwan ?? 0)} 篇、國際 ${num(
+        `供應鏈議題在語料標記中台灣 ${num(supply.by_region?.taiwan ?? 0)} 篇、國際 ${num(
           supply.by_region?.global ?? 0
         )} 篇`
       );
     }
-    $('#comparisonInsight').textContent = `${pieces.join('；')}。兩地關注焦點的時間差，即是 CISO 提前部署修補與監控的決策窗口。`;
+    $('#comparisonInsight').textContent = `${modeNote}${pieces.join('；')}。兩地關注焦點的時間差，即是 CISO 提前部署修補與監控的決策窗口。`;
+  }
+
+  function renderDatasetNote(stats) {
+    const node = $('#baselineNote');
+    if (!node) return;
+
+    const info = stats.dataset || {};
+    const files = (info.sources || [])
+      .map((source) => String(source).split(/[\\/]/).pop())
+      .join('、');
+    const rows = info.rows || {};
+    const dateNote =
+      info.date_policy === 'row_order_backfill'
+        ? '原始 CSV 未含發布日期，時間軸依擷取順序回推'
+        : `時間軸基準日 ${esc(info.exported_at || '—')}`;
+
+    node.textContent = `資料來源：${files || '—'}（匯出 ${esc(info.exported_at || '—')}，台灣 ${
+      num(rows.taiwan ?? 0)
+    } 筆 / 國際 ${num(rows.global ?? 0)} 筆）｜叢集對應：C→Meta-Category 由 dataset_meta.json 定義｜${dateNote}`;
   }
 
   function renderChipCounts(priorities) {
@@ -539,6 +563,7 @@
               <span class="mono">#${esc(item.id)}</span>
               <span class="h-2 w-px bg-[#27384f]"></span>
               <span>${esc(item.category_label)}</span>
+              <span class="mono rounded border border-[#27384f] px-1">C${esc(item.cluster ?? '—')}</span>
             </div>
           </td>
           <td>

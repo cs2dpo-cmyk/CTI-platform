@@ -30,6 +30,7 @@ class Threat(Base):
     risk_score: Mapped[float] = mapped_column(Float, nullable=False, index=True)
     risk_level: Mapped[str] = mapped_column(String(16), nullable=False)
     priority: Mapped[str] = mapped_column(String(4), nullable=False, index=True)
+    cluster: Mapped[str | None] = mapped_column(String(8), nullable=True)
     action_plan: Mapped[str] = mapped_column(Text, nullable=False, default="[]")
     cve_id: Mapped[str | None] = mapped_column(String(24), nullable=True)
     published_at: Mapped[date] = mapped_column(Date, nullable=False, index=True)

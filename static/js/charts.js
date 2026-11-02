@@ -113,61 +113,133 @@ const CTICharts = (() => {
     });
   }
 
-  /* -------------------------------------------------------------- comparison */
+  /* -------------------------------------------------------------- comparison
+   * The categories are addressed by their API key (VULN / MALWARE / RESEARCH),
+   * never by array position, so a reordering of the payload can never shift a
+   * series onto the wrong category.
+   */
+  const COMPARISON_AXIS = [
+    { key: 'VULN', label: '漏洞與修補' },
+    { key: 'MALWARE', label: '惡意與攻擊' },
+    { key: 'RESEARCH', label: '研究與治理' },
+  ];
+
+  function comparisonSeries(stats) {
+    const meta = Array.isArray(stats.meta_categories) ? stats.meta_categories : [];
+    const byKey = new Map(meta.map((item) => [item.key, item]));
+
+    // Keep the API order when it is complete; otherwise fall back to the
+    // canonical order so a missing category still renders an empty, aligned bar.
+    const rows = COMPARISON_AXIS.map((axis) => {
+      const row = byKey.get(axis.key);
+      return {
+        key: axis.key,
+        label: axis.label,
+        taiwan: Number(row?.by_region?.taiwan ?? 0),
+        global: Number(row?.by_region?.global ?? 0),
+        total: Number(row?.count ?? 0),
+      };
+    });
+
+    return {
+      labels: rows.map((row) => row.label),
+      taiwan: rows.map((row) => row.taiwan),
+      global: rows.map((row) => row.global),
+      totTaiwan: rows.reduce((sum, row) => sum + row.taiwan, 0),
+      totGlobal: rows.reduce((sum, row) => sum + row.global, 0),
+      rows,
+    };
+  }
+
   function renderComparison(stats) {
     const el = canvas('comparisonBarChart');
     if (!el || !hasChart()) return;
 
-    const meta = stats.meta_categories || [];
-    const labels = meta.map((m) =>
-      m.key === 'VULN' ? '漏洞與修補' : m.key === 'MALWARE' ? '惡意與攻擊' : '研究與治理'
-    );
-    const tw = meta.map((m) => m.by_region?.taiwan ?? 0);
-    const gl = meta.map((m) => m.by_region?.global ?? 0);
+    const series = comparisonSeries(stats);
+    const labelTw = `台灣 (TWCERT + iThome)`;
+    const labelGl = `國際 (The Hacker News)`;
 
-    destroyIfOrphan('comparison', el);
+    const datasets = [
+      {
+        label: labelTw,
+        shortLabel: '台灣',
+        data: series.taiwan,
+        backgroundColor: 'rgba(45, 212, 191, 0.78)',
+        hoverBackgroundColor: '#2dd4bf',
+        borderRadius: 5,
+        borderSkipped: false,
+        maxBarThickness: 46,
+      },
+      {
+        label: labelGl,
+        shortLabel: '國際',
+        data: series.global,
+        backgroundColor: 'rgba(96, 165, 250, 0.78)',
+        hoverBackgroundColor: '#60a5fa',
+        borderRadius: 5,
+        borderSkipped: false,
+        maxBarThickness: 46,
+      },
+    ];
+
     if (instances.comparison) {
       const chart = instances.comparison;
-      chart.data.labels = labels;
-      chart.data.datasets[0].data = tw;
-      chart.data.datasets[1].data = gl;
+      chart.data.labels = series.labels;
+      chart.data.datasets[0].data = series.taiwan;
+      chart.data.datasets[1].data = series.global;
       chart.update();
       return;
     }
 
     instances.comparison = new Chart(el, {
       type: 'bar',
-      data: {
-        labels,
-        datasets: [
-          {
-            label: '台灣在地',
-            data: tw,
-            backgroundColor: 'rgba(45, 212, 191, 0.78)',
-            hoverBackgroundColor: '#2dd4bf',
-            borderRadius: 5,
-            borderSkipped: false,
-            maxBarThickness: 46,
-          },
-          {
-            label: '國際來源',
-            data: gl,
-            backgroundColor: 'rgba(96, 165, 250, 0.78)',
-            hoverBackgroundColor: '#60a5fa',
-            borderRadius: 5,
-            borderSkipped: false,
-            maxBarThickness: 46,
-          },
-        ],
-      },
+      data: { labels: series.labels, datasets },
       options: {
         responsive: true,
         maintainAspectRatio: false,
         interaction: { mode: 'index', intersect: false },
+        layout: { padding: { top: 2 } },
         plugins: {
-          legend: { display: false },
+          legend: {
+            display: true,
+            position: 'top',
+            align: 'end',
+            labels: {
+              color: '#c3cede',
+              usePointStyle: true,
+              pointStyle: 'rectRounded',
+              boxWidth: 9,
+              boxHeight: 9,
+              padding: 14,
+              font: { size: 10.5, weight: '500' },
+              generateLabels: (chart) =>
+                chart.data.datasets.map((dataset, index) => ({
+                  text: `${dataset.label} · ${dataset.data.reduce((sum, value) => sum + value, 0)} 篇`,
+                  fillStyle: dataset.backgroundColor,
+                  strokeStyle: dataset.hoverBackgroundColor,
+                  lineWidth: 0,
+                  pointStyle: 'rectRounded',
+                  hidden: !chart.isDatasetVisible(index),
+                  datasetIndex: index,
+                })),
+            },
+            onClick: (event, legendItem, legend) => {
+              const chart = legend.chart;
+              const index = legendItem.datasetIndex;
+              if (typeof index === 'number') {
+                chart.setDatasetVisibility(index, !chart.isDatasetVisible(index));
+                chart.update();
+              }
+            },
+          },
           tooltip: {
-            callbacks: { label: (ctx) => ` ${ctx.dataset.label}：${ctx.raw} 篇` },
+            callbacks: {
+              label: (ctx) => ` ${ctx.dataset.shortLabel || ctx.dataset.label}：${ctx.raw} 篇`,
+              footer: (items) => {
+                const row = series.rows[items[0]?.dataIndex];
+                return row ? `合計 ${row.total} 篇` : '';
+              },
+            },
           },
         },
         scales: {
@@ -178,7 +250,7 @@ const CTICharts = (() => {
           },
           y: {
             beginAtZero: true,
-            suggestedMax: 45,
+            suggestedMax: Math.max(45, series.totTaiwan, series.totGlobal),
             grid: { color: COLORS.grid, drawTicks: false },
             border: { display: false },
             ticks: { color: COLORS.tick, stepSize: 10, padding: 6, font: { size: 10.5 } },
