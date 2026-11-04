@@ -187,6 +187,17 @@ assert($('#apiStatus').textContent.includes('已連線'), 'API status pill updat
 
   const items = legend.labels.generateLabels(bar);
   assert(items.length === 2, `legend entries (got ${items.length})`);
+  assert(items[0].fontColor === '#2dd4bf', `Taiwan legend text colour (got ${items[0].fontColor})`);
+  assert(items[1].fontColor === '#60a5fa', `Global legend text colour (got ${items[1].fontColor})`);
+  assert(
+    bar.options.scales.x.ticks.color === '#FFFFFF',
+    `x tick colour (got ${bar.options.scales.x.ticks.color})`
+  );
+  assert(
+    bar.options.scales.y.ticks.color === '#FFFFFF',
+    `y tick colour (got ${bar.options.scales.y.ticks.color})`
+  );
+
   assert(
     items[0].text.includes('台灣 (TWCERT + iThome)'),
     `legend names the Taiwan source (got "${items[0].text}")`

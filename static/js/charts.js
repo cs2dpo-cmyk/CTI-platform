@@ -124,6 +124,10 @@ const CTICharts = (() => {
     { key: 'RESEARCH', label: '研究與治理' },
   ];
 
+  // Chart.js paints a legend entry with `entry.fontColor` (not labels.color),
+  // so each dataset's swatch text colour has to be supplied per item.
+  const COMPARISON_LEGEND_TEXT = ['#2dd4bf', '#60a5fa'];
+
   function comparisonSeries(stats) {
     const meta = Array.isArray(stats.meta_categories) ? stats.meta_categories : [];
     const byKey = new Map(meta.map((item) => [item.key, item]));
@@ -206,6 +210,7 @@ const CTICharts = (() => {
             align: 'end',
             labels: {
               color: '#FFFFFF',
+              font: { size: 10.5, weight: '600' },
               usePointStyle: true,
               pointStyle: 'rectRounded',
               boxWidth: 9,
@@ -217,6 +222,7 @@ const CTICharts = (() => {
                   text: `${dataset.label} · ${dataset.data.reduce((sum, value) => sum + value, 0)} 篇`,
                   fillStyle: dataset.backgroundColor,
                   strokeStyle: dataset.hoverBackgroundColor,
+                  fontColor: COMPARISON_LEGEND_TEXT[index] || '#FFFFFF',
                   lineWidth: 0,
                   pointStyle: 'rectRounded',
                   hidden: !chart.isDatasetVisible(index),
@@ -246,14 +252,14 @@ const CTICharts = (() => {
           x: {
             grid: { display: false },
             border: { color: COLORS.grid },
-            ticks: { color: '#FFFFFF', font: { size: 11 } },
+            ticks: { color: '#FFFFFF', font: { size: 11, weight: '500' } },
           },
           y: {
             beginAtZero: true,
             suggestedMax: Math.max(45, series.totTaiwan, series.totGlobal),
             grid: { color: COLORS.grid, drawTicks: false },
             border: { display: false },
-            ticks: { color: '#FFFFFF', stepSize: 10, padding: 6, font: { size: 10.5 } },
+            ticks: { color: '#FFFFFF', stepSize: 10, padding: 6, font: { size: 10.5, weight: '500' } },
             title: {
               display: true,
               text: '文章篇數',
