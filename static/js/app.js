@@ -237,7 +237,12 @@
           .sort((a, b) => Number(a.cluster) - Number(b.cluster))
           .map((row) => {
             const color = CTICharts.META_KEY_COLOR[row.category] || '#22d3ee';
-            return `<span class="tally" title="${esc(row.category_label)}｜${num(row.count)} 篇">
+            const split = Object.entries(row.breakdown || {})
+              .map(([key, value]) => `${key} ${value}`)
+              .join(' / ');
+            return `<span class="tally" title="${esc(row.category_label)}｜${num(row.count)} 篇${
+              split ? `（${esc(split)}）` : ''
+            }">
               <span class="legend-swatch" style="background:${color}"></span>
               C${esc(row.cluster)}<b>${num(row.count)}</b>
             </span>`;
@@ -284,10 +289,13 @@
       .map((source) => String(source).split(/[\\/]/).pop())
       .join('、');
     const rows = info.rows || {};
+    const sources = info.date_sources || {};
+    const verified = (sources['thehackernews.com'] || 0) + (sources['twcert.org.tw'] || 0) + (sources['ithome.com.tw'] || 0);
+    const estimated = sources.estimated || 0;
     const dateNote =
-      info.date_policy === 'row_order_backfill'
-        ? '原始 CSV 未含發布日期，時間軸依擷取順序回推'
-        : `時間軸基準日 ${esc(info.exported_at || '—')}`;
+      info.date_policy === 'column'
+        ? `時間軸為來源實際發布日期（已驗證 ${num(verified)} 筆${estimated ? `，推估 ${num(estimated)} 筆` : ''}）`
+        : '原始 CSV 未含發布日期，時間軸依擷取順序回推';
 
     node.textContent = `資料來源：${files || '—'}（匯出 ${esc(info.exported_at || '—')}，台灣 ${
       num(rows.taiwan ?? 0)
@@ -547,6 +555,11 @@
                     <div class="flex justify-between gap-3"><dt class="text-[color:var(--faint)]">Meta-Category</dt><dd class="text-right text-[color:var(--ink-soft)]">${esc(item.meta_label)}</dd></div>
                     <div class="flex justify-between gap-3"><dt class="text-[color:var(--faint)]">風險分數</dt><dd class="mono text-[color:var(--ink-soft)]">${esc(item.risk_score)}</dd></div>
                     <div class="flex justify-between gap-3"><dt class="text-[color:var(--faint)]">發布日期</dt><dd class="mono text-[color:var(--ink-soft)]">${esc(item.published_at)}</dd></div>
+                    <div class="flex justify-between gap-3"><dt class="text-[color:var(--faint)]">原始報導</dt><dd class="text-right">${
+                      item.source_url
+                        ? `<a class="feed-link" href="${esc(item.source_url)}" target="_blank" rel="noopener noreferrer">開啟來源 ↗</a>`
+                        : '—'
+                    }</dd></div>
                     <div class="flex justify-between gap-3"><dt class="text-[color:var(--faint)]">事件 ID</dt><dd class="mono text-[color:var(--ink-soft)]">#${esc(item.id)}</dd></div>
                   </dl>
                 </div>
@@ -558,12 +571,17 @@
         <tr class="feed-row" data-row="${item.id}" data-open="${open}" tabindex="0" aria-expanded="${open}">
           <td><span class="badge" data-tone="${sourceTone}">${esc(item.source)}</span></td>
           <td>
-            <div class="feed-title">${esc(item.title)}</div>
+            <div class="feed-title">${
+              item.source_url
+                ? `<a class="feed-link" href="${esc(item.source_url)}" target="_blank" rel="noopener noreferrer">${esc(item.title)}</a>`
+                : esc(item.title)
+            }</div>
             <div class="mt-1 flex items-center gap-2 text-[10px] text-[color:var(--faint)]">
               <span class="mono">#${esc(item.id)}</span>
               <span class="h-2 w-px bg-[#27384f]"></span>
               <span>${esc(item.category_label)}</span>
               <span class="mono rounded border border-[#27384f] px-1">C${esc(item.cluster ?? '—')}</span>
+              <span class="mono text-[color:var(--muted)]">${esc(item.published_at)}</span>
             </div>
           </td>
           <td>
@@ -584,7 +602,8 @@
     $('#feedTotal').textContent = num(state.total);
 
     body.querySelectorAll('.feed-row').forEach((row) => {
-      const toggle = () => {
+      const toggle = (event) => {
+        if (event && event.target && event.target.closest('a')) return;
         const id = Number(row.dataset.row);
         state.openRowId = state.openRowId === id ? null : id;
         renderFeed(items);

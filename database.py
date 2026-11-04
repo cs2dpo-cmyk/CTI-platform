@@ -77,6 +77,7 @@ def init_db(*, seed: bool = True) -> int:
                     category=record.category,
                     meta_category=risk_engine.meta_of(record.category),
                     cluster=record.cluster,
+                    source_url=record.source_url or None,
                     risk_score=result.score,
                     risk_level=result.risk_level,
                     priority=result.priority,

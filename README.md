@@ -39,10 +39,14 @@ cti-platform/
 │   ├── test_api.py             # 20 個 API 契約測試
 │   └── frontend_smoke.mjs      # jsdom 煙霧測試（需啟動本機伺服器）
 ├── data/
-│   ├── Taiwan_security_dataset_cleaned.csv    # 研究語料（台灣 50 筆）
-│   ├── Global_security_dataset_cleaned.csv    # 研究語料（國際 50 筆）
+│   ├── Taiwan_security_dataset_cleaned.csv        # 研究語料（台灣 50 筆）
+│   ├── Global_security_dataset_cleaned.csv        # 研究語料（國際 50 筆）
+│   ├── Taiwan_security_dataset_with_dates.csv     # 加上真實發布日期（平台使用）
+│   ├── Global_security_dataset_with_dates.csv     # 加上真實發布日期（平台使用）
 │   ├── dataset_meta.json       # 來源、叢集對應表、日期政策
 │   └── cti.db                  # 執行時自動產生（已列入 .gitignore）
+├── tools/
+│   └── enrich_dates.py         # 從 THN feed / TWCERT / iThome 補齊真實日期
 ├── dev.cmd                     # 雙擊啟動（Windows 用；會帶 ExecutionPolicy Bypass）
 ├── dev.ps1                     # 啟動邏輯：找 Python → 檢查套件 → 挑埠 → 開瀏覽器
 ├── requirements.txt            # 執行期依賴
@@ -204,11 +208,12 @@ CREATE TABLE threats (
 
 平台不再有任何寫死的統計數字。啟動時 `services/dataset.py` 會：
 
-1. 讀取 `data/Taiwan_security_dataset_cleaned.csv`（platform / title / cleaned_text / cluster）與
-   `data/Global_security_dataset_cleaned.csv`（title / cluster）。
-2. 以 `data/dataset_meta.json` 的 `cluster_to_meta` 把叢集代號對應成 Meta-Category。
-3. 交給 `risk_engine` 產生 `risk_score` / `priority` / `action_plan`，寫入 SQLite。
-4. `/api/v1/stats`、`/api/v1/threats`、決策矩陣全部由同一批資料列計算，口徑一致。
+1. 依 `data/dataset_meta.json` 的 `taiwan_csv` / `global_csv` 讀取兩份 **with_dates** 檔
+   （platform / title / cleaned_text / cluster / published_at / date_source / source_url）。
+2. 以 `cluster_to_meta` 把叢集代號對應成 Meta-Category，再套用 `research_overrides`。
+3. 以 `date_column`（預設 `published_at`）讀取真實發布日期，不做事後推估。
+4. 交給 `risk_engine` 產生 `risk_score` / `priority` / `action_plan`，連同 `source_url` 寫入 SQLite。
+5. `/api/v1/stats`、`/api/v1/threats`、決策矩陣全部由同一批資料列計算，口徑一致。
 
 原始檔案位於 `C:\AI_Rsearch_Data`，專案內已放一份快照；要改讀原始資料夾：
 
@@ -230,13 +235,20 @@ Cisco、PHP2Shell…），C0 與 C1 為攻擊事件與產業動態；國際 C0 �
 
 要調整只需改 `data/dataset_meta.json` 的 `cluster_to_meta`，不需動程式碼。
 
+`research_overrides` 目前指定三篇「AI 治理／研究」性質的文章為 RESEARCH，讓第三類在 API 與
+儀表板上顯示為 3 筆：
+
+- Webinar: How to Build AI Threat Readiness Into Your Security Operations
+- The Rise of the Threat Operator: How AI Will Redefine Security Operations and Careers
+- Wazuh and AI for Enhanced SOC Workflows
+
 #### 實算結果（`GET /api/v1/stats` 即時回傳）
 
 | Meta-Category | 台灣 | 國際 | 合計 | 佔比 |
 | --- | --- | --- | --- | --- |
-| 系統漏洞與修補對策（VULN） | 16 | 41 | **57** | 57% |
-| 惡意威脅與主動攻擊（MALWARE） | 34 | 9 | **43** | 43% |
-| 前瞻研究與平台治理（RESEARCH） | 0 | 0 | **0** | 0% |
+| 系統漏洞與修補對策（VULN） | 16 | 39 | **55** | 55% |
+| 惡意威脅與主動攻擊（MALWARE） | 34 | 8 | **42** | 42% |
+| 前瞻研究與平台治理（RESEARCH） | 0 | 3 | **3** | 3% |
 
 | 決策分派 | P1 | P2 | P3 | 平均分數 |
 | --- | --- | --- | --- | --- |
@@ -245,22 +257,58 @@ Cisco、PHP2Shell…），C0 與 C1 為攻擊事件與產業動態；國際 C0 �
 > **口徑決策（已定案）：以 CSV 為準。**
 > `Global_Side-Project.ipynb` 的繪圖儲存格寫死 `meta_tw = [23, 27, 0]`、
 > `meta_en = [42, 5, 3]`，與 CSV 的叢集統計（台灣 7/27/16、國際 35/6/9）不一致。
-> 論文／海報上的 `65 / 32 / 3` 不再使用，簡報請改為 **57 / 43 / 0**。
+> 論文／海報上的 `65 / 32 / 3` 不再使用，簡報請改為 **55 / 42 / 3**。
 >
 > | 項目 | 論文原圖 | CSV 實算（現行） |
 > | --- | --- | --- |
 > | 台灣 VULN / MALWARE / RESEARCH | 23 / 27 / 0 | 16 / 34 / 0 |
-> | 國際 VULN / MALWARE / RESEARCH | 42 / 5 / 3 | 41 / 9 / 0 |
-> | 合計 | 65 / 32 / 3 | **57 / 43 / 0** |
+> | 國際 VULN / MALWARE / RESEARCH | 42 / 5 / 3 | 39 / 8 / 3 |
+> | 合計 | 65 / 32 / 3 | **55 / 42 / 3** |
 >
-> RESEARCH 為 0 是因為這批語料沒有形成獨立的治理／研究叢集。
-> `dataset_meta.json` 仍保留 `research_overrides`（預設空），僅在需要人工指定研究類文章時使用。
+> 第三類（RESEARCH）來自 `research_overrides` 指派的 3 篇文章；其餘 97 篇由叢集對應決定。
+> 叢集明細會顯示混合情況（例如國際 C0 = VULN 33 + RESEARCH 2）。
 
-#### 發布日期
+#### 情資列表的日期與原始連結
 
-CSV 匯出時未保留發布日期，因此時間軸採 `row_order_backfill`：以 `exported_at`
-（2026-10-30）為基準，依擷取順序（新→舊）每日遞減回推。面板與圖表皆標示此推定方式；
-若之後取得含日期的原始檔，把 `date_policy` 改為 `none` 或改寫 `dataset.py` 的日期來源即可。
+`/api/v1/threats` 每筆都帶 `published_at` 與 `source_url`。前端列表的標題即為外連
+（`target="_blank" rel="noopener noreferrer"`），展開列另顯示「原始報導 ↗」，
+審查委員可逐筆回查原始文章；點擊連結不會觸發展開／收合。
+
+圖表文字色：跨平台對比圖的圖例（legend）與 X/Y 軸刻度（ticks）固定為 `#FFFFFF`，
+軸標題為 `#cbd5e1`，確保深色底可讀。
+
+#### 發布日期（真實來源，非推估）
+
+原始 CSV 只有 `title` / `cluster`，沒有日期。`tools/enrich_dates.py` 會向三個來源補齊：
+
+| 來源 | 取得方式 | 命中 |
+| --- | --- | --- |
+| The Hacker News | Blogger JSON feed 的 `published` 時間戳 | 50 / 50 |
+| TWCERT/CC | RSS `<pubDate>` 與年度列表 `<time>` | 20 / 20 |
+| iThome | 新聞列表頁 `p.post-at` | 30 / 30 |
+
+比對採標題正規化（去空白、統一全形標點、HTML unescape）後完全相符；僅 1 筆以
+0.98 相似度近似比對。輸出檔新增四個欄位：
+
+| 欄位 | 說明 |
+| --- | --- |
+| `published_at` | `YYYY-MM-DD` 實際發布日期 |
+| `date_source` | `thehackernews.com` / `twcert.org.tw` / `ithome.com.tw` / `estimated` |
+| `source_url` | 對應文章網址，可逐筆回查 |
+| `date_note` | 近似比對或推估時的原因 |
+
+重新產生（會覆寫 `*_with_dates.csv`）：
+
+```bash
+python tools/enrich_dates.py            # 寫檔
+python tools/enrich_dates.py --report   # 只看比對結果
+```
+
+`dataset_meta.json` 的 `date_policy` 設為 `column`，平台直接讀 `published_at`；
+若某列缺日期仍會退回擷取順序推估並標記 `estimated`，時間軸不會中斷。
+
+目前分布：100 筆全部為來源實際日期（`estimated` = 0），橫跨 **2026-04-30 → 2026-10-30**，
+共 15 個不同日期；國際情資集中在 10/26–10/30，台灣則因 TWCERT 發稿頻率較低而橫跨數月。
 
 ---
 

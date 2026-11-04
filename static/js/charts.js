@@ -35,7 +35,7 @@ const CTICharts = (() => {
     defaultsApplied = true;
     Chart.defaults.font.family = 'Inter, "Noto Sans TC", "Microsoft JhengHei", sans-serif';
     Chart.defaults.font.size = 11;
-    Chart.defaults.color = COLORS.tick;
+    Chart.defaults.color = '#e8eef7';
     Chart.defaults.animation = { duration: 620, easing: 'easeOutQuart' };
     Chart.defaults.plugins.tooltip.backgroundColor = 'rgba(9, 15, 25, 0.96)';
     Chart.defaults.plugins.tooltip.borderColor = 'rgba(60, 82, 110, 0.9)';
@@ -205,7 +205,7 @@ const CTICharts = (() => {
             position: 'top',
             align: 'end',
             labels: {
-              color: '#c3cede',
+              color: '#FFFFFF',
               usePointStyle: true,
               pointStyle: 'rectRounded',
               boxWidth: 9,
@@ -246,18 +246,18 @@ const CTICharts = (() => {
           x: {
             grid: { display: false },
             border: { color: COLORS.grid },
-            ticks: { color: COLORS.tick, font: { size: 11 } },
+            ticks: { color: '#FFFFFF', font: { size: 11 } },
           },
           y: {
             beginAtZero: true,
             suggestedMax: Math.max(45, series.totTaiwan, series.totGlobal),
             grid: { color: COLORS.grid, drawTicks: false },
             border: { display: false },
-            ticks: { color: COLORS.tick, stepSize: 10, padding: 6, font: { size: 10.5 } },
+            ticks: { color: '#FFFFFF', stepSize: 10, padding: 6, font: { size: 10.5 } },
             title: {
               display: true,
               text: '文章篇數',
-              color: '#61728d',
+              color: '#cbd5e1',
               font: { size: 10 },
               padding: { bottom: 4 },
             },

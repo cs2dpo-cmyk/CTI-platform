@@ -97,9 +97,10 @@ def test_meta_categories_follow_the_cluster_mapping(client: TestClient):
     by_key = {item["key"]: item["by_region"] for item in body["meta_categories"]}
     # taiwan: C0 + C1 -> MALWARE (34), C2 -> VULN (16)
     # global: C0 + C1 -> VULN (41), C2 -> MALWARE (9)
-    assert by_key["VULN"] == {"taiwan": 16, "global": 41}
-    assert by_key["MALWARE"] == {"taiwan": 34, "global": 9}
-    assert by_key["RESEARCH"] == {"taiwan": 0, "global": 0}
+    # research_overrides moves two global VULN rows and one MALWARE row to RESEARCH
+    assert by_key["VULN"] == {"taiwan": 16, "global": 39}
+    assert by_key["MALWARE"] == {"taiwan": 34, "global": 8}
+    assert by_key["RESEARCH"] == {"taiwan": 0, "global": 3}
 
 
 def test_every_cluster_maps_to_a_known_category(client: TestClient):
@@ -116,8 +117,24 @@ def test_dataset_provenance_is_reported(client: TestClient):
     assert info["rows"] == {"taiwan": 50, "global": 50}
     assert info["total"] == 100
     assert info["exported_at"] == "2026-10-30"
-    assert any("Taiwan_security_dataset_cleaned.csv" in source for source in info["sources"])
-    assert info["date_policy"] == "row_order_backfill"
+    assert any("Taiwan_security_dataset_with_dates.csv" in source for source in info["sources"])
+    assert info["date_policy"] == "column"
+
+
+def test_dates_come_from_the_publishers_not_from_the_row_order(client: TestClient):
+    body = client.get("/api/v1/stats").json()
+    sources = body["dataset"]["date_sources"]
+    assert sum(sources.values()) == 100
+    assert sources.get("estimated", 0) == 0, "所有日期都應來自來源 feed／列表"
+    assert sources["thehackernews.com"] == 50
+    assert sources["twcert.org.tw"] == 20
+    assert sources["ithome.com.tw"] == 30
+
+    # Real publication dates are spread over months, not the synthetic 50-day run.
+    timeline = body["timeline"]
+    assert len(timeline) >= 10
+    assert timeline[0]["date"] >= "2026-04-01"
+    assert timeline[-1]["date"] == "2026-10-30"
 
 
 # --------------------------------------------------------------------------- #
@@ -227,7 +244,7 @@ def test_threats_filters_combine(client: TestClient):
         "/api/v1/threats",
         params={"region": "global", "category": "MALWARE", "limit": 200},
     ).json()
-    assert body["total"] == 9, "global cluster 2 的 9 篇就是 MALWARE"
+    assert body["total"] == 8, "global cluster 2 的 9 篇，1 篇被 research_overrides 移到 RESEARCH"
     for item in body["items"]:
         assert item["region"] == "global"
         assert item["category"] == "MALWARE"
@@ -240,6 +257,26 @@ def test_threats_search_and_pagination(client: TestClient):
     page = client.get("/api/v1/threats", params={"limit": 10, "offset": 95}).json()
     assert page["returned"] == 5
     assert page["total"] == 100
+
+
+def test_research_overrides_pin_three_articles(client: TestClient):
+    body = client.get("/api/v1/threats", params={"category": "RESEARCH", "limit": 200}).json()
+    assert body["total"] == 3
+    titles = {item["title"] for item in body["items"]}
+    assert titles == {
+        "Webinar: How to Build AI Threat Readiness Into Your Security Operations",
+        "The Rise of the Threat Operator: How AI Will Redefine Security Operations and Careers",
+        "Wazuh and AI for Enhanced SOC Workflows",
+    }
+    for item in body["items"]:
+        assert item["source_url"].startswith("https://")
+
+
+def test_threat_items_expose_real_dates_and_source_links(client: TestClient):
+    body = client.get("/api/v1/threats", params={"limit": 200}).json()
+    for item in body["items"]:
+        assert item["source_url"].startswith("https://"), item["title"]
+        assert "2026-" in item["published_at"]
 
 
 def test_threat_detail_and_404(client: TestClient):

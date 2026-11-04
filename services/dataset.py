@@ -1,14 +1,10 @@
 """Load the research CSVs and turn them into scored, labelled threat records.
 
-The two ``*_security_dataset_cleaned.csv`` files are the single source of truth:
-every article's cluster id comes from the file, the cluster is mapped to a
-Meta-Category through ``data/dataset_meta.json``, and every derived number in the
-API (stats, feed, decision matrix) is computed from these rows — there are no
-hard-coded counts anywhere.
-
-The export does not carry publication dates, so dates are backfilled from the
-row order (newest first) anchored at the export date. ``date_policy`` in the
-metadata documents this; set it to ``"none"`` to disable backfilling.
+The two ``*_with_dates.csv`` files are the single source of truth: every
+article's cluster, publication date and source URL come straight from the file.
+The cluster is mapped to a Meta-Category through ``data/dataset_meta.json``, and
+every derived number in the API (stats, feed, decision matrix) is computed from
+these rows — there are no hard-coded counts and no simulated dates.
 """
 
 from __future__ import annotations
@@ -19,7 +15,7 @@ import json
 import os
 import re
 from dataclasses import dataclass
-from datetime import date, timedelta
+from datetime import date
 from pathlib import Path
 from typing import Any, Iterable
 
@@ -27,6 +23,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 DEFAULT_DATASET_DIR = BASE_DIR / "data"
 
 VALID_META = ("VULN", "MALWARE", "RESEARCH")
+DEFAULT_DATE_COLUMN = "published_at"
 
 # Titles that read like a critical advisory get a HIGH hint; the rest MEDIUM.
 _SEVERE = re.compile(
@@ -46,6 +43,8 @@ class DatasetRecord:
     category: str  # VULN | MALWARE | RESEARCH
     risk_hint: str  # HIGH | MEDIUM | LOW
     published_at: date
+    source_url: str = ""
+    date_source: str = ""
 
     def as_seed(self) -> dict[str, Any]:
         return {
@@ -62,6 +61,11 @@ class DatasetRecord:
 _cache: dict[str, Any] = {"signature": None, "records": [], "info": {}}
 
 
+# --------------------------------------------------------------------------- #
+# Configuration
+# --------------------------------------------------------------------------- #
+
+
 def dataset_dir() -> Path:
     override = os.getenv("CTI_DATASET_DIR", "").strip()
     return Path(override) if override else DEFAULT_DATASET_DIR
@@ -75,14 +79,47 @@ def _read_meta(directory: Path) -> dict[str, Any]:
     return {}
 
 
-def _signature(directory: Path, meta: dict[str, Any]) -> tuple:
-    names = [meta.get("provenance", {}).get("taiwan_file", "Taiwan_security_dataset_cleaned.csv"),
-             meta.get("provenance", {}).get("global_file", "Global_security_dataset_cleaned.csv")]
+def _resolve_csv(directory: Path, value: str, default_name: str) -> Path:
+    """Resolve a metadata path.
+
+    ``"Taiwan.csv"``        → relative to the dataset directory
+    ``"data/Taiwan.csv"``   → relative to the project root
+    ``"/abs/Taiwan.csv"``   → used as-is
+    """
+    raw = (value or default_name).strip()
+    path = Path(raw)
+    if path.is_absolute():
+        return path
+    if path.parent != Path("."):
+        return (BASE_DIR / path).resolve()
+    return directory / path
+
+
+def _csv_paths(directory: Path, meta: dict[str, Any]) -> tuple[Path, Path]:
+    provenance = meta.get("provenance", {})
+    taiwan = _resolve_csv(
+        directory,
+        meta.get("taiwan_csv") or provenance.get("taiwan_file", ""),
+        "Taiwan_security_dataset_with_dates.csv",
+    )
+    global_ = _resolve_csv(
+        directory,
+        meta.get("global_csv") or provenance.get("global_file", ""),
+        "Global_security_dataset_with_dates.csv",
+    )
+    return taiwan, global_
+
+
+def _signature(paths: Iterable[Path]) -> tuple:
     stamps = []
-    for name in names:
-        path = directory / name
-        stamps.append((name, path.stat().st_mtime if path.exists() else 0))
+    for path in paths:
+        stamps.append((str(path), path.stat().st_mtime if path.exists() else 0))
     return tuple(stamps)
+
+
+# --------------------------------------------------------------------------- #
+# Parsing helpers
+# --------------------------------------------------------------------------- #
 
 
 def _risk_hint(title: str, meta_category: str) -> str:
@@ -96,40 +133,56 @@ def _rows_from_csv(path: Path) -> list[dict[str, str]]:
         return [{k.strip(): (v or "").strip() for k, v in row.items()} for row in csv.DictReader(handle)]
 
 
+def _parse_date(raw: str) -> date | None:
+    text = (raw or "").strip()
+    if not text:
+        return None
+    try:
+        return date.fromisoformat(text[:10])
+    except ValueError:
+        return None
+
+
+# --------------------------------------------------------------------------- #
+# Loader
+# --------------------------------------------------------------------------- #
+
+
 def load_dataset(*, refresh: bool = False) -> tuple[list[DatasetRecord], dict[str, Any]]:
     """Parse both CSVs into records plus provenance metadata (cached by mtime)."""
     directory = dataset_dir()
     meta = _read_meta(directory)
-    signature = _signature(directory, meta)
+    taiwan_path, global_path = _csv_paths(directory, meta)
+
+    signature = _signature([taiwan_path, global_path, directory / "dataset_meta.json"])
     if not refresh and _cache["signature"] == signature and _cache["records"]:
         return _cache["records"], _cache["info"]
 
     provenance = meta.get("provenance", {})
     mapping = meta.get("cluster_to_meta", {})
     overrides = {title.strip() for title in meta.get("research_overrides", []) if title.strip()}
-    date_policy = meta.get("date_policy", "row_order_backfill")
-    export_date = date.fromisoformat(provenance.get("exported_at", "2026-10-30"))
+    date_column = (meta.get("date_column") or DEFAULT_DATE_COLUMN).strip()
+    export_date = _parse_date(provenance.get("exported_at", "")) or date(2026, 10, 30)
 
-    files = [
-        ("taiwan", provenance.get("taiwan_file", "Taiwan_security_dataset_cleaned.csv")),
-        ("global", provenance.get("global_file", "Global_security_dataset_cleaned.csv")),
-    ]
+    missing = [str(path) for path in (taiwan_path, global_path) if not path.exists()]
+    if missing:
+        raise FileNotFoundError(
+            "找不到語料 CSV：" + "、".join(missing)
+            + "。請確認 dataset_meta.json 的 taiwan_csv / global_csv 路徑，"
+            "或設定 CTI_DATASET_DIR 指向資料夾。"
+        )
 
     records: list[DatasetRecord] = []
     next_id = 1
     per_region: dict[str, int] = {}
-    missing: list[str] = []
+    date_sources: dict[str, int] = {}
+    unknown_dates: list[str] = []
 
-    for region, filename in files:
-        path = directory / filename
-        if not path.exists():
-            missing.append(str(path))
-            continue
-
+    for region, path in (("taiwan", taiwan_path), ("global", global_path)):
         rows = _rows_from_csv(path)
         region_map = {str(key): str(value).upper() for key, value in mapping.get(region, {}).items()}
 
-        for index, row in enumerate(rows):
+        for row in rows:
             title = row.get("title", "")
             if not title:
                 continue
@@ -141,11 +194,14 @@ def load_dataset(*, refresh: bool = False) -> tuple[list[DatasetRecord], dict[st
                 category = "RESEARCH"
 
             source = row.get("platform") or ("THN" if region == "global" else "UNKNOWN")
-            published = (
-                export_date - timedelta(days=index)
-                if date_policy == "row_order_backfill"
-                else export_date
-            )
+            published = _parse_date(row.get(date_column, ""))
+            if published is None:
+                # Never invent a date: fall back to the export day and say so.
+                published = export_date
+                date_source = "unknown"
+                unknown_dates.append(title)
+            else:
+                date_source = (row.get("date_source") or "source").strip() or "source"
 
             records.append(
                 DatasetRecord(
@@ -157,29 +213,28 @@ def load_dataset(*, refresh: bool = False) -> tuple[list[DatasetRecord], dict[st
                     category=category,
                     risk_hint=_risk_hint(title, category),
                     published_at=published,
+                    source_url=(row.get("source_url") or "").strip(),
+                    date_source=date_source,
                 )
             )
             next_id += 1
             per_region[region] = per_region.get(region, 0) + 1
-
-    if missing:
-        raise FileNotFoundError(
-            "找不到語料 CSV：" + "、".join(missing)
-            + "。請將 Taiwan/Global_security_dataset_cleaned.csv 放到 data/，"
-            "或設定 CTI_DATASET_DIR 指向原始資料夾。"
-        )
+            date_sources[date_source] = date_sources.get(date_source, 0) + 1
 
     info = {
-        "sources": [str(directory / filename) for _, filename in files],
+        "sources": [str(taiwan_path), str(global_path)],
         "source_directory": provenance.get("source_directory", str(directory)),
         "exported_at": export_date.isoformat(),
         "note": provenance.get("note", ""),
         "mapping_note": meta.get("mapping_note", ""),
         "cluster_to_meta": mapping,
-        "date_policy": date_policy,
+        "date_policy": meta.get("date_policy", "column"),
+        "date_column": date_column,
+        "date_sources": date_sources,
         "rows": per_region,
         "total": len(records),
         "overrides": sorted(overrides),
+        "unknown_dates": unknown_dates,
     }
 
     _cache.update(signature=signature, records=records, info=info)

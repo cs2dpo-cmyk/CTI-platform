@@ -65,9 +65,18 @@ def _cluster_rows(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
                 "cluster": row["cluster"],
                 "category": row["category"],
                 "count": 0,
+                "breakdown": Counter(),
             },
         )
         bucket["count"] += 1
+        bucket["breakdown"][row["category"]] += 1
+
+    for bucket in buckets.values():
+        # research_overrides can mix categories inside one cluster: report the
+        # dominant one and keep the full split for the tooltip.
+        dominant = bucket["breakdown"].most_common(1)[0][0]
+        bucket["category"] = dominant
+        bucket["breakdown"] = dict(bucket["breakdown"])
     return sorted(
         buckets.values(), key=lambda item: (item["region"], int(item["cluster"] or 0))
     )

@@ -174,12 +174,16 @@ assert($('#apiStatus').textContent.includes('已連線'), 'API status pill updat
 
   const legend = bar.options.plugins.legend;
   assert(legend.display === true, 'comparison legend is enabled');
+  assert(
+    String(legend.labels.color).toUpperCase() === '#FFFFFF',
+    `legend label colour is white (got ${legend.labels.color})`
+  );
   assert(legend.position === 'top', `legend position (got ${legend.position})`);
 
   const series = { tw: bar.data.datasets[0].data, gl: bar.data.datasets[1].data };
   assert(series.tw.join(',') === '16,34,0', `Taiwan CSV series (got ${series.tw.join(',')})`);
-  assert(series.gl.join(',') === '41,9,0', `Global CSV series (got ${series.gl.join(',')})`);
-  assert($('#baselineNote').textContent.includes('dataset_cleaned.csv'), 'dataset provenance is displayed');
+  assert(series.gl.join(',') === '39,8,3', `Global CSV series (got ${series.gl.join(',')})`);
+  assert($('#baselineNote').textContent.includes('with_dates.csv'), 'dataset provenance is displayed');
 
   const items = legend.labels.generateLabels(bar);
   assert(items.length === 2, `legend entries (got ${items.length})`);
@@ -215,6 +219,15 @@ p2Card.dispatchEvent(new window.MouseEvent('click', { bubbles: true }));
 await wait(80);
 assert(p2Card.getAttribute('aria-expanded') === 'true', 'matrix accordion expands');
 
+// ---------------------------------------------------- feed: dates + outbound links
+{
+  const row = $('#feedBody .feed-row');
+  const link = row?.querySelector('a.feed-link');
+  assert(!!link, 'feed title is a link to the source article');
+  assert(link.href.startsWith('https://'), `feed link points to the publisher (got ${link?.href})`);
+  assert(/\d{4}-\d{2}-\d{2}/.test(row.textContent), 'feed row shows the publication date');
+}
+
 // ------------------------------------------------------- assessment flow (live API)
 const form = $('#assessForm');
 $('#assetType').value = 'core_datacenter';
@@ -249,5 +262,6 @@ if (errors.length) {
   process.exit(1);
 }
 console.log('\nAll dashboard smoke checks passed.');
+
 
 

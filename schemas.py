@@ -40,6 +40,7 @@ class ThreatOut(BaseModel):
     meta_category: str
     meta_label: str
     cluster: str | None = None
+    source_url: str | None = None
     risk_score: float
     risk_level: RiskLevel
     priority: Priority
@@ -188,6 +189,7 @@ class ClusterStat(BaseModel):
     category: str
     category_label: str
     count: int
+    breakdown: dict[str, int] = Field(default_factory=dict)
 
 
 class DatasetInfo(BaseModel):
@@ -199,6 +201,8 @@ class DatasetInfo(BaseModel):
     note: str = ""
     mapping_note: str = ""
     date_policy: str = ""
+    date_column: str = ""
+    date_sources: dict[str, int] = Field(default_factory=dict)
     rows: dict[str, int] = Field(default_factory=dict)
     total: int = 0
     overrides: list[str] = Field(default_factory=list)
@@ -298,6 +302,7 @@ def threat_to_schema(threat_row: Any) -> ThreatOut:
         meta_category=meta,
         meta_label=risk_engine.META_CATEGORY_META.get(meta, {}).get("label", meta),
         cluster=get("cluster"),
+        source_url=get("source_url"),
         risk_score=round(float(get("risk_score") or 0.0), 1),
         risk_level=get("risk_level", "MEDIUM"),
         priority=get("priority", "P3"),

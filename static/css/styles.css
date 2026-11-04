@@ -883,6 +883,24 @@ body::after {
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
+.feed-link {
+  color: inherit;
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: color 140ms ease, border-color 140ms ease;
+}
+@media (hover: hover) and (pointer: fine) {
+  .feed-link:hover {
+    color: #7dd3fc;
+    border-bottom-color: rgba(125, 211, 252, 0.45);
+  }
+}
+.feed-link:focus-visible {
+  outline: 2px solid rgba(34, 211, 238, 0.6);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
 .feed-detail-row td {
   padding: 0 !important;
   border-bottom: 1px solid rgba(27, 39, 57, 0.55);
