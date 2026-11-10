@@ -110,6 +110,14 @@ def _csv_paths(directory: Path, meta: dict[str, Any]) -> tuple[Path, Path]:
     return taiwan, global_
 
 
+def corpus_signature() -> tuple:
+    """mtime fingerprint of the files the corpus is parsed from."""
+    directory = dataset_dir()
+    meta = _read_meta(directory)
+    taiwan_path, global_path = _csv_paths(directory, meta)
+    return _signature([taiwan_path, global_path, directory / "dataset_meta.json"])
+
+
 def _signature(paths: Iterable[Path]) -> tuple:
     stamps = []
     for path in paths:

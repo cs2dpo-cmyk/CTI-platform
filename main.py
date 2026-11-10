@@ -18,8 +18,8 @@ from fastapi import APIRouter, Depends, FastAPI, HTTPException, Query, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, Response
 from fastapi.staticfiles import StaticFiles
-from sqlalchemy import func, select
-from sqlalchemy.orm import Session
+from sqlalchemy import false, func, select
+from sqlalchemy.orm import Session, load_only
 
 import database
 import schemas
@@ -94,14 +94,29 @@ def health(db: Session = Depends(database.get_db)) -> schemas.HealthResponse:
 # --------------------------------------------------------------------------- #
 
 
+# The dashboard payload only changes when the corpus does, so it is computed
+# once and re-served until a row is added, updated or the CSVs change.
+_STATS_CACHE: dict[tuple[Any, ...], schemas.StatsResponse] = {}
+
+
 @api.get("/stats", response_model=schemas.StatsResponse, summary="全球 / 台灣情資統計與 Meta-Category 分布")
 def stats(db: Session = Depends(database.get_db)) -> schemas.StatsResponse:
-    threats = db.scalars(select(database.Threat)).all()
-    if not threats:
+    version = database.corpus_version(db)
+    if not version[0]:
         raise HTTPException(status_code=503, detail="情資資料庫尚未初始化，請稍後重試。")
-    _, dataset_info = dataset.load_dataset()
-    payload = analytics.build_stats(threats, dataset_info)
-    return schemas.StatsResponse(**payload)
+
+    key = (version, dataset.corpus_signature())
+    cached = _STATS_CACHE.get(key)
+    if cached is None:
+        columns = (getattr(database.Threat, name) for name in analytics.STATS_COLUMNS)
+        stmt = select(database.Threat).options(load_only(*columns))
+        threats = db.scalars(stmt).all()
+        _, dataset_info = dataset.load_dataset()
+        cached = schemas.StatsResponse(**analytics.build_stats(threats, dataset_info))
+        _STATS_CACHE.clear()
+        _STATS_CACHE[key] = cached
+    # generated_at describes this response, not the cached computation.
+    return cached.model_copy(update={"generated_at": datetime.now(timezone.utc)})
 
 
 # --------------------------------------------------------------------------- #
@@ -111,6 +126,9 @@ def stats(db: Session = Depends(database.get_db)) -> schemas.StatsResponse:
 
 @api.post("/assess", response_model=schemas.AssessResponse, summary="即時風險評估與 P1-P3 處置建議")
 def assess(payload: schemas.AssessRequest, db: Session = Depends(database.get_db)) -> schemas.AssessResponse:
+    matched = _match_corpus(
+        db, cve_id=payload.cve_id, category=payload.category, region=payload.region
+    )
     result = risk_engine.assess(
         asset_type=payload.asset_type,
         threat_source=payload.threat_source,
@@ -121,8 +139,8 @@ def assess(payload: schemas.AssessRequest, db: Session = Depends(database.get_db
         exposure=payload.exposure,
         controls=payload.controls,
         data_sensitivity=payload.data_sensitivity,
+        region_hits=matched["region_hits"],
     )
-    matched = _match_corpus(db, cve_id=payload.cve_id, category=payload.category)
 
     # Corroboration bonus: a CVE that already appears in the intel corpus is
     # materially more actionable than a hypothetical one.
@@ -167,21 +185,27 @@ def assess(payload: schemas.AssessRequest, db: Session = Depends(database.get_db
     )
 
 
-def _match_corpus(db: Session, *, cve_id: str | None, category: str) -> dict[str, Any]:
-    """Find how many seeded intel items corroborate this assessment."""
+def _match_corpus(db: Session, *, cve_id: str | None, category: str,
+                  region: str) -> dict[str, Any]:
+    """Find how many seeded intel items corroborate this assessment.
+
+    Every lookup hits an indexed equality comparison. The CVE was previously
+    matched with `upper(title) LIKE '%...%'`, which cannot use an index and
+    forced a full table scan on every assessment.
+    """
+    threat = database.Threat
     category_hits = db.scalar(
-        select(func.count()).select_from(database.Threat).where(
-            database.Threat.category == category
-        )
+        select(func.count()).select_from(threat).where(threat.category == category)
+    ) or 0
+    region_hits = db.scalar(
+        select(func.count()).select_from(threat).where(threat.region == region)
     ) or 0
     cve_hits = 0
     if cve_id:
         cve_hits = db.scalar(
-            select(func.count())
-            .select_from(database.Threat)
-            .where(func.upper(database.Threat.title).like(f"%{cve_id}%"))
+            select(func.count()).select_from(threat).where(threat.cve_id == cve_id)
         ) or 0
-    return {"category_hits": category_hits, "cve_hits": cve_hits}
+    return {"category_hits": category_hits, "cve_hits": cve_hits, "region_hits": region_hits}
 
 
 def _summarise(payload: schemas.AssessRequest, score: float, priority: str,
@@ -195,7 +219,7 @@ def _summarise(payload: schemas.AssessRequest, score: float, priority: str,
     ]
     if payload.cve_id:
         parts.append(f"，其中 {matched['cve_hits']} 筆直接提及 {payload.cve_id}")
-    parts.append(f"；在地關聯採計{region} 50 筆語料。")
+    parts.append(f"；在地關聯採計{region} {matched.get('region_hits', 0)} 筆語料。")
     return "".join(parts)
 
 
@@ -231,7 +255,16 @@ def list_threats(
     if source:
         conditions.append(database.Threat.source == source)
     if q:
-        conditions.append(database.Threat.title.ilike(f"%{q.strip()}%"))
+        needle = q.strip()
+        # The trigram index answers substring search in O(log n); needles too
+        # short for a trigram (e.g. "AI") keep the LIKE scan they need.
+        ids = database.search_title_ids(db, needle)
+        if ids is None:
+            conditions.append(database.Threat.title.ilike(f"%{needle}%"))
+        elif ids:
+            conditions.append(database.Threat.id.in_(ids))
+        else:
+            conditions.append(false())
     if min_score is not None:
         conditions.append(database.Threat.risk_score >= min_score)
     if conditions:

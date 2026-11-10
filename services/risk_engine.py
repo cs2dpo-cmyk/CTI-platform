@@ -297,6 +297,7 @@ def assess(
     exposure: str = "internal",
     controls: Iterable[str] | None = None,
     data_sensitivity: str = "medium",
+    region_hits: int | None = None,
 ) -> RiskResult:
     """Score one asset/threat combination and derive its P1-P3 disposition."""
     asset = ASSET_TYPES.get(asset_type, ASSET_TYPES["web_app"])
@@ -324,8 +325,10 @@ def assess(
     adjustments: list[dict[str, Any]] = []
 
     if region == "taiwan":
-        adjustments.append({"key": "region_local", "label": "在地情資關聯 (台灣 50 筆語料命中)",
-                            "points": 3.0})
+        # The hit count comes from the caller so no corpus size is baked in.
+        label = ("在地情資關聯 (台灣語料命中)" if region_hits is None
+                 else f"在地情資關聯 (台灣 {region_hits} 筆語料命中)")
+        adjustments.append({"key": "region_local", "label": label, "points": 3.0})
         raw += 3.0
     sensitivity_bonus = {"high": 4.0, "medium": 0.0, "low": -2.0}.get(data_sensitivity, 0.0)
     if sensitivity_bonus:

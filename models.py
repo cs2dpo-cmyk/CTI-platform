@@ -33,7 +33,7 @@ class Threat(Base):
     cluster: Mapped[str | None] = mapped_column(String(8), nullable=True)
     source_url: Mapped[str | None] = mapped_column(String(512), nullable=True)
     action_plan: Mapped[str] = mapped_column(Text, nullable=False, default="[]")
-    cve_id: Mapped[str | None] = mapped_column(String(24), nullable=True)
+    cve_id: Mapped[str | None] = mapped_column(String(24), nullable=True, index=True)
     published_at: Mapped[date] = mapped_column(Date, nullable=False, index=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
 

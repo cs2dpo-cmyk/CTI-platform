@@ -20,6 +20,7 @@
     total: 0,
     matrixSelection: '',
     openRowId: null,
+    feedItems: [],
     form: { controls: new Set(), sensitivity: 'medium' },
     feedAbort: null,
     busy: false,
@@ -517,30 +518,8 @@
     $('#feedTotal').textContent = '—';
   }
 
-  function renderFeed(items) {
-    const body = $('#feedBody');
-    if (!body) return;
-
-    if (!items.length) {
-      body.innerHTML = `
-        <tr><td colspan="6" class="py-10">
-          <div class="empty">
-            <svg class="ico h-6 w-6"><use href="#i-search" /></svg>
-            <p>目前篩選條件下沒有符合的情資項目。</p>
-          </div>
-        </td></tr>`;
-      $('#feedCount').textContent = '0';
-      $('#feedTotal').textContent = num(state.total);
-      return;
-    }
-
-    body.innerHTML = items
-      .map((item) => {
-        const metaColor = CTICharts.META_KEY_COLOR[item.meta_category] || '#22d3ee';
-        const sourceTone = item.source === 'THN' ? 'global' : 'tw';
-        const open = item.id === state.openRowId;
-        const detail = open
-          ? `<tr class="feed-detail-row"><td colspan="6">
+  function detailRowHtml(item) {
+    return `<tr class="feed-detail-row"><td colspan="6">
               <div class="feed-detail-grid">
                 <div>
                   <div class="kicker mb-2">Recommended Playbook · ${esc(item.priority)}</div>
@@ -564,11 +543,14 @@
                   </dl>
                 </div>
               </div>
-            </td></tr>`
-          : '';
+            </td></tr>`;
+  }
 
-        return `
-        <tr class="feed-row" data-row="${item.id}" data-open="${open}" tabindex="0" aria-expanded="${open}">
+  function feedRowHtml(item) {
+    const metaColor = CTICharts.META_KEY_COLOR[item.meta_category] || '#22d3ee';
+    const sourceTone = item.source === 'THN' ? 'global' : 'tw';
+    return `
+        <tr class="feed-row" data-row="${item.id}" data-open="false" tabindex="0" aria-expanded="false">
           <td><span class="badge" data-tone="${sourceTone}">${esc(item.source)}</span></td>
           <td>
             <div class="feed-title">${
@@ -593,29 +575,86 @@
           <td><span class="mono text-[12px] font-semibold text-[color:var(--ink)]">${esc(item.risk_score)}</span></td>
           <td><span class="badge" data-tone="${esc(LEVEL_TONE[item.risk_level] || 'low')}">${esc(item.priority)}</span></td>
           <td><span class="mono text-[10.5px] text-[color:var(--faint)]">${esc(item.published_at)}</span></td>
-        </tr>
-        ${detail}`;
-      })
-      .join('');
+        </tr>`;
+  }
 
+  /* Rows are rendered once. Expanding one only inserts or removes its own
+     detail row: the previous code rebuilt the whole tbody and re-attached two
+     listeners to every row on each click. */
+  function syncFeedDetail() {
+    const body = $('#feedBody');
+    if (!body) return;
+
+    body.querySelectorAll('.feed-detail-row').forEach((node) => node.remove());
+    const rows = Array.from(body.querySelectorAll('.feed-row'));
+    rows.forEach((row) => {
+      row.setAttribute('aria-expanded', "false");
+      row.dataset.open = 'false';
+    });
+
+    const id = state.openRowId;
+    if (id == null) return;
+
+    const row = rows.find((node) => Number(node.dataset.row) === id);
+    const item = (state.feedItems || []).find((entry) => entry.id === id);
+    if (!row || !item) return;
+
+    row.setAttribute('aria-expanded', "true");
+    row.dataset.open = 'true';
+    row.insertAdjacentHTML('afterend', detailRowHtml(item));
+  }
+
+  function toggleFeedRow(id) {
+    state.openRowId = state.openRowId === id ? null : id;
+    syncFeedDetail();
+  }
+
+  function bindFeed() {
+    const body = $('#feedBody');
+    if (!body) return;
+
+    const rowFrom = (event) => {
+      if (event.target.closest('a')) return null;
+      return event.target.closest('.feed-row');
+    };
+
+    body.addEventListener('click', (event) => {
+      const row = rowFrom(event);
+      if (row) toggleFeedRow(Number(row.dataset.row));
+    });
+
+    body.addEventListener('keydown', (event) => {
+      if (event.key !== 'Enter' && event.key !== ' ') return;
+      const row = rowFrom(event);
+      if (!row) return;
+      event.preventDefault();
+      toggleFeedRow(Number(row.dataset.row));
+    });
+  }
+
+  function renderFeed(items) {
+    const body = $('#feedBody');
+    if (!body) return;
+
+    state.feedItems = items;
+
+    if (!items.length) {
+      body.innerHTML = `
+        <tr><td colspan="6" class="py-10">
+          <div class="empty">
+            <svg class="ico h-6 w-6"><use href="#i-search" /></svg>
+            <p>目前篩選條件下沒有符合的情資項目。</p>
+          </div>
+        </td></tr>`;
+      $('#feedCount').textContent = '0';
+      $('#feedTotal').textContent = num(state.total);
+      return;
+    }
+
+    body.innerHTML = items.map(feedRowHtml).join('');
     $('#feedCount').textContent = num(items.length);
     $('#feedTotal').textContent = num(state.total);
-
-    body.querySelectorAll('.feed-row').forEach((row) => {
-      const toggle = (event) => {
-        if (event && event.target && event.target.closest('a')) return;
-        const id = Number(row.dataset.row);
-        state.openRowId = state.openRowId === id ? null : id;
-        renderFeed(items);
-      };
-      row.addEventListener('click', toggle);
-      row.addEventListener('keydown', (event) => {
-        if (event.key === 'Enter' || event.key === ' ') {
-          event.preventDefault();
-          toggle();
-        }
-      });
-    });
+    syncFeedDetail();
   }
 
   function renderPagination() {
@@ -938,6 +977,7 @@
 
   async function init() {
     bindFilters();
+    bindFeed();
     bindForm();
     bindGlobal();
     renderPriorityChips();

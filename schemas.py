@@ -291,6 +291,11 @@ def threat_to_schema(threat_row: Any) -> ThreatOut:
         plan = json.loads(raw_plan) if isinstance(raw_plan, str) else (raw_plan or [])
     except json.JSONDecodeError:
         plan = []
+    if not plan:
+        # Rows no longer store their playbook: it is a pure function of
+        # (meta_category, priority), so it is derived on read instead of being
+        # duplicated into every database row.
+        plan = risk_engine.playbook(meta, get("priority", "P3"))
 
     return ThreatOut(
         id=get("id"),

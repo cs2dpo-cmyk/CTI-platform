@@ -17,6 +17,13 @@ RISK_ORDER = ["CRITICAL", "HIGH", "MEDIUM", "LOW"]
 RISK_LABELS = {"CRITICAL": "極高風險", "HIGH": "高風險", "MEDIUM": "中風險", "LOW": "低風險"}
 PRIORITY_ORDER = ["P1", "P2", "P3"]
 
+# The only columns `build_stats` reads. `/stats` loads just these so the ORM
+# never materialises the free-text columns it does not use.
+STATS_COLUMNS = (
+    "title", "source", "region", "category", "cluster",
+    "risk_score", "risk_level", "priority", "published_at",
+)
+
 
 class ThreatLike(Protocol):
     title: str
@@ -93,21 +100,27 @@ def build_stats(threats: list[ThreatLike], dataset_info: dict[str, Any] | None =
     priority_counts = Counter(row["priority"] for row in rows)
     source_counts = Counter(row["source"] for row in rows)
 
+    # One pass feeds both views of the region x meta-category grid plus the
+    # per-region score sums, so `regions` no longer rebuilds filtered copies.
     meta_by_region: dict[str, Counter[str]] = defaultdict(Counter)
+    region_meta: dict[str, Counter[str]] = defaultdict(Counter)
+    region_score_sum: dict[str, float] = defaultdict(float)
     for row in rows:
         meta_by_region[row["category"]][row["region"]] += 1
+        region_meta[row["region"]][row["category"]] += 1
+        region_score_sum[row["region"]] += row["risk_score"]
 
     regions = []
     for key, label in (("taiwan", "台灣在地"), ("global", "國際來源")):
-        subset = [row for row in rows if row["region"] == key]
-        top = Counter(row["category"] for row in subset).most_common(1)
+        count = region_counts.get(key, 0)
+        top = region_meta[key].most_common(1)
         regions.append(
             {
                 "key": key,
                 "label": label,
-                "count": len(subset),
-                "share": _share(len(subset), total),
-                "avg_score": _avg(row["risk_score"] for row in subset),
+                "count": count,
+                "share": _share(count, total),
+                "avg_score": round(region_score_sum[key] / count, 1) if count else 0.0,
                 "top_category": risk_engine.CATEGORY_TAXONOMY[top[0][0]]["label"] if top else "—",
             }
         )
@@ -188,7 +201,7 @@ def build_stats(threats: list[ThreatLike], dataset_info: dict[str, Any] | None =
     gap = abs(tw_top_n - gl_top_n)
 
     insights = [
-        f"100 筆語料中，{p1} 筆落入 P1（{_share(p1, total) * 100:.0f}%），"
+        f"{total} 筆語料中，{p1} 筆落入 P1（{_share(p1, total) * 100:.0f}%），"
         f"平均風險分數 {_avg(row['risk_score'] for row in rows)}，須於 24 小時內完成阻斷與修補。",
         f"Meta-Category 以「{top_meta['label'] if top_meta else '—'}」為最大族群"
         f"（{top_meta['count'] if top_meta else 0} 筆，{(top_meta['share'] * 100) if top_meta else 0:.0f}%），"
