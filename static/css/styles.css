@@ -15,7 +15,7 @@
   --ink: #e9eef7;
   --ink-soft: #c3cede;
   --muted: #8b9ab2;
-  --faint: #61728d;
+  --faint: #7b8ba6;
 
   --cyan: #22d3ee;
   --cyan-dim: rgba(34, 211, 238, 0.12);
@@ -121,7 +121,7 @@ body::after {
 
 .kicker {
   font-family: "JetBrains Mono", ui-monospace, monospace;
-  font-size: 10.5px;
+  font-size: 11px;
   letter-spacing: 0.18em;
   text-transform: uppercase;
   color: var(--faint);
@@ -327,7 +327,7 @@ body::after {
 
 .chip-count {
   font-family: "JetBrains Mono", monospace;
-  font-size: 10px;
+  font-size: 10.5px;
   color: var(--faint);
 }
 .chip[aria-pressed="true"] .chip-count {
@@ -391,7 +391,7 @@ body::after {
   border-radius: 7px;
   border: 1px solid rgba(39, 56, 79, 0.8);
   background: rgba(8, 14, 23, 0.55);
-  font-size: 10.5px;
+  font-size: 11px;
   color: var(--muted);
   white-space: nowrap;
   transition: color 140ms ease, border-color 140ms ease;
@@ -419,7 +419,7 @@ body::after {
   border-radius: 6px;
   border: 1px solid transparent;
   font-family: "JetBrains Mono", monospace;
-  font-size: 10.5px;
+  font-size: 11px;
   font-weight: 600;
   letter-spacing: 0.04em;
   white-space: nowrap;
@@ -652,7 +652,7 @@ body::after {
 }
 .ring-caption {
   margin-top: 3px;
-  font-size: 10px;
+  font-size: 10.5px;
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--faint);
@@ -682,7 +682,7 @@ body::after {
 }
 .factor-value {
   font-family: "JetBrains Mono", monospace;
-  font-size: 10.5px;
+  font-size: 11px;
   color: var(--faint);
   text-align: right;
 }
@@ -735,7 +735,7 @@ body::after {
   background: rgba(34, 211, 238, 0.09);
   color: #a9f0fb;
   font-family: "JetBrains Mono", monospace;
-  font-size: 10px;
+  font-size: 10.5px;
   font-weight: 600;
 }
 .step-title {
@@ -749,7 +749,7 @@ body::after {
   gap: 10px;
   margin-top: 3px;
   font-family: "JetBrains Mono", monospace;
-  font-size: 10px;
+  font-size: 10.5px;
   color: var(--faint);
 }
 .step-detail {
@@ -849,9 +849,9 @@ body::after {
   backdrop-filter: blur(4px);
   border-bottom: 1px solid var(--line-strong);
   font-family: "JetBrains Mono", monospace;
-  font-size: 9.5px;
+  font-size: 11px;
   font-weight: 500;
-  letter-spacing: 0.14em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--faint);
   white-space: nowrap;
@@ -925,7 +925,7 @@ body::after {
 }
 .field-hint {
   font-family: "JetBrains Mono", monospace;
-  font-size: 9.5px;
+  font-size: 10.5px;
   color: var(--faint);
 }
 
@@ -944,7 +944,7 @@ body::after {
   appearance: none;
 }
 .input::placeholder {
-  color: #4d5c73;
+  color: var(--faint);
 }
 .input:hover,
 .select:hover {

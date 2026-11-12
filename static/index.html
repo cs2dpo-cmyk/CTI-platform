@@ -34,7 +34,7 @@
     rel="stylesheet"
   />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.6/dist/chart.umd.min.js" defer></script>
-  <link rel="stylesheet" href="/static/css/styles.css?v=20261104b" />
+  <link rel="stylesheet" href="/static/css/styles.css?v=20261112" />
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23060a11'/%3E%3Cpath d='M16 5l9 4v7c0 5.5-3.8 10-9 11-5.2-1-9-5.5-9-11V9l9-4z' fill='none' stroke='%2322d3ee' stroke-width='2'/%3E%3C/svg%3E" />
 </head>
 
@@ -138,24 +138,24 @@
           <div class="rounded-xl border border-[#1b2739] bg-[#0a111c]/70 p-3">
             <div class="kicker">P1 回應 SLA</div>
             <div class="mt-1.5 font-mono text-lg font-semibold text-rose-300">24<span class="ml-1 text-[11px] text-[color:var(--faint)]">hrs</span></div>
-            <p class="mt-1 text-[10.5px] text-[color:var(--faint)]">零日 / 勒索軟體</p>
+            <p class="mt-1 text-[11px] text-[color:var(--faint)]">零日 / 勒索軟體</p>
           </div>
           <div class="rounded-xl border border-[#1b2739] bg-[#0a111c]/70 p-3">
             <div class="kicker">情資語料</div>
             <div class="mt-1.5 font-mono text-lg font-semibold text-cyan-300" id="heroCorpus">100<span class="ml-1 text-[11px] text-[color:var(--faint)]">篇</span></div>
-            <p class="mt-1 text-[10.5px] text-[color:var(--faint)]">TWCERT · iThome · THN</p>
+            <p class="mt-1 text-[11px] text-[color:var(--faint)]">TWCERT · iThome · THN</p>
           </div>
           <div class="rounded-xl border border-[#1b2739] bg-[#0a111c]/70 p-3">
             <div class="kicker">風險模型</div>
             <div class="mt-1.5 font-mono text-lg font-semibold text-teal-300">5<span class="ml-1 text-[11px] text-[color:var(--faint)]">factors</span></div>
-            <p class="mt-1 text-[10.5px] text-[color:var(--faint)]">加權可解釋評分</p>
+            <p class="mt-1 text-[11px] text-[color:var(--faint)]">加權可解釋評分</p>
           </div>
           <div class="rounded-xl border border-[#1b2739] bg-[#0a111c]/70 p-3">
             <div class="kicker">資料庫</div>
             <div class="mt-1.5 flex items-center gap-1.5 font-mono text-lg font-semibold text-violet-300">
               <span class="live-dot" aria-hidden="true"></span>SQLite
             </div>
-            <p class="mt-1 text-[10.5px] text-[color:var(--faint)]">PoC schema · Render 就緒</p>
+            <p class="mt-1 text-[11px] text-[color:var(--faint)]">PoC schema · Render 就緒</p>
           </div>
         </div>
       </div>
@@ -164,7 +164,7 @@
     <!-- ===================== KPI row ===================== -->
     <section id="overview" class="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4 stagger" aria-label="關鍵指標">
       <article class="panel kpi panel-hover">
-        <div class="kpi-label"><span>解析情資樣本</span><span class="mono text-[10px] text-[color:var(--faint)]">CORPUS</span></div>
+        <div class="kpi-label"><span>解析情資樣本</span><span class="mono text-[10.5px] text-[color:var(--faint)]">CORPUS</span></div>
         <div class="kpi-value" id="kpiTotal">—</div>
         <div class="kpi-foot"><span class="badge" data-tone="tw">台灣 <b id="kpiTw" class="ml-1 font-mono">—</b></span><span class="badge" data-tone="global">國際 <b id="kpiGlobal" class="ml-1 font-mono">—</b></span></div>
         <div class="spark" id="kpiSpark" aria-hidden="true"></div>
@@ -173,21 +173,21 @@
       <article class="panel kpi panel-hover">
         <div class="kpi-label"><span>P1 立即處置</span><svg class="ico ico-sm text-rose-400"><use href="#i-alert" /></svg></div>
         <div class="kpi-value text-rose-200" id="kpiP1">—</div>
-        <div class="kpi-foot"><span class="mono text-[10px]" id="kpiP1Share">—</span><span>需於 24 小時內完成阻斷</span></div>
+        <div class="kpi-foot"><span class="mono text-[10.5px]" id="kpiP1Share">—</span><span>需於 24 小時內完成阻斷</span></div>
         <div class="spark" id="kpiP1Spark" aria-hidden="true"></div>
       </article>
 
       <article class="panel kpi panel-hover">
         <div class="kpi-label"><span>最大 Meta-Category</span><svg class="ico ico-sm text-cyan-400"><use href="#i-layers" /></svg></div>
         <div class="mt-2 truncate text-[15px] font-semibold text-white" id="kpiTopMeta">—</div>
-        <div class="kpi-foot"><span class="mono text-[10px] text-cyan-300" id="kpiTopMetaShare">—</span><span id="kpiTopMetaNote">—</span></div>
+        <div class="kpi-foot"><span class="mono text-[10.5px] text-cyan-300" id="kpiTopMetaShare">—</span><span id="kpiTopMetaNote">—</span></div>
         <div class="mt-2.5 flex h-1 overflow-hidden rounded-full bg-white/5" id="kpiMetaBar" aria-hidden="true"></div>
       </article>
 
       <article class="panel kpi panel-hover">
         <div class="kpi-label"><span>平均風險分數</span><svg class="ico ico-sm text-teal-300"><use href="#i-target" /></svg></div>
         <div class="kpi-value text-teal-200" id="kpiAvgScore">—</div>
-        <div class="kpi-foot"><span class="mono text-[10px]" id="kpiCritical">—</span><span>CRITICAL 等級事件</span></div>
+        <div class="kpi-foot"><span class="mono text-[10.5px]" id="kpiCritical">—</span><span>CRITICAL 等級事件</span></div>
         <div class="mt-2.5 h-1 overflow-hidden rounded-full bg-white/5">
           <div class="h-full rounded-full bg-gradient-to-r from-teal-400/60 to-cyan-300 transition-[width] duration-700" id="kpiAvgBar" style="width:0%"></div>
         </div>
@@ -210,7 +210,7 @@
             <div class="pointer-events-none absolute inset-0 grid place-items-center">
               <div class="text-center">
                 <div class="mono text-2xl font-semibold text-white" id="pieCenterTotal">—</div>
-                <div class="kicker mt-0.5">articles</div>
+                <div class="kicker mt-0.5" id="pieCenterCaption">articles</div>
               </div>
             </div>
           </div>
@@ -238,7 +238,7 @@
             <svg class="ico ico-sm mt-0.5 shrink-0 text-amber-300"><use href="#i-alert" /></svg>
             <p id="comparisonInsight">正在取得情資洞察…</p>
           </div>
-          <p class="mt-2 text-[10.5px] leading-relaxed text-[color:var(--faint)]" id="baselineNote"></p>
+          <p class="mt-2 text-[11px] leading-relaxed text-[color:var(--faint)]" id="baselineNote"></p>
         </div>
       </article>
 
@@ -246,9 +246,9 @@
         <div class="panel-head">
           <div>
             <h3 class="panel-title"><svg class="ico ico-sm text-cyan-400"><use href="#i-pulse" /></svg>情資發布節奏</h3>
-            <p class="kicker mt-1">Daily Volume · 2026-09-10 → 2026-10-29</p>
+            <p class="kicker mt-1">Daily Volume · <span id="timelineRange">—</span></p>
           </div>
-          <div class="flex items-center gap-3 text-[10.5px] text-[color:var(--faint)]">
+          <div class="flex items-center gap-3 text-[11px] text-[color:var(--faint)]">
             <span class="inline-flex items-center gap-1.5"><span class="legend-swatch bg-teal-400"></span>台灣</span>
             <span class="inline-flex items-center gap-1.5"><span class="legend-swatch bg-blue-400"></span>國際</span>
           </div>
@@ -368,12 +368,12 @@
               </label>
               <input class="range mt-3" id="cvss" name="cvss" type="range" min="0" max="10" step="0.1" value="7.5" />
               <div class="mt-2 flex items-center justify-between">
-                <span class="mono text-[10px] text-[color:var(--faint)]">0.0</span>
-                <label class="inline-flex items-center gap-1.5 text-[10.5px] text-[color:var(--faint)]">
+                <span class="mono text-[10.5px] text-[color:var(--faint)]">0.0</span>
+                <label class="inline-flex items-center gap-1.5 text-[11px] text-[color:var(--faint)]">
                   <input type="checkbox" id="cvssEnabled" class="accent-cyan-400" checked />
                   納入評分
                 </label>
-                <span class="mono text-[10px] text-[color:var(--faint)]">10.0</span>
+                <span class="mono text-[10.5px] text-[color:var(--faint)]">10.0</span>
               </div>
             </div>
 
@@ -416,7 +416,7 @@
           </div>
 
           <div class="flex flex-wrap items-center justify-between gap-3 border-t border-[#1b2739] pt-4">
-            <div class="flex items-center gap-2 text-[10.5px] text-[color:var(--faint)]">
+            <div class="flex items-center gap-2 text-[11px] text-[color:var(--faint)]">
               <svg class="ico ico-sm text-cyan-400"><use href="#i-flow" /></svg>
               <span class="mono">POST /api/v1/assess</span>
             </div>
@@ -453,7 +453,7 @@
               <div class="min-w-0 space-y-1.5">
                 <span class="badge badge-p1" id="priorityBadge">P1</span>
                 <h4 class="text-[13.5px] font-semibold leading-snug text-white" id="resultHeadline">—</h4>
-                <div class="flex flex-wrap gap-x-3 gap-y-1 text-[10.5px] text-[color:var(--faint)]">
+                <div class="flex flex-wrap gap-x-3 gap-y-1 text-[11px] text-[color:var(--faint)]">
                   <span class="mono" id="resultLevel">—</span>
                   <span class="mono" id="resultSla">—</span>
                   <span class="mono" id="resultConfidence">—</span>
@@ -466,7 +466,7 @@
             <div>
               <div class="mb-1 flex items-center justify-between">
                 <span class="kicker">Factor Contribution</span>
-                <span class="mono text-[10px] text-[color:var(--faint)]" id="resultOwner">—</span>
+                <span class="mono text-[10.5px] text-[color:var(--faint)]" id="resultOwner">—</span>
               </div>
               <div id="factorList"></div>
             </div>
@@ -476,7 +476,7 @@
             <div>
               <div class="mb-2 flex items-center justify-between">
                 <span class="kicker">Recommended Playbook</span>
-                <span class="mono text-[10px] text-[color:var(--faint)]" id="planCount">—</span>
+                <span class="mono text-[10.5px] text-[color:var(--faint)]" id="planCount">—</span>
               </div>
               <ol class="steps" id="resultPlan"></ol>
             </div>
@@ -493,7 +493,7 @@
           <p class="kicker mt-1">Click a lane to filter the feed</p>
         </div>
         <div class="flex items-center gap-2">
-          <span class="hidden text-[10.5px] text-[color:var(--faint)] sm:inline" id="matrixHint">依風險分數自動分派</span>
+          <span class="hidden text-[11px] text-[color:var(--faint)] sm:inline" id="matrixHint">依風險分數自動分派</span>
           <button class="btn btn-ghost" type="button" id="clearMatrixBtn" hidden>
             <svg class="ico ico-sm"><use href="#i-close" /></svg>取消篩選
           </button>
@@ -512,7 +512,7 @@
         <div>
           <h3 id="feedTitle" class="panel-title"><svg class="ico ico-sm text-cyan-400"><use href="#i-list" /></svg>情資流與 AI 分群明細</h3>
           <p class="kicker mt-1">GET /api/v1/threats?priority=&amp;region=</p>
-          <p class="mt-1 text-[10px] text-[color:var(--faint)]">每筆皆附原始叢集代號（C0–C2）</p>
+          <p class="mt-1 text-[11px] text-[color:var(--faint)]">每筆皆附原始叢集代號（C0–C2）</p>
         </div>
 
         <div class="flex flex-wrap items-center gap-2">
@@ -570,7 +570,7 @@
         <span>顯示 <strong class="mono text-white" id="feedCount">0</strong> / <span class="mono" id="feedTotal">0</span> 筆情資</span>
         <div class="flex items-center gap-2">
           <button class="btn btn-ghost" id="prevPageBtn" type="button" disabled>上一頁</button>
-          <span class="mono text-[10.5px]" id="pageLabel">1 / 1</span>
+          <span class="mono text-[11px]" id="pageLabel">1 / 1</span>
           <button class="btn btn-ghost" id="nextPageBtn" type="button" disabled>下一頁</button>
         </div>
       </div>
@@ -587,7 +587,7 @@
         <p class="text-[11.5px] text-[color:var(--muted)]">
           嶺東 SmartTech AI 創新應用挑戰賽 · 基於機器學習之跨平台 CTI 分析與決策支援平台
         </p>
-        <p class="mono text-[10px] text-[color:var(--faint)]">
+        <p class="mono text-[10.5px] text-[color:var(--faint)]">
           FastAPI · SQLite · Chart.js — PoC deployment ready for Render
         </p>
       </div>
@@ -604,7 +604,7 @@
 
   <div class="toast-stack" id="toastStack" aria-live="polite" aria-atomic="false"></div>
 
-  <script src="/static/js/charts.js?v=20261104b" defer></script>
-  <script src="/static/js/app.js?v=20261104b" defer></script>
+  <script src="/static/js/charts.js?v=20261112" defer></script>
+  <script src="/static/js/app.js?v=20261112" defer></script>
 </body>
 </html>

@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Headless DOM smoke test for the dashboard bundle.
  *
  * jsdom cannot paint, so this does not test visuals. It does execute the real
@@ -190,12 +190,12 @@ assert($('#apiStatus').textContent.includes('已連線'), 'API status pill updat
   assert(items[0].fontColor === '#2dd4bf', `Taiwan legend text colour (got ${items[0].fontColor})`);
   assert(items[1].fontColor === '#60a5fa', `Global legend text colour (got ${items[1].fontColor})`);
   assert(
-    bar.options.scales.x.ticks.color === '#FFFFFF',
-    `x tick colour (got ${bar.options.scales.x.ticks.color})`
+    bar.options.scales.x.ticks.color === '#8b9ab2',
+    `x tick colour is the muted axis tone (got ${bar.options.scales.x.ticks.color})`
   );
   assert(
-    bar.options.scales.y.ticks.color === '#FFFFFF',
-    `y tick colour (got ${bar.options.scales.y.ticks.color})`
+    bar.options.scales.y.ticks.color === '#8b9ab2',
+    `y tick colour is the muted axis tone (got ${bar.options.scales.y.ticks.color})`
   );
 
   assert(
@@ -207,6 +207,33 @@ assert($('#apiStatus').textContent.includes('已連線'), 'API status pill updat
     `legend names the global source (got "${items[1].text}")`
   );
   assert(/·\s*\d+\s*篇/.test(items[0].text), `legend shows totals (got "${items[0].text}")`);
+
+  // The panel subtitle is derived from the loaded rows, so it can never drift
+  // from the CSV snapshot the way the old hard-coded window did.
+  const first = statsNow.timeline[0].date;
+  const last = statsNow.timeline[statsNow.timeline.length - 1].date;
+  assert(
+    $('#timelineRange').textContent.trim().startsWith(`${first} → ${last}`),
+    `timeline subtitle follows the data (got "${$('#timelineRange').textContent}")`
+  );
+}
+
+// ----------------------------------------------------------- doughnut readout
+{
+  const pie = window.Chart.instances.find((chart) => chart.config.type === 'doughnut');
+  assert(!!pie, 'doughnut chart exists');
+  assert($('#pieCenterTotal').textContent.trim() === '100', 'pie centre rests on the corpus total');
+
+  pie.options.onHover({}, [{ index: 0 }]);
+  assert(
+    /^\d+(\.\d+)?%$/.test($('#pieCenterTotal').textContent.trim()),
+    `hovering a slice shows its share (got "${$('#pieCenterTotal').textContent}")`
+  );
+  assert($('#pieCenterCaption').textContent.trim() === 'VULN', 'hovering a slice names the category');
+
+  pie.canvas.dispatchEvent(new window.MouseEvent('mouseleave'));
+  assert($('#pieCenterTotal').textContent.trim() === '100', 'leaving the doughnut restores the total');
+  assert($('#pieCenterCaption').textContent.trim() === 'articles', 'leaving the doughnut restores the caption');
 }
 
 // ------------------------------------------------------------ interaction: chips

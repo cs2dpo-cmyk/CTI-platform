@@ -16,6 +16,7 @@ const CTICharts = (() => {
     p3: '#22d3ee',
     grid: 'rgba(39, 56, 79, 0.55)',
     tick: '#8b9ab2',
+    axisTitle: '#cbd5e1',
     ink: '#e9eef7',
   };
 
@@ -35,7 +36,7 @@ const CTICharts = (() => {
     defaultsApplied = true;
     Chart.defaults.font.family = 'Inter, "Noto Sans TC", "Microsoft JhengHei", sans-serif';
     Chart.defaults.font.size = 11;
-    Chart.defaults.color = '#e8eef7';
+    Chart.defaults.color = COLORS.ink;
     Chart.defaults.animation = { duration: 620, easing: 'easeOutQuart' };
     Chart.defaults.plugins.tooltip.backgroundColor = 'rgba(9, 15, 25, 0.96)';
     Chart.defaults.plugins.tooltip.borderColor = 'rgba(60, 82, 110, 0.9)';
@@ -51,6 +52,27 @@ const CTICharts = (() => {
 
   function canvas(id) {
     return document.getElementById(id);
+  }
+
+  /* The doughnut centre is a readout, not decoration: it shows the corpus
+     total at rest, and the hovered slice's share while the pointer is on it.
+     The latest series lives in module scope so a refresh cannot leave the
+     hover handler pointing at stale numbers. */
+  const nf = new Intl.NumberFormat('zh-TW');
+  let pieState = { total: 0, meta: [] };
+
+  function setPieCenter(total, meta, index) {
+    const valueEl = document.getElementById('pieCenterTotal');
+    if (!valueEl) return;
+    const captionEl = document.getElementById('pieCenterCaption');
+    const item = Number.isInteger(index) ? meta[index] : null;
+    if (!item) {
+      valueEl.textContent = nf.format(total);
+      if (captionEl) captionEl.textContent = 'articles';
+      return;
+    }
+    valueEl.textContent = `${Math.round((item.share || 0) * 1000) / 10}%`;
+    if (captionEl) captionEl.textContent = item.key || 'articles';
   }
 
   function destroyIfOrphan(key, element) {
@@ -69,6 +91,8 @@ const CTICharts = (() => {
     const labels = meta.map((m) => m.label);
     const data = meta.map((m) => m.count);
     const colors = meta.map((m) => META_KEY_COLOR[m.key] || COLORS.vuln);
+    const total = Number(stats.totals?.threats ?? data.reduce((sum, value) => sum + value, 0));
+    pieState = { total, meta };
 
     const dataset = {
       data,
@@ -96,6 +120,8 @@ const CTICharts = (() => {
         maintainAspectRatio: false,
         cutout: '74%',
         layout: { padding: 4 },
+        onHover: (event, active) =>
+          setPieCenter(pieState.total, pieState.meta, active[0]?.index),
         plugins: {
           legend: { display: false },
           tooltip: {
@@ -111,6 +137,10 @@ const CTICharts = (() => {
         },
       },
     });
+
+    // onHover only fires for segment hits; leaving the canvas would otherwise
+    // leave a slice's share frozen in the centre readout.
+    el.addEventListener('mouseleave', () => setPieCenter(pieState.total, pieState.meta, null));
   }
 
   /* -------------------------------------------------------------- comparison
@@ -210,7 +240,6 @@ const CTICharts = (() => {
             align: 'end',
             labels: {
               color: '#FFFFFF',
-              font: { size: 10.5, weight: '600' },
               usePointStyle: true,
               pointStyle: 'rectRounded',
               boxWidth: 9,
@@ -252,18 +281,18 @@ const CTICharts = (() => {
           x: {
             grid: { display: false },
             border: { color: COLORS.grid },
-            ticks: { color: '#FFFFFF', font: { size: 11, weight: '500' } },
+            ticks: { color: COLORS.tick, font: { size: 11, weight: '500' } },
           },
           y: {
             beginAtZero: true,
             suggestedMax: Math.max(45, series.totTaiwan, series.totGlobal),
             grid: { color: COLORS.grid, drawTicks: false },
             border: { display: false },
-            ticks: { color: '#FFFFFF', stepSize: 10, padding: 6, font: { size: 10.5, weight: '500' } },
+            ticks: { color: COLORS.tick, stepSize: 10, padding: 6, font: { size: 11, weight: '500' } },
             title: {
               display: true,
               text: '文章篇數',
-              color: '#cbd5e1',
+              color: COLORS.axisTitle,
               font: { size: 10 },
               padding: { bottom: 4 },
             },
@@ -436,7 +465,7 @@ const CTICharts = (() => {
             grid: { display: false },
             border: { color: COLORS.grid },
             ticks: {
-              color: COLORS.ink,
+              color: COLORS.tick,
               font: { family: '"JetBrains Mono", monospace', size: 11, weight: '600' },
             },
           },

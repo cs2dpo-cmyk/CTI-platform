@@ -108,6 +108,7 @@
       renderClusterStrip(stats);
       renderComparisonInsight(stats);
       renderDatasetNote(stats);
+      renderTimelineRange(stats);
       renderMatrix(stats.matrix || []);
       renderInsights(stats.insights || []);
       renderChipCounts(stats.priorities || []);
@@ -301,6 +302,21 @@
     node.textContent = `資料來源：${files || '—'}（匯出 ${esc(info.exported_at || '—')}，台灣 ${
       num(rows.taiwan ?? 0)
     } 筆 / 國際 ${num(rows.global ?? 0)} 筆）｜叢集對應：C→Meta-Category 由 dataset_meta.json 定義｜${dateNote}`;
+  }
+
+  function renderTimelineRange(stats) {
+    const node = $('#timelineRange');
+    if (!node) return;
+    const points = stats.timeline || [];
+    if (!points.length) {
+      node.textContent = '—';
+      return;
+    }
+    // The label must describe the rows that were actually loaded, never a
+    // hard-coded window that can drift away from the CSV snapshot.
+    const first = points[0].date;
+    const last = points[points.length - 1].date;
+    node.textContent = `${first} → ${last}（${points.length} 個日期）`;
   }
 
   function renderChipCounts(priorities) {
