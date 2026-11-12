@@ -79,60 +79,57 @@ body::after {
   pointer-events: none;
 }
 
-/* Digital rain: pure CSS columns falling behind the dashboard.
-   Each column is two identical halves; animating translateY by 50% lands on
-   the same pixels, so the loop has no visible seam. Transform only. */
+/* Digital rain: sparse 0/1 streams falling behind the dashboard.
+   Each stream is a short run of digits with a gradient that fades the tail and
+   brightens the head. Streams start above the viewport and end below it, so the
+   infinite loop never shows a jump. Only transform animates. */
 .rain {
   position: fixed;
   inset: 0;
   z-index: -1;
   overflow: hidden;
   pointer-events: none;
-  opacity: 0.62;
-  -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 72%, transparent 100%);
-  mask-image: linear-gradient(to bottom, #000 0%, #000 72%, transparent 100%);
+  opacity: 0.72;
 }
 
-.rain-col {
+.rain-stream {
   position: absolute;
   top: 0;
+  width: 1.5em;
+  background: linear-gradient(
+    to bottom,
+    rgba(134, 239, 172, 0) 0%,
+    rgba(134, 239, 172, 0.28) 40%,
+    rgba(134, 239, 172, 0.75) 82%,
+    rgba(233, 251, 255, 0.95) 100%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
   font-family: "JetBrains Mono", ui-monospace, monospace;
-  font-size: 15px;
-  line-height: 1.18;
+  line-height: 1.2;
   white-space: pre;
   text-align: center;
-  color: rgba(134, 239, 172, 0.5);
-  transform: translate3d(0, -50%, 0);
   animation: rain-fall linear infinite;
-  animation-duration: var(--rain-speed, 16s);
+  /* styles.css has a global reduced-motion reset that forces
+     `animation-duration: 0.001ms !important` on every element. This layer is
+     decorative and the product owner wants it to run regardless, so the
+     duration/iteration are restored at the same weight; the per-stream speed
+     comes from a custom property set inline. */
+  animation-duration: var(--rain-speed, 6s) !important;
+  animation-iteration-count: infinite !important;
   will-change: transform;
-  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 12%, #000 88%, transparent 100%);
-  mask-image: linear-gradient(to bottom, transparent 0%, #000 12%, #000 88%, transparent 100%);
+  transform: translate3d(0, -130%, 0);
 }
 
 @keyframes rain-fall {
-  from { transform: translate3d(0, -50%, 0); }
-  to { transform: translate3d(0, 0, 0); }
+  from { transform: translate3d(0, -130%, 0); }
+  to { transform: translate3d(0, 110vh, 0); }
 }
 
 @media print {
   .rain { display: none; }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  /* Freeze instead of removing: paused keeps duration/delay intact, so the
-     ?rain=on override only has to flip play-state back. */
-  .rain-col { animation-play-state: paused; }
-}
-
-/* ?rain=on — opt-in override for demos on machines that disable motion. */
-body[data-rain="on"] .rain-col {
-  /* The global reduced-motion reset in this file forces
-     `animation-duration: 0.001ms !important` on every element, so this
-     opt-in override has to match that weight. */
-  animation-duration: var(--rain-speed, 16s) !important;
-  animation-iteration-count: infinite !important;
-  animation-play-state: running !important;
 }
 
 ::selection {

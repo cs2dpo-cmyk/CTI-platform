@@ -1,12 +1,10 @@
 /* ==========================================================================
-   Digital rain, CSS-only.
+   Digital rain: short 0/1 streams at random positions, falling at random
+   speeds. Every stream is a separate composited layer animating transform only.
 
-   Each column is two identical halves; its height is 2x the viewport, so a
-   translateY from -50% to 0 lands on the same pixels and the loop has no seam.
-   Only transform animates, which the compositor can run off the main thread.
-
-   prefers-reduced-motion freezes the columns (a readable static field).
-   Append ?rain=on to force the animation for a demo on such a machine.
+   The effect is decorative and the product owner asked for it to run even when
+   the OS reports prefers-reduced-motion, so this layer always animates; the
+   rest of the dashboard still honours the preference.
    ========================================================================== */
 (function () {
   "use strict";
@@ -14,51 +12,40 @@
   var host = document.getElementById("rain");
   if (!host) return;
 
-  if (/[?&]rain=on(?:&|$)/.test(window.location.search)) {
-    document.body.dataset.rain = "on";
-  }
-
   var rebuildTimer = 0;
 
-  function digits(count) {
+  function digits(length) {
     var out = "";
-    for (var i = 0; i < count; i += 1) {
+    for (var i = 0; i < length; i += 1) {
       out += Math.random() > 0.5 ? "1" : "0";
-      if (i < count - 1) out += "\n";
+      if (i < length - 1) out += "\n";
     }
     return out;
   }
 
   function build() {
     var width = window.innerWidth;
-    var height = window.innerHeight;
-    var fontSize = width < 640 ? 13 : 15;
-    var lineHeight = fontSize * 1.18;
-
-    // One half must cover the viewport, otherwise a gap appears at the bottom
-    // of the loop.
-    var lines = Math.ceil(height / lineHeight) + 2;
-    var gap = width < 640 ? 44 : 32;
-    var columns = Math.max(8, Math.min(48, Math.floor(width / gap)));
+    var gap = width < 640 ? 30 : 24;
+    var count = Math.max(10, Math.min(64, Math.round(width / gap)));
 
     host.textContent = "";
     var fragment = document.createDocumentFragment();
 
-    for (var i = 0; i < columns; i += 1) {
-      var column = document.createElement("span");
-      column.className = "rain-col";
-      column.setAttribute("aria-hidden", "true");
+    for (var i = 0; i < count; i += 1) {
+      var stream = document.createElement("span");
+      stream.className = "rain-stream";
+      stream.setAttribute("aria-hidden", "true");
 
-      var half = digits(lines);
-      column.textContent = half + "\n" + half;   // identical halves
+      var length = 7 + Math.floor(Math.random() * 16);   // 7–22 glyphs
+      stream.textContent = digits(length);
 
-      column.style.left = (((i + 0.5) * 100) / columns).toFixed(2) + "%";
-      column.style.fontSize = fontSize + "px";
-      column.style.setProperty("--rain-speed", (12 + Math.random() * 12).toFixed(1) + "s");
-      column.style.animationDelay = (-Math.random() * 24).toFixed(1) + "s";
-      column.style.opacity = (0.3 + Math.random() * 0.45).toFixed(2);
+      stream.style.left = (Math.random() * 100).toFixed(2) + "%";
+      stream.style.fontSize = (width < 640 ? 13 : 15) + "px";
+      stream.style.setProperty("--rain-speed", (3.6 + Math.random() * 5.4).toFixed(1) + "s");
+      stream.style.animationDelay = (-Math.random() * 9).toFixed(1) + "s";
+      stream.style.opacity = (0.35 + Math.random() * 0.55).toFixed(2);
 
-      fragment.appendChild(column);
+      fragment.appendChild(stream);
     }
 
     host.appendChild(fragment);
