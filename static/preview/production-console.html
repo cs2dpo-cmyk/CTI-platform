@@ -1,0 +1,925 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>CTI 風險決策儀表板 · Production Console</title>
+<script src="https://cdn.tailwindcss.com/3.4.16"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        fontFamily: {
+          sans: ['Inter', 'Noto Sans TC', 'Microsoft JhengHei', 'system-ui', 'sans-serif'],
+          mono: ['"JetBrains Mono"', 'ui-monospace', 'monospace'],
+        },
+      },
+    },
+  };
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg: #04070d;
+    --panel: rgba(12, 19, 31, 0.72);
+    --line: rgba(56, 189, 248, 0.13);
+    --cyan: #22d3ee;
+    --teal: #2dd4bf;
+    --amber: #fbbf24;
+    --red: #fb7185;
+    --violet: #a78bfa;
+    --ink: #e8eefb;
+    --muted: #8ea2c0;
+    --faint: #5d7192;
+    --ease: cubic-bezier(0.23, 1, 0.32, 1);
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: Inter, "Noto Sans TC", "Microsoft JhengHei", system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+
+  .bg-aura {
+    position: fixed; inset: 0; z-index: -2;
+    background:
+      radial-gradient(80% 55% at 10% -6%, rgba(34, 211, 238, 0.18), transparent 60%),
+      radial-gradient(60% 45% at 92% 4%, rgba(167, 139, 250, 0.14), transparent 62%),
+      radial-gradient(70% 50% at 50% 104%, rgba(45, 212, 191, 0.10), transparent 65%),
+      var(--bg);
+  }
+
+  .bg-grid {
+    position: fixed; inset: 0; z-index: -1;
+    background-image:
+      linear-gradient(to right, rgba(120, 160, 200, 0.055) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(120, 160, 200, 0.055) 1px, transparent 1px);
+    background-size: 56px 56px;
+    mask-image: radial-gradient(120% 80% at 50% 0%, #000 25%, transparent 78%);
+    pointer-events: none;
+  }
+
+  .panel {
+    position: relative;
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.035), transparent 42%), var(--panel);
+    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.04) inset, 0 24px 60px -40px rgba(0, 0, 0, 0.95);
+    backdrop-filter: blur(14px);
+    transition: box-shadow 300ms var(--ease), border-color 240ms ease;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .panel:hover {
+      border-color: rgba(34, 211, 238, 0.26);
+      box-shadow: 0 1px 0 rgba(255, 255, 255, 0.05) inset, 0 26px 70px -38px rgba(34, 211, 238, 0.42);
+    }
+  }
+
+  .kicker {
+    font-family: "JetBrains Mono", ui-monospace, monospace;
+    font-size: 10.5px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--faint);
+  }
+
+  .mono { font-family: "JetBrains Mono", ui-monospace, monospace; font-variant-numeric: tabular-nums; }
+
+  /* ---------------- header ---------------- */
+  .topbar {
+    position: sticky; top: 0; z-index: 40;
+    border-bottom: 1px solid rgba(27, 39, 57, 0.9);
+    background: rgba(4, 7, 13, 0.74);
+    backdrop-filter: blur(16px);
+  }
+
+  .logo-chip {
+    display: grid; place-items: center; height: 38px; width: 38px;
+    border-radius: 12px;
+    border: 1px solid rgba(34, 211, 238, 0.4);
+    background: radial-gradient(circle at 30% 20%, rgba(34, 211, 238, 0.28), rgba(34, 211, 238, 0.04));
+    box-shadow: 0 0 24px -4px rgba(34, 211, 238, 0.55), 0 0 0 1px rgba(34, 211, 238, 0.1) inset;
+    color: var(--cyan);
+  }
+
+  .live-dot {
+    position: relative; display: inline-block; height: 7px; width: 7px;
+    border-radius: 999px; background: #34d399;
+    box-shadow: 0 0 10px 1px rgba(52, 211, 153, 0.8);
+  }
+  .live-dot::after {
+    content: ""; position: absolute; inset: -4px; border-radius: 999px;
+    border: 1px solid rgba(52, 211, 153, 0.6);
+    animation: ping 2.2s var(--ease) infinite;
+  }
+  @keyframes ping { 0% { transform: scale(0.7); opacity: 0.9; } 70%, 100% { transform: scale(1.9); opacity: 0; } }
+
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    border-radius: 10px; border: 1px solid rgba(56, 189, 248, 0.22);
+    background: rgba(15, 26, 42, 0.85);
+    padding: 8px 14px; font-size: 12.5px; font-weight: 500; color: #cfe3f8;
+    cursor: pointer;
+    transition: transform 140ms var(--ease), border-color 180ms ease, box-shadow 240ms var(--ease);
+  }
+  .btn:hover { border-color: rgba(34, 211, 238, 0.55); box-shadow: 0 0 22px -8px rgba(34, 211, 238, 0.8); }
+  .btn:active { transform: scale(0.97); }
+  .btn:focus-visible { outline: 2px solid rgba(34, 211, 238, 0.7); outline-offset: 2px; }
+  .btn[disabled] { opacity: 0.55; cursor: progress; }
+
+  .btn-primary {
+    border: 1px solid rgba(34, 211, 238, 0.55);
+    background: linear-gradient(180deg, rgba(34, 211, 238, 0.22), rgba(34, 211, 238, 0.08));
+    color: #d6fbff;
+    box-shadow: 0 0 28px -12px rgba(34, 211, 238, 0.9), 0 0 0 1px rgba(34, 211, 238, 0.08) inset;
+  }
+
+  .spin { animation: spin 900ms linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ---------------- skeleton (transform-only shimmer) ---------------- */
+  .skeleton {
+    position: relative;
+    overflow: hidden;
+    border-radius: 8px;
+    background: rgba(148, 163, 184, 0.10);
+  }
+
+  .skeleton::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    transform: translateX(-100%);
+    background: linear-gradient(90deg, transparent, rgba(226, 240, 255, 0.10), transparent);
+    animation: shimmer 1.6s var(--ease) infinite;
+    will-change: transform;
+  }
+
+  @keyframes shimmer { 100% { transform: translateX(100%); } }
+
+  .skeleton[data-shape="line"] { height: 10px; }
+  .skeleton[data-shape="title"] { height: 22px; width: 62%; }
+  .skeleton[data-shape="pill"] { height: 18px; width: 54px; border-radius: 999px; }
+
+  /* ---------------- reveal (transform + opacity only) ---------------- */
+  .reveal {
+    opacity: 0;
+    transform: translate3d(0, 14px, 0);
+    transition: opacity 620ms var(--ease), transform 620ms var(--ease);
+    transition-delay: var(--d, 0ms);
+  }
+  .reveal.is-in { opacity: 1; transform: translate3d(0, 0, 0); }
+
+  /* ---------------- bars: scaleX, never width ---------------- */
+  .bar-track {
+    position: relative;
+    height: 8px;
+    border-radius: 999px;
+    background: rgba(148, 163, 184, 0.10);
+    overflow: hidden;
+  }
+
+  .bar-fill {
+    position: absolute;
+    inset: 0;
+    transform-origin: left center;
+    transform: scaleX(0);
+    border-radius: 999px;
+    background: linear-gradient(90deg, rgba(34, 211, 238, 0.55), #22d3ee 70%, #a5f3fc);
+    box-shadow: 0 0 14px -2px rgba(34, 211, 238, 0.85);
+    transition: transform 900ms var(--ease);
+    will-change: transform;
+  }
+  .bar-fill[data-tone="amber"] { background: linear-gradient(90deg, rgba(251, 191, 36, 0.5), #fbbf24); box-shadow: 0 0 14px -2px rgba(251, 191, 36, 0.75); }
+  .bar-fill[data-tone="violet"] { background: linear-gradient(90deg, rgba(167, 139, 250, 0.5), #a78bfa); box-shadow: 0 0 14px -2px rgba(167, 139, 250, 0.7); }
+  .bar-fill[data-tone="red"] { background: linear-gradient(90deg, rgba(251, 113, 133, 0.5), #fb7185); box-shadow: 0 0 14px -2px rgba(251, 113, 133, 0.7); }
+  .bar-fill[data-tone="slate"] { background: linear-gradient(90deg, rgba(148, 163, 184, 0.4), #94a3b8); box-shadow: none; }
+
+  .is-in .bar-fill { transform: scaleX(var(--v, 0)); }
+
+  /* ---------------- gauge ---------------- */
+  .gauge-value {
+    font-family: "JetBrains Mono", ui-monospace, monospace;
+    font-size: clamp(48px, 6vw, 68px);
+    font-weight: 700; line-height: 1; letter-spacing: -0.04em;
+    color: #f4f9ff;
+    text-shadow: 0 0 34px rgba(34, 211, 238, 0.35);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    border-radius: 999px; border: 1px solid rgba(251, 191, 36, 0.35);
+    background: rgba(251, 191, 36, 0.1); padding: 3px 10px;
+    font-size: 11px; font-weight: 600; color: #fde68a;
+  }
+  .badge[data-tone="critical"] { border-color: rgba(251, 113, 133, 0.45); background: rgba(251, 113, 133, 0.12); color: #fecdd3; }
+  .badge[data-tone="low"] { border-color: rgba(52, 211, 153, 0.4); background: rgba(52, 211, 153, 0.1); color: #a7f3d0; }
+
+  .stat {
+    border-radius: 12px; border: 1px solid rgba(27, 39, 57, 0.9);
+    background: rgba(8, 14, 24, 0.66); padding: 10px 12px;
+  }
+
+  /* ---------------- feed ---------------- */
+  .feed-row {
+    display: grid;
+    grid-template-columns: 4px 1fr auto auto;
+    gap: 12px;
+    align-items: center;
+    padding: 10px 12px;
+    border-radius: 10px;
+    transition: transform 180ms var(--ease), background-color 180ms ease;
+  }
+  .feed-row:hover { background: rgba(34, 211, 238, 0.05); transform: translateX(2px); }
+
+  .sev { height: 32px; width: 4px; border-radius: 999px; }
+
+  /* ---------------- states ---------------- */
+  .is-hidden { display: none !important; }
+
+  .status-strip {
+    display: flex; flex-wrap: wrap; align-items: center; gap: 10px 18px;
+    border: 1px solid rgba(56, 189, 248, 0.14);
+    border-radius: 12px;
+    background: rgba(8, 14, 24, 0.6);
+    padding: 9px 14px;
+    font-size: 11.5px;
+    color: var(--muted);
+  }
+
+  .dot-sep { height: 12px; width: 1px; background: #27384f; }
+
+  code, .code {
+    font-family: "JetBrains Mono", ui-monospace, monospace;
+    font-size: 11px;
+    color: #a5f3fc;
+  }
+
+  ::selection { background: rgba(34, 211, 238, 0.3); color: #fff; }
+  ::-webkit-scrollbar { width: 10px; }
+  ::-webkit-scrollbar-thumb { background: #1d2c42; border-radius: 999px; border: 3px solid transparent; background-clip: content-box; }
+
+  @media print {
+    .reveal { opacity: 1 !important; transform: none !important; }
+    .bg-aura, .bg-grid { display: none; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    .reveal { opacity: 1; transform: none; transition: none; }
+    .skeleton::after { animation: none; opacity: 0; }
+    .bar-fill { transition: none; }
+    .live-dot::after { animation: none; }
+    .spin { animation: none; }
+    .feed-row:hover { transform: none; }
+  }
+</style>
+<noscript><style>.reveal { opacity: 1; transform: none; }</style></noscript>
+</head>
+<body>
+<div class="bg-aura"></div>
+<div class="bg-grid"></div>
+
+<header class="topbar">
+  <div class="mx-auto flex h-16 max-w-[1280px] items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
+    <div class="flex min-w-0 items-center gap-3">
+      <div class="logo-chip" aria-hidden="true">
+        <svg viewBox="0 0 24 24" class="h-[19px] w-[19px]" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 3l7.5 3.2v6.1c0 4.6-3.1 8.3-7.5 9.2-4.4-.9-7.5-4.6-7.5-9.2V6.2L12 3z" />
+          <path d="M9.2 12.2l2 2 3.7-4" />
+        </svg>
+      </div>
+      <div class="min-w-0">
+        <h1 class="truncate text-[15px] font-semibold tracking-tight text-white sm:text-base">
+          CTI <span class="bg-gradient-to-r from-cyan-300 via-teal-200 to-violet-300 bg-clip-text text-transparent">風險決策儀表板</span>
+        </h1>
+        <p class="kicker hidden sm:block">Production Console · Async Data Pipeline</p>
+      </div>
+    </div>
+
+    <div class="flex items-center gap-2 sm:gap-3">
+      <span class="hidden items-center gap-2 rounded-full border border-emerald-400/25 bg-emerald-400/10 px-3 py-1.5 text-[11.5px] font-medium text-emerald-300 sm:inline-flex">
+        <span class="live-dot" aria-hidden="true"></span>
+        <span id="apiStatus">API 連線正常</span>
+      </span>
+      <span class="mono hidden rounded-lg border border-slate-700/60 bg-slate-900/50 px-2.5 py-1.5 text-[11.5px] text-slate-400 md:inline-block" id="clock">--:--:--</span>
+      <button class="btn btn-primary" id="refreshBtn" type="button">
+        <svg class="h-4 w-4" id="refreshIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20 11a8 8 0 1 0-2.4 5.6" /><path d="M20 5v6h-6" />
+        </svg>
+        <span id="refreshLabel">重新載入</span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main class="mx-auto max-w-[1280px] space-y-5 px-4 py-5 sm:px-6 lg:px-8 lg:py-7" id="main" aria-busy="true">
+
+  <section class="status-strip reveal" aria-label="資料管線狀態">
+    <span class="inline-flex items-center gap-2">
+      <span class="live-dot" aria-hidden="true"></span>
+      <span>Data layer → View layer</span>
+    </span>
+    <span class="dot-sep hidden sm:block" aria-hidden="true"></span>
+    <span>狀態 <strong class="mono text-slate-200" id="loadState">載入中…</strong></span>
+    <span class="dot-sep hidden sm:block" aria-hidden="true"></span>
+    <span>Fetch <span class="mono text-cyan-300" id="msFetch">—</span></span>
+    <span class="dot-sep hidden sm:block" aria-hidden="true"></span>
+    <span>Render <span class="mono text-teal-300" id="msRender">—</span></span>
+    <span class="dot-sep hidden sm:block" aria-hidden="true"></span>
+    <span class="mono text-[10.5px] text-[color:var(--faint)]">textContent only · no innerHTML</span>
+  </section>
+
+  <!-- KPI row -->
+  <section class="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4" id="kpiGrid" aria-label="關鍵指標"></section>
+
+  <!-- gauge + distributions -->
+  <section class="grid grid-cols-1 gap-5 lg:grid-cols-12">
+    <article class="panel p-5 sm:p-6 lg:col-span-5" id="gaugeCard" aria-labelledby="gaugeTitle"></article>
+
+    <div class="space-y-5 lg:col-span-7">
+      <article class="panel p-5 sm:p-6" id="metaCard" aria-labelledby="metaTitle"></article>
+      <article class="panel p-5 sm:p-6" id="priorityCard" aria-labelledby="priorityTitle"></article>
+    </div>
+  </section>
+
+  <!-- feed -->
+  <section class="panel p-5 sm:p-6" id="feedCard" aria-labelledby="feedTitle"></section>
+
+  <footer class="flex flex-col items-center justify-between gap-3 pb-6 pt-1 text-center text-[11px] text-[color:var(--faint)] sm:flex-row sm:text-left">
+    <p class="mono">CTI PRODUCTION CONSOLE · v1.0 · DEMO</p>
+    <div class="flex flex-wrap items-center justify-center gap-3">
+      <button class="btn" id="simulateErrorBtn" type="button">模擬 API 失敗</button>
+      <a class="btn" href="?inject=1">XSS 注入自測</a>
+    </div>
+  </footer>
+</main>
+<script>
+(function () {
+  "use strict";
+
+  /* ====================================================================== */
+  /* 1. DATA LAYER — no DOM access, only promises.                          */
+  /*    In production these become fetch() calls to /api/v1/stats etc.      */
+  /* ====================================================================== */
+
+  var reduceQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+  function reduceMotion() { return reduceQuery.matches; }
+
+  var INJECT = /(?:^|[?&])inject=1(?:&|$)/.test(window.location.search);
+
+  var PAYLOAD = {
+    stats: {
+      generated_at: "2026-11-12T05:00:00Z",
+      score: 74.0,
+      level: "P2",
+      totals: { corpus: 200, threats: 182, other: 18, taiwan: 100, global: 100, p1: 25, avg_score: 67.6, critical: 28 },
+      meta: [
+        { key: "VULN", label: "系統漏洞與修補對策", count: 46, share: 0.23, tone: "cyan" },
+        { key: "MALWARE", label: "惡意威脅與主動攻擊", count: 94, share: 0.47, tone: "red" },
+        { key: "RESEARCH", label: "前瞻研究與平台治理", count: 42, share: 0.21, tone: "violet" },
+        { key: "OTHER", label: "產業與產品動態", count: 18, share: 0.09, tone: "slate" }
+      ],
+      priorities: [
+        { key: "P1", label: "P1 立即處置", count: 25, tone: "red" },
+        { key: "P2", label: "P2 計畫處置", count: 124, tone: "amber" },
+        { key: "P3", label: "P3 觀測追蹤", count: 33, tone: "cyan" }
+      ]
+    },
+    threats: [
+      { id: 1, title: "Microsoft Exchange 系列更新，CVE-2026-62911 已有利用碼流通", source: "TWCERT", region: "taiwan", score: 95.6, priority: "P1", published: "2026-11-04" },
+      { id: 2, title: "WSUS 高嚴重性漏洞 CVE-2025-59287 已遭利用，呼籲用戶儘速更新", source: "TWCERT", region: "taiwan", score: 94.5, priority: "P1", published: "2025-11-27" },
+      { id: 3, title: "Cisco BroadWorks 與 Openwave 漏洞遭積極利用，PoC 已公開", source: "THN", region: "global", score: 86.0, priority: "P1", published: "2026-11-11" },
+      { id: 4, title: "Node.js 發布安全性更新，修補 10 項漏洞含可導致 RCE 者", source: "iThome", region: "taiwan", score: 70.4, priority: "P2", published: "2026-10-22" },
+      { id: 5, title: "Lazarus 濫用南韓資安軟體部署惡意程式，採用後量子加密", source: "THN", region: "global", score: 78.9, priority: "P2", published: "2026-11-10" },
+      { id: 6, title: "攻擊者鎖定 Dahua 網路攝影機，以 P2P 與弱認證橫向移動", source: "THN", region: "global", score: 71.2, priority: "P2", published: "2026-11-09" }
+    ]
+  };
+
+  /* A hostile string used by ?inject=1. If rendering is unsafe this would
+     execute (window.__XSS__ === 1) or insert an <img> element. */
+  var XSS_PAYLOAD = '"><img src=x onerror="window.__XSS__=1"> CVE-2026-9999 惡意字串';
+
+  var failNext = false;
+
+  function wait(ms, signal) {
+    return new Promise(function (resolve, reject) {
+      var timer = setTimeout(resolve, ms);
+      if (signal) {
+        signal.addEventListener("abort", function () {
+          clearTimeout(timer);
+          var error = new Error("aborted");
+          error.name = "AbortError";
+          reject(error);
+        }, { once: true });
+      }
+    });
+  }
+
+  async function fetchStats(signal) {
+    await wait(520, signal);
+    if (failNext) throw new Error("HTTP 503 · stats service unavailable");
+    return JSON.parse(JSON.stringify(PAYLOAD.stats));
+  }
+
+  async function fetchThreats(signal) {
+    await wait(780, signal);
+    if (failNext) throw new Error("HTTP 503 · threats service unavailable");
+    var list = JSON.parse(JSON.stringify(PAYLOAD.threats));
+    if (INJECT) {
+      // Only in the self-test: the payload must appear as literal text.
+      list[0] = Object.assign({}, list[0], { title: XSS_PAYLOAD });
+    }
+    return list;
+  }
+
+  /* ====================================================================== */
+  /* 2. VIEW LAYER — pure rendering. Every dynamic value goes through        */
+  /*    textContent / createTextNode. No innerHTML, no eval.                 */
+  /* ====================================================================== */
+
+  function h(tag, attrs) {
+    var node = document.createElement(tag);
+    if (attrs) {
+      Object.keys(attrs).forEach(function (key) {
+        var value = attrs[key];
+        if (value === null || value === undefined || value === false) return;
+        if (key === "class") node.className = value;
+        else if (key === "text") node.textContent = String(value);
+        else if (key === "style") node.setAttribute("style", value);
+        else if (key === "dataset") Object.keys(value).forEach(function (k) { node.dataset[k] = value[k]; });
+        else if (key.slice(0, 2) === "on" && typeof value === "function") node.addEventListener(key.slice(2).toLowerCase(), value);
+        else node.setAttribute(key, String(value));
+      });
+    }
+    for (var i = 2; i < arguments.length; i += 1) {
+      var child = arguments[i];
+      if (child === null || child === undefined || child === false) continue;
+      if (Array.isArray(child)) {
+        child.forEach(function (item) {
+          if (item === null || item === undefined) return;
+          node.append(item instanceof Node ? item : document.createTextNode(String(item)));
+        });
+      } else {
+        node.append(child instanceof Node ? child : document.createTextNode(String(child)));
+      }
+    }
+    return node;
+  }
+
+  function clear(node) { while (node.firstChild) node.removeChild(node.firstChild); }
+
+  var ICON_PATHS = {
+    shield: "M12 3l7.5 3.2v6.1c0 4.6-3.1 8.3-7.5 9.2-4.4-.9-7.5-4.6-7.5-9.2V6.2L12 3z",
+    alert: "M12 4.5l8.2 14.2H3.8L12 4.5zM12 10v4",
+    target: "M12 3.5a8.5 8.5 0 1 0 0 17 8.5 8.5 0 0 0 0-17zM12 7a5 5 0 1 0 0 10 5 5 0 0 0 0-10z",
+    list: "M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01"
+  };
+
+  function icon(name, cls) {
+    var svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    svg.setAttribute("viewBox", "0 0 24 24");
+    svg.setAttribute("fill", "none");
+    svg.setAttribute("stroke", "currentColor");
+    svg.setAttribute("stroke-width", "1.7");
+    svg.setAttribute("stroke-linecap", "round");
+    svg.setAttribute("stroke-linejoin", "round");
+    svg.setAttribute("class", cls || "h-4 w-4");
+    svg.setAttribute("aria-hidden", "true");
+    var path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+    path.setAttribute("d", ICON_PATHS[name] || ICON_PATHS.shield);
+    svg.appendChild(path);
+    return svg;
+  }
+
+  var main = document.getElementById("main");
+  var kpiGrid = document.getElementById("kpiGrid");
+  var gaugeCard = document.getElementById("gaugeCard");
+  var metaCard = document.getElementById("metaCard");
+  var priorityCard = document.getElementById("priorityCard");
+  var feedCard = document.getElementById("feedCard");
+  var loadState = document.getElementById("loadState");
+
+  function setPanelsHidden(hidden) {
+    [gaugeCard, metaCard, priorityCard, feedCard].forEach(function (node) {
+      node.classList.toggle("is-hidden", hidden);
+    });
+  }
+
+  function setBusy(busy) {
+    main.setAttribute("aria-busy", busy ? "true" : "false");
+  }
+
+  /* ---------- skeletons ---------- */
+  function skeletonBlock(width, height, extraClass) {
+    return h("div", {
+      class: "skeleton " + (extraClass || ""),
+      style: "width:" + width + ";height:" + height + "px",
+      "aria-hidden": "true"
+    });
+  }
+
+  function renderSkeletons() {
+    setPanelsHidden(false);
+    clear(kpiGrid);
+    for (var i = 0; i < 4; i += 1) {
+      kpiGrid.append(
+        h("article", { class: "panel p-4" },
+          h("div", { class: "flex items-start justify-between" },
+            skeletonBlock("42%", 10),
+            h("div", { class: "skeleton", style: "width:24px;height:24px;border-radius:8px", "aria-hidden": "true" })
+          ),
+          h("div", { class: "mt-3" }, skeletonBlock("38%", 30)),
+          h("div", { class: "mt-3" }, skeletonBlock("64%", 10))
+        )
+      );
+    }
+
+    clear(gaugeCard);
+    gaugeCard.append(
+      h("div", { class: "flex items-start justify-between" },
+        h("div", null, skeletonBlock("120px", 14), h("div", { class: "mt-2" }, skeletonBlock("160px", 9))),
+        skeletonBlock("76px", 20, "rounded-full")
+      ),
+      h("div", { class: "mx-auto mt-6 flex justify-center" },
+        h("div", { class: "skeleton", style: "width:220px;height:120px;border-radius:120px 120px 0 0", "aria-hidden": "true" })
+      ),
+      h("div", { class: "mt-6 grid grid-cols-3 gap-2.5" },
+        skeletonBlock("100%", 46, "rounded-xl"),
+        skeletonBlock("100%", 46, "rounded-xl"),
+        skeletonBlock("100%", 46, "rounded-xl")
+      )
+    );
+
+    clear(metaCard);
+    metaCard.append(skeletonBlock("38%", 14), h("div", { class: "mt-4 space-y-4" }, [0, 1, 2, 3].map(function () {
+      return h("div", null, skeletonBlock("55%", 10), h("div", { class: "mt-2" }, skeletonBlock("100%", 8, "rounded-full")));
+    })));
+
+    clear(priorityCard);
+    priorityCard.append(skeletonBlock("30%", 14), h("div", { class: "mt-4 grid grid-cols-3 gap-3" }, [0, 1, 2].map(function () {
+      return h("div", { class: "stat" }, skeletonBlock("60%", 10), h("div", { class: "mt-2" }, skeletonBlock("45%", 20)));
+    })));
+
+    clear(feedCard);
+    feedCard.append(
+      h("div", { class: "flex items-center justify-between" }, skeletonBlock("26%", 14), skeletonBlock("64px", 18, "rounded-full")),
+      h("div", { class: "mt-4 space-y-3" }, [0, 1, 2, 3, 4].map(function () {
+        return h("div", { class: "flex items-center gap-3" },
+          skeletonBlock("4px", 32, "rounded-full"),
+          h("div", { class: "flex-1" }, skeletonBlock("70%", 11), h("div", { class: "mt-2" }, skeletonBlock("28%", 9)))
+        );
+      }))
+    );
+  }
+
+  /* ---------- content ---------- */
+  var KPI_CLASS = kpiGrid.className;
+
+  function renderKpis(stats) {
+    kpiGrid.className = KPI_CLASS;
+    var totals = stats.totals;
+    var cards = [
+      { label: "解析情資樣本", tag: "CORPUS", value: totals.corpus, note: "台灣 " + totals.taiwan + " / 國際 " + totals.global, icon: "list", tone: "text-white" },
+      { label: "P1 立即處置", tag: "24H", value: totals.p1, note: "需於 24 小時內完成阻斷", icon: "alert", tone: "text-rose-200" },
+      { label: "平均風險分數", tag: "AVG", value: totals.avg_score, note: totals.critical + " 筆 CRITICAL 等級", icon: "target", tone: "text-teal-200", decimals: 1 },
+      { label: "已分類類別", tag: "META", value: stats.meta.length, note: "含產業動態 1 類", icon: "shield", tone: "text-cyan-200" }
+    ];
+
+    clear(kpiGrid);
+    cards.forEach(function (card, index) {
+      var valueNode = h("div", { class: "mono mt-2 text-[28px] font-semibold tabular-nums " + card.tone });
+      kpiGrid.append(
+        h("article", { class: "panel reveal p-4", style: "--d:" + (index * 60) + "ms" },
+          h("div", { class: "flex items-start justify-between gap-2" },
+            h("span", { class: "kicker", text: card.label }),
+            h("span", { class: "text-cyan-300/70" }, icon(card.icon))
+          ),
+          valueNode,
+          h("p", { class: "mt-1.5 text-[11px] text-[color:var(--faint)]", text: card.note }),
+          h("span", { class: "mono mt-2 inline-block rounded border border-slate-700/60 px-1.5 py-0.5 text-[9.5px] text-slate-500", text: card.tag })
+        )
+      );
+      countUp(valueNode, card.value, card.decimals || 0);
+    });
+  }
+
+  function renderGauge(stats) {
+    var score = stats.score;
+    var tone = score >= 80 ? "critical" : score >= 66 ? "high" : "low";
+    var label = score >= 80 ? "P1 立即處置" : score >= 66 ? "P2 計畫處置" : "P3 觀測追蹤";
+
+    var NS = "http://www.w3.org/2000/svg";
+    var svg = document.createElementNS(NS, "svg");
+    svg.setAttribute("viewBox", "0 0 320 208");
+    svg.setAttribute("class", "w-full");
+    svg.setAttribute("role", "img");
+    svg.setAttribute("aria-label", "綜合風險評分 " + score.toFixed(1));
+
+    var defs = document.createElementNS(NS, "defs");
+    var gradient = document.createElementNS(NS, "linearGradient");
+    gradient.setAttribute("id", "g");
+    gradient.setAttribute("x1", "0"); gradient.setAttribute("y1", "1");
+    gradient.setAttribute("x2", "1"); gradient.setAttribute("y2", "0");
+    [["0%", "#22d3ee"], ["55%", "#2dd4bf"], ["82%", "#fbbf24"], ["100%", "#fb7185"]].forEach(function (pair) {
+      var stop = document.createElementNS(NS, "stop");
+      stop.setAttribute("offset", pair[0]);
+      stop.setAttribute("stop-color", pair[1]);
+      gradient.appendChild(stop);
+    });
+    defs.appendChild(gradient);
+    svg.appendChild(defs);
+
+    function arcPath(stroke, width, extra) {
+      var p = document.createElementNS(NS, "path");
+      p.setAttribute("d", "M 30 170 A 130 130 0 0 1 290 170");
+      p.setAttribute("fill", "none");
+      p.setAttribute("stroke", stroke);
+      p.setAttribute("stroke-width", String(width));
+      p.setAttribute("stroke-linecap", "round");
+      if (extra) extra(p);
+      return p;
+    }
+
+    svg.appendChild(arcPath("rgba(148,163,184,0.12)", 16));
+    var progress = arcPath("url(#g)", 16, function (p) {
+      p.id = "gaugeArc";
+      // One documented exception: stroke-dashoffset paints, it never reflows.
+      p.style.filter = "drop-shadow(0 0 6px rgba(34,211,238,0.55))";
+    });
+    svg.appendChild(progress);
+
+    var value = h("div", { class: "gauge-value", id: "gaugeValue", "aria-live": "polite" });
+    var wrap = h("div", { class: "relative mx-auto mt-1 w-full max-w-[420px]" }, svg,
+      h("div", { class: "pointer-events-none absolute inset-x-0 top-[39%] flex flex-col items-center" },
+        value,
+        h("div", { class: "kicker mt-1.5", text: "RISK / 100" })
+      )
+    );
+
+    clear(gaugeCard);
+    gaugeCard.append(
+      h("div", { class: "flex items-start justify-between" },
+        h("div", null,
+          h("h2", { class: "text-[15px] font-semibold text-white", id: "gaugeTitle", text: "綜合風險評分" }),
+          h("p", { class: "kicker mt-1", text: "Composite Risk Score" })
+        ),
+        h("span", { class: "badge", "data-tone": tone }, h("span", { class: "h-1.5 w-1.5 rounded-full bg-current" }), label)
+      ),
+      wrap,
+      h("div", { class: "mt-1 flex items-center justify-between px-1 text-[11px] text-[color:var(--faint)]" },
+        h("span", { class: "mono", text: "0 低" }), h("span", { class: "mono", text: "50 中" }), h("span", { class: "mono", text: "100 極高" })
+      ),
+      h("div", { class: "mt-4 grid grid-cols-3 gap-2.5" },
+        h("div", { class: "stat" }, h("div", { class: "kicker", text: "P1 立即" }), h("div", { class: "mono mt-1 text-lg font-semibold text-rose-300", text: String(stats.totals.p1) })),
+        h("div", { class: "stat" }, h("div", { class: "kicker", text: "平均分" }), h("div", { class: "mono mt-1 text-lg font-semibold text-teal-200", text: stats.totals.avg_score.toFixed(1) })),
+        h("div", { class: "stat" }, h("div", { class: "kicker", text: "情資量" }), h("div", { class: "mono mt-1 text-lg font-semibold text-cyan-200", text: String(stats.totals.corpus) }))
+      )
+    );
+
+    var arc = svg.querySelector("#gaugeArc");
+    var length = arc.getTotalLength();
+    arc.style.strokeDasharray = String(length);
+    arc.style.strokeDashoffset = String(length);
+
+    requestAnimationFrame(function () {
+      arc.style.transition = "stroke-dashoffset 1100ms cubic-bezier(0.23,1,0.32,1)";
+      arc.style.strokeDashoffset = String(length * (1 - score / 100));
+    });
+    countUp(value, score, 1);
+  }
+
+  function renderMeta(stats) {
+    clear(metaCard);
+    metaCard.append(
+      h("div", { class: "flex items-start justify-between" },
+        h("div", null,
+          h("h2", { class: "text-[15px] font-semibold text-white", id: "metaTitle", text: "威脅類別分布" }),
+          h("p", { class: "kicker mt-1", text: "Meta-Category Distribution" })
+        ),
+        h("span", { class: "mono text-[10.5px] text-[color:var(--faint)]", text: "n = " + stats.totals.corpus })
+      ),
+      h("div", { class: "mt-4 space-y-3.5" }, stats.meta.map(function (item, index) {
+        return h("div", { class: "reveal", style: "--d:" + (index * 70) + "ms" },
+          h("div", { class: "flex items-baseline justify-between" },
+            h("span", { class: "text-[12.5px] text-slate-200", text: item.label }),
+            h("span", { class: "mono text-[11px] text-[color:var(--faint)]", text: item.count + " · " + Math.round(item.share * 100) + "%" })
+          ),
+          h("div", { class: "bar-track mt-1.5" },
+            h("div", { class: "bar-fill", "data-tone": item.tone, style: "--v:" + item.share })
+          )
+        );
+      }))
+    );
+  }
+
+  function renderPriorities(stats) {
+    clear(priorityCard);
+    var total = stats.priorities.reduce(function (sum, p) { return sum + p.count; }, 0) || 1;
+    priorityCard.append(
+      h("div", { class: "flex items-start justify-between" },
+        h("div", null,
+          h("h2", { class: "text-[15px] font-semibold text-white", id: "priorityTitle", text: "決策分派" }),
+          h("p", { class: "kicker mt-1", text: "P1 / P2 / P3 Split" })
+        ),
+        h("span", { class: "mono text-[10.5px] text-[color:var(--faint)]", text: total + " 筆威脅" })
+      ),
+      h("div", { class: "mt-4 grid grid-cols-3 gap-3" }, stats.priorities.map(function (item, index) {
+        return h("div", { class: "stat reveal", style: "--d:" + (index * 80) + "ms" },
+          h("div", { class: "kicker", text: item.key }),
+          h("div", { class: "mono mt-1 text-[20px] font-semibold text-white", text: String(item.count) }),
+          h("div", { class: "mt-2 bar-track" }, h("div", { class: "bar-fill", "data-tone": item.tone, style: "--v:" + (item.count / total) }))
+        );
+      }))
+    );
+  }
+
+  function renderFeed(list) {
+    clear(feedCard);
+    var header = h("div", { class: "flex items-start justify-between" },
+      h("div", null,
+        h("h2", { class: "text-[15px] font-semibold text-white", id: "feedTitle", text: "情資流" }),
+        h("p", { class: "kicker mt-1", text: "Live Feed · Sorted by Risk" })
+      ),
+      h("span", { class: "mono rounded-full border border-cyan-400/25 bg-cyan-400/10 px-2.5 py-1 text-[10.5px] text-cyan-300", text: list.length + " 筆" })
+    );
+
+    if (!list.length) {
+      feedCard.append(header, h("p", { class: "mt-6 text-center text-[12px] text-[color:var(--faint)]", text: "目前沒有符合條件的情資。" }));
+      return;
+    }
+
+    var tones = { P1: "#fb7185", P2: "#fbbf24", P3: "#22d3ee" };
+
+    feedCard.append(
+      header,
+      h("div", { class: "mt-3 divide-y divide-slate-800/60", role: "list" },
+        list.map(function (item, index) {
+          return h("div", { class: "feed-row reveal", role: "listitem", style: "--d:" + (index * 50) + "ms", tabindex: "0" },
+            h("span", { class: "sev", style: "background:" + (tones[item.priority] || "#22d3ee"), "aria-hidden": "true" }),
+            h("div", { class: "min-w-0" },
+              // Dynamic untrusted text: textContent only, never innerHTML.
+              h("p", { class: "truncate text-[12.5px] font-medium text-slate-100", text: item.title }),
+              h("p", { class: "mono mt-0.5 text-[10px] text-[color:var(--faint)]", text: item.source + " · " + item.published })
+            ),
+            h("span", { class: "mono text-[13px] font-semibold", style: "color:" + (tones[item.priority] || "#22d3ee"), text: item.score.toFixed(1) }),
+            h("span", { class: "badge", "data-tone": item.priority === "P1" ? "critical" : item.priority === "P3" ? "low" : "", text: item.priority })
+          );
+        })
+      )
+    );
+  }
+
+  function renderError(error) {
+    setPanelsHidden(true);
+    clear(kpiGrid);
+    clear(gaugeCard);
+    clear(metaCard);
+    clear(priorityCard);
+    clear(feedCard);
+
+    var panel = h("div", { class: "panel p-6", role: "alert" },
+      h("p", { class: "kicker text-rose-300", text: "Data layer error" }),
+      h("h2", { class: "mt-2 text-[16px] font-semibold text-white", text: "資料載入失敗" }),
+      h("p", { class: "mt-2 text-[12.5px] text-[color:var(--muted)]", text: String(error && error.message ? error.message : error) }),
+      h("button", { class: "btn btn-primary mt-4", type: "button", onclick: function () { load(); } }, "重試")
+    );
+    kpiGrid.append(panel);
+    kpiGrid.className = "grid grid-cols-1";
+  }
+
+  /* ---------- number animation (text only; tabular-nums keeps width) ---- */
+  function countUp(node, target, decimals) {
+    var format = function (v) { return v.toFixed(decimals); };
+    if (reduceMotion()) { node.textContent = format(target); return; }
+    var start = performance.now();
+    var duration = 900;
+    function frame(now) {
+      var p = Math.min(1, (now - start) / duration);
+      var eased = 1 - Math.pow(1 - p, 3);
+      node.textContent = format(target * eased);
+      if (p < 1) requestAnimationFrame(frame);
+    }
+    requestAnimationFrame(frame);
+  }
+
+  /* ====================================================================== */
+  /* 3. CONTROLLER — orchestration, IO, events.                              */
+  /* ====================================================================== */
+
+  var observer = null;
+
+  function observeReveals() {
+    var nodes = document.querySelectorAll(".reveal:not(.is-in)");
+    if (!("IntersectionObserver" in window)) {
+      Array.prototype.forEach.call(nodes, function (n) { n.classList.add("is-in"); });
+      return;
+    }
+    if (!observer) {
+      observer = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (!entry.isIntersecting) return;
+          entry.target.classList.add("is-in");
+          observer.unobserve(entry.target); // one-shot: no work while scrolling
+        });
+      }, { threshold: 0.12, rootMargin: "0px 0px -4% 0px" });
+    }
+    Array.prototype.forEach.call(nodes, function (node) { observer.observe(node); });
+  }
+
+  var state = { controller: null, running: false };
+
+  async function load(options) {
+    var opts = options || {};
+    if (state.running && !opts.force) return;
+    if (state.controller) state.controller.abort();
+    state.controller = new AbortController();
+    state.running = true;
+
+    failNext = Boolean(opts.fail);
+    var signal = state.controller.signal;
+
+    setBusy(true);
+    loadState.textContent = "載入中…";
+    document.getElementById("msFetch").textContent = "—";
+    document.getElementById("msRender").textContent = "—";
+    renderSkeletons();
+    observeReveals();
+
+    var t0 = performance.now();
+    try {
+      var results = await Promise.all([fetchStats(signal), fetchThreats(signal)]);
+      var stats = results[0];
+      var threats = results[1];
+      var t1 = performance.now();
+
+      renderKpis(stats);
+      renderGauge(stats);
+      renderMeta(stats);
+      renderPriorities(stats);
+      renderFeed(threats);
+      var t2 = performance.now();
+
+      observeReveals();
+      setBusy(false);
+      loadState.textContent = "完成";
+      document.getElementById("msFetch").textContent = Math.round(t1 - t0) + " ms";
+      document.getElementById("msRender").textContent = Math.round(t2 - t1) + " ms";
+      document.getElementById("apiStatus").textContent = "API 連線正常";
+    } catch (error) {
+      if (error && error.name === "AbortError") return;
+      setBusy(false);
+      loadState.textContent = "失敗";
+      document.getElementById("apiStatus").textContent = "API 異常";
+      renderError(error);
+      kpiGrid.className = "grid grid-cols-1";
+      observeReveals();
+    } finally {
+      state.running = false;
+    }
+  }
+
+  function boot() {
+    document.getElementById("clock").textContent = new Date().toLocaleTimeString("zh-TW", { hour12: false });
+    setInterval(function () {
+      document.getElementById("clock").textContent = new Date().toLocaleTimeString("zh-TW", { hour12: false });
+    }, 1000);
+
+    document.getElementById("refreshBtn").addEventListener("click", function () {
+      var btn = document.getElementById("refreshBtn");
+      var iconEl = document.getElementById("refreshIcon");
+      var label = document.getElementById("refreshLabel");
+      btn.disabled = true;
+      iconEl.classList.add("spin");
+      label.textContent = "載入中…";
+      load({ force: true }).finally(function () {
+        btn.disabled = false;
+        iconEl.classList.remove("spin");
+        label.textContent = "重新載入";
+      });
+    });
+
+    document.getElementById("simulateErrorBtn").addEventListener("click", function () {
+      load({ force: true, fail: true });
+    });
+
+    load();
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", boot, { once: true });
+  } else {
+    boot();
+  }
+})();
+</script>
+</body>
+</html>
