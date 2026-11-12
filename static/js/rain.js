@@ -1,146 +1,73 @@
 /* ==========================================================================
-   Digital rain — sparse green 0/1 columns falling behind the dashboard.
+   Digital rain, CSS-only.
 
-   Performance notes:
-   - one canvas, one rAF loop throttled to ~24fps (the eye cannot tell);
-   - no layout reads inside the loop; the transform is set once per resize;
-   - the trail is produced with destination-out, so the page background stays
-     transparent behind the glyphs instead of being painted over;
-   - stops on hidden tabs and on prefers-reduced-motion (draws one static
-     field instead of animating).
+   Each column is two identical halves; its height is 2x the viewport, so a
+   translateY from -50% to 0 lands on the same pixels and the loop has no seam.
+   Only transform animates, which the compositor can run off the main thread.
+
+   prefers-reduced-motion freezes the columns (a readable static field).
+   Append ?rain=on to force the animation for a demo on such a machine.
    ========================================================================== */
 (function () {
   "use strict";
 
-  var canvas = document.getElementById("rain");
-  if (!canvas) return;
+  var host = document.getElementById("rain");
+  if (!host) return;
 
-  var ctx = canvas.getContext("2d", { alpha: true });
-  if (!ctx) return; // jsdom and other headless DOMs have no 2D context
+  if (/[?&]rain=on(?:&|$)/.test(window.location.search)) {
+    document.body.dataset.rain = "on";
+  }
 
-  var reduce = window.matchMedia("(prefers-reduced-motion: reduce)");
-  var FONT = 15;
-  var FPS = 24;
-  var INTERVAL = 1000 / FPS;
+  var rebuildTimer = 0;
 
-  var width = 0;
-  var height = 0;
-  var columns = 0;
-  var drops = [];
-  var speeds = [];
-  var last = 0;
-  var raf = 0;
-
-  function resize() {
-    var dpr = Math.min(window.devicePixelRatio || 1, 2);
-    width = window.innerWidth;
-    height = window.innerHeight;
-    canvas.width = Math.floor(width * dpr);
-    canvas.height = Math.floor(height * dpr);
-    canvas.style.width = width + "px";
-    canvas.style.height = height + "px";
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-
-    columns = Math.max(1, Math.floor(width / FONT));
-    drops = new Array(columns);
-    speeds = new Array(columns);
-    for (var i = 0; i < columns; i += 1) {
-      drops[i] = Math.random() * -40;          // staggered start above the fold
-      speeds[i] = 0.45 + Math.random() * 0.85; // rows per frame
+  function digits(count) {
+    var out = "";
+    for (var i = 0; i < count; i += 1) {
+      out += Math.random() > 0.5 ? "1" : "0";
+      if (i < count - 1) out += "\n";
     }
+    return out;
   }
 
-  function drawColumn(index) {
-    var x = index * FONT + 3;
-    var y = drops[index] * FONT;
-    if (y < -FONT) return;
+  function build() {
+    var width = window.innerWidth;
+    var height = window.innerHeight;
+    var fontSize = width < 640 ? 13 : 15;
+    var lineHeight = fontSize * 1.18;
 
-    // "Head" glyph is brighter than the trail behind it.
-    ctx.fillStyle = "rgba(134, 239, 172, 0.55)";
-    ctx.fillText(Math.random() > 0.5 ? "1" : "0", x, y);
-  }
+    // One half must cover the viewport, otherwise a gap appears at the bottom
+    // of the loop.
+    var lines = Math.ceil(height / lineHeight) + 2;
+    var gap = width < 640 ? 44 : 32;
+    var columns = Math.max(8, Math.min(48, Math.floor(width / gap)));
 
-  function frame(now) {
-    raf = requestAnimationFrame(frame);
-    if (now - last < INTERVAL) return;
-    last = now;
-
-    // Fade what is already there instead of painting the page background.
-    ctx.globalCompositeOperation = "destination-out";
-    ctx.fillStyle = "rgba(0, 0, 0, 0.055)";
-    ctx.fillRect(0, 0, width, height);
-    ctx.globalCompositeOperation = "source-over";
-
-    ctx.font = FONT + 'px "JetBrains Mono", ui-monospace, monospace';
-    ctx.textBaseline = "top";
+    host.textContent = "";
+    var fragment = document.createDocumentFragment();
 
     for (var i = 0; i < columns; i += 1) {
-      drawColumn(i);
-      drops[i] += speeds[i];
-      if (drops[i] * FONT > height && Math.random() > 0.972) {
-        drops[i] = Math.random() * -12;
-        speeds[i] = 0.45 + Math.random() * 0.85;
-      }
+      var column = document.createElement("span");
+      column.className = "rain-col";
+      column.setAttribute("aria-hidden", "true");
+
+      var half = digits(lines);
+      column.textContent = half + "\n" + half;   // identical halves
+
+      column.style.left = (((i + 0.5) * 100) / columns).toFixed(2) + "%";
+      column.style.fontSize = fontSize + "px";
+      column.style.setProperty("--rain-speed", (12 + Math.random() * 12).toFixed(1) + "s");
+      column.style.animationDelay = (-Math.random() * 24).toFixed(1) + "s";
+      column.style.opacity = (0.3 + Math.random() * 0.45).toFixed(2);
+
+      fragment.appendChild(column);
     }
+
+    host.appendChild(fragment);
   }
 
-  function start() {
-    if (raf) return;
-    last = 0;
-    raf = requestAnimationFrame(frame);
-  }
-
-  function stop() {
-    if (!raf) return;
-    cancelAnimationFrame(raf);
-    raf = 0;
-  }
-
-  function drawStill() {
-    // Reduced motion: still a visible field, just not animated. A near-invisible
-    // static frame reads as "the feature is missing", so the alpha stays close
-    // to the animated version.
-    ctx.clearRect(0, 0, width, height);
-    ctx.font = FONT + 'px "JetBrains Mono", ui-monospace, monospace';
-    ctx.textBaseline = "top";
-    for (var i = 0; i < columns; i += 1) {
-      var rows = 4 + Math.floor(Math.random() * 16);
-      var top = Math.random() * height * 0.75;
-      for (var row = 0; row < rows; row += 1) {
-        var y = top + row * FONT;
-        if (y > height) break;
-        var alpha = Math.max(0.12, 0.5 - row * 0.028);
-        ctx.fillStyle = "rgba(134, 239, 172, " + alpha.toFixed(3) + ")";
-        ctx.fillText(Math.random() > 0.5 ? "1" : "0", i * FONT + 3, y);
-      }
-    }
-  }
-
-  function applyPreference() {
-    stop();
-    if (reduce.matches) {
-      drawStill();
-    } else if (!document.hidden) {
-      start();
-    }
-  }
-
-  var resizeTimer = 0;
   window.addEventListener("resize", function () {
-    clearTimeout(resizeTimer);
-    resizeTimer = setTimeout(function () {
-      resize();
-      if (reduce.matches) drawStill();
-    }, 180);
+    clearTimeout(rebuildTimer);
+    rebuildTimer = setTimeout(build, 220);
   });
 
-  document.addEventListener("visibilitychange", function () {
-    if (document.hidden) stop();
-    else applyPreference();
-  });
-
-  if (reduce.addEventListener) reduce.addEventListener("change", applyPreference);
-
-  resize();
-  applyPreference();
+  build();
 })();

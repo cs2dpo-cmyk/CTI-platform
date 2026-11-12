@@ -79,21 +79,60 @@ body::after {
   pointer-events: none;
 }
 
-/* Digital rain: sits above the aura, below every panel. */
-#rain {
+/* Digital rain: pure CSS columns falling behind the dashboard.
+   Each column is two identical halves; animating translateY by 50% lands on
+   the same pixels, so the loop has no visible seam. Transform only. */
+.rain {
   position: fixed;
   inset: 0;
   z-index: -1;
-  width: 100%;
-  height: 100%;
+  overflow: hidden;
   pointer-events: none;
-  opacity: 0.8;
-  -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 70%, transparent 100%);
-  mask-image: linear-gradient(to bottom, #000 0%, #000 70%, transparent 100%);
+  opacity: 0.62;
+  -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 72%, transparent 100%);
+  mask-image: linear-gradient(to bottom, #000 0%, #000 72%, transparent 100%);
+}
+
+.rain-col {
+  position: absolute;
+  top: 0;
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 15px;
+  line-height: 1.18;
+  white-space: pre;
+  text-align: center;
+  color: rgba(134, 239, 172, 0.5);
+  transform: translate3d(0, -50%, 0);
+  animation: rain-fall linear infinite;
+  animation-duration: var(--rain-speed, 16s);
+  will-change: transform;
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 12%, #000 88%, transparent 100%);
+  mask-image: linear-gradient(to bottom, transparent 0%, #000 12%, #000 88%, transparent 100%);
+}
+
+@keyframes rain-fall {
+  from { transform: translate3d(0, -50%, 0); }
+  to { transform: translate3d(0, 0, 0); }
 }
 
 @media print {
-  #rain { display: none; }
+  .rain { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* Freeze instead of removing: paused keeps duration/delay intact, so the
+     ?rain=on override only has to flip play-state back. */
+  .rain-col { animation-play-state: paused; }
+}
+
+/* ?rain=on — opt-in override for demos on machines that disable motion. */
+body[data-rain="on"] .rain-col {
+  /* The global reduced-motion reset in this file forces
+     `animation-duration: 0.001ms !important` on every element, so this
+     opt-in override has to match that weight. */
+  animation-duration: var(--rain-speed, 16s) !important;
+  animation-iteration-count: infinite !important;
+  animation-play-state: running !important;
 }
 
 ::selection {
