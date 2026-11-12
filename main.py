@@ -321,7 +321,9 @@ if STATIC_DIR.exists():
 
 @app.get("/", include_in_schema=False)
 def index() -> FileResponse:
-    return FileResponse(STATIC_DIR / "index.html")
+    # The dashboard HTML has no content hash in its URL, so browsers would
+    # otherwise keep a heuristic copy. Revalidate on every load.
+    return FileResponse(STATIC_DIR / "index.html", headers={"Cache-Control": "no-cache"})
 
 
 @app.get("/favicon.ico", include_in_schema=False)

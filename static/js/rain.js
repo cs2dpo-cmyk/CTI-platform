@@ -19,7 +19,7 @@
   if (!ctx) return; // jsdom and other headless DOMs have no 2D context
 
   var reduce = window.matchMedia("(prefers-reduced-motion: reduce)");
-  var FONT = 14;
+  var FONT = 15;
   var FPS = 24;
   var INTERVAL = 1000 / FPS;
 
@@ -56,7 +56,7 @@
     if (y < -FONT) return;
 
     // "Head" glyph is brighter than the trail behind it.
-    ctx.fillStyle = "rgba(134, 239, 172, 0.42)";
+    ctx.fillStyle = "rgba(134, 239, 172, 0.55)";
     ctx.fillText(Math.random() > 0.5 ? "1" : "0", x, y);
   }
 
@@ -67,7 +67,7 @@
 
     // Fade what is already there instead of painting the page background.
     ctx.globalCompositeOperation = "destination-out";
-    ctx.fillStyle = "rgba(0, 0, 0, 0.075)";
+    ctx.fillStyle = "rgba(0, 0, 0, 0.055)";
     ctx.fillRect(0, 0, width, height);
     ctx.globalCompositeOperation = "source-over";
 
