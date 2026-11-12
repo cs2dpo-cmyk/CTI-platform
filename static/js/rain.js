@@ -97,16 +97,20 @@
   }
 
   function drawStill() {
-    // Reduced motion: a single static field, no animation.
+    // Reduced motion: still a visible field, just not animated. A near-invisible
+    // static frame reads as "the feature is missing", so the alpha stays close
+    // to the animated version.
     ctx.clearRect(0, 0, width, height);
     ctx.font = FONT + 'px "JetBrains Mono", ui-monospace, monospace';
     ctx.textBaseline = "top";
     for (var i = 0; i < columns; i += 1) {
-      var rows = Math.floor(Math.random() * 14) + 2;
+      var rows = 4 + Math.floor(Math.random() * 16);
+      var top = Math.random() * height * 0.75;
       for (var row = 0; row < rows; row += 1) {
-        var y = (drops[i] + row) * FONT;
+        var y = top + row * FONT;
         if (y > height) break;
-        ctx.fillStyle = "rgba(134, 239, 172, " + (0.16 - row * 0.01) + ")";
+        var alpha = Math.max(0.12, 0.5 - row * 0.028);
+        ctx.fillStyle = "rgba(134, 239, 172, " + alpha.toFixed(3) + ")";
         ctx.fillText(Math.random() > 0.5 ? "1" : "0", i * FONT + 3, y);
       }
     }
