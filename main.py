@@ -324,12 +324,6 @@ def index() -> FileResponse:
     return FileResponse(STATIC_DIR / "index.html")
 
 
-@app.get("/console", include_in_schema=False)
-def console() -> FileResponse:
-    """Production-style console: async data layer, skeletons, safe rendering."""
-    return FileResponse(STATIC_DIR / "console.html")
-
-
 @app.get("/favicon.ico", include_in_schema=False)
 def favicon() -> Response:
     return Response(status_code=status.HTTP_204_NO_CONTENT)
