@@ -1,0 +1,53 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "CTI: 截圖（桌面 1440）",
+      "type": "shell",
+      "command": "node tools/shot.mjs ${input:ctiUrl} 1440 900 .tmp/shot-desktop.png",
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      }
+    },
+    {
+      "label": "CTI: 截圖（平板 768）",
+      "type": "shell",
+      "command": "node tools/shot.mjs ${input:ctiUrl} 768 900 .tmp/shot-tablet.png",
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      }
+    },
+    {
+      "label": "CTI: 截圖（手機 390）",
+      "type": "shell",
+      "command": "node tools/shot.mjs ${input:ctiUrl} 390 844 .tmp/shot-mobile.png",
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      }
+    },
+    {
+      "label": "CTI: 前端煙霧測試",
+      "type": "shell",
+      "command": "node tests/frontend_smoke.mjs",
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      }
+    }
+  ],
+  "inputs": [
+    {
+      "id": "ctiUrl",
+      "type": "promptString",
+      "description": "要截圖的網址（本機或 Render）",
+      "default": "http://127.0.0.1:8123"
+    }
+  ]
+}

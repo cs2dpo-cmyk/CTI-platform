@@ -1,0 +1,15 @@
+{
+  "name": "cti-platform",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "CTI 資安風險決策支援平台 — 開發工具鏈（前端測試與視覺截圖）",
+  "scripts": {
+    "shot": "node tools/shot.mjs",
+    "test:ui": "node tests/frontend_smoke.mjs"
+  },
+  "devDependencies": {
+    "jsdom": "^24.1.3",
+    "puppeteer-core": "^24.43.1"
+  }
+}

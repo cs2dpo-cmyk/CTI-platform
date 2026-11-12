@@ -126,6 +126,23 @@ node tests/frontend_smoke.mjs
 # 環境變數：CTI_BASE_URL（預設 http://127.0.0.1:8123）、CTI_STATIC_DIR、JSDOM_MODULE
 ```
 
+### 視覺截圖（選用）
+
+用機器上既有的 Edge / Chrome 截圖，**不下载第二個瀏覽器**（`puppeteer-core` 只負責驅動）：
+
+```bash
+npm install                     # 第一次：jsdom + puppeteer-core
+node tools/shot.mjs http://127.0.0.1:8123 1440 900 .tmp/desktop.png
+node tools/shot.mjs http://127.0.0.1:8123 390 844   .tmp/mobile.png
+```
+
+輸出會印出 `scrollWidth` / `clientWidth` / `overflowX`；`overflowX: true` 就代表有
+橫向溢出，比肉眼看圖可靠。視窗寬度是用 DevTools 的 `setViewport` 覆寫，所以 390 是真正的
+手機寬度 —— Edge 的 `--window-size` 在 Windows 有約 500px 下限，直接呼叫會變成
+「500 寬的版面被裁成 390」。
+
+VS Code 也可以用 **終端機 → 執行工作…** 跑 `CTI: 截圖（桌面 1440）` / `CTI: 截圖（手機 390）`。
+
 ---
 
 ## 3. API 規格
