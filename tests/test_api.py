@@ -315,6 +315,13 @@ def test_threat_detail_and_404(client: TestClient):
     assert client.get("/api/v1/threats/9999").status_code == 404
 
 
+def test_console_page_served(client: TestClient):
+    response = client.get("/console")
+    assert response.status_code == 200
+    assert "text/html" in response.headers["content-type"]
+    assert "/api/v1" in response.text
+
+
 def test_index_page_served(client: TestClient):
     response = client.get("/")
     assert response.status_code == 200
