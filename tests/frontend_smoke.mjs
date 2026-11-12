@@ -119,9 +119,9 @@ const $ = (selector) => window.document.querySelector(selector);
 const $$ = (selector) => Array.from(window.document.querySelectorAll(selector));
 
 // ---------------------------------------------------------------- render checks
-assert($('#kpiTotal').textContent.trim() === '100', `KPI total rendered (got "${$('#kpiTotal').textContent}")`);
-assert($('#kpiTw').textContent.trim() === '50', 'KPI Taiwan count rendered');
-assert($('#kpiGlobal').textContent.trim() === '50', 'KPI global count rendered');
+assert($('#kpiTotal').textContent.trim() === '200', `KPI total rendered (got "${$('#kpiTotal').textContent}")`);
+assert($('#kpiTw').textContent.trim() === '100', 'KPI Taiwan count rendered');
+assert($('#kpiGlobal').textContent.trim() === '100', 'KPI global count rendered');
 assert($('#kpiP1').textContent.trim().length > 0 && $('#kpiP1').textContent.trim() !== '—', 'KPI P1 rendered');
 assert($('#kpiTopMeta').textContent.trim() !== '—', 'KPI top meta-category rendered');
 assert($('#kpiAvgScore').textContent.trim() !== '—', 'KPI average score rendered');
@@ -135,14 +135,14 @@ assert(
     .includes('C0'),
   'cluster tallies expose the raw cluster ids'
 );
-assert($('#pieCenterTotal').textContent.trim() === '100', 'pie centre total rendered');
+assert($('#pieCenterTotal').textContent.trim() === '200', 'pie centre total rendered');
 
 assert($$('#matrixGrid .matrix-card').length === 3, `matrix lanes (got ${$$('#matrixGrid .matrix-card').length})`);
 assert($$('#matrixGrid .step').length > 0, 'matrix playbooks rendered');
 
 assert($$('#feedBody .feed-row').length === 25, `feed first page rows (got ${$$('#feedBody .feed-row').length})`);
-assert($('#feedTotal').textContent.trim() === '100', 'feed total rendered');
-assert($('#pageLabel').textContent.includes('1 / 4'), `pagination label (got "${$('#pageLabel').textContent}")`);
+assert($('#feedTotal').textContent.trim() === '200', 'feed total rendered');
+assert($('#pageLabel').textContent.includes('1 / 8'), `pagination label (got "${$('#pageLabel').textContent}")`);
 
 assert($$('#insightGrid article').length === 4, `insight cards (got ${$$('#insightGrid article').length})`);
 assert(window.Chart.instances?.length === 4, `chart instances (got ${window.Chart.instances?.length})`);
@@ -226,7 +226,7 @@ assert($('#apiStatus').textContent.includes('已連線'), 'API status pill updat
 {
   const pie = window.Chart.instances.find((chart) => chart.config.type === 'doughnut');
   assert(!!pie, 'doughnut chart exists');
-  assert($('#pieCenterTotal').textContent.trim() === '100', 'pie centre rests on the corpus total');
+  assert($('#pieCenterTotal').textContent.trim() === '200', 'pie centre rests on the corpus total');
 
   pie.options.onHover({}, [{ index: 0 }]);
   assert(
@@ -236,7 +236,7 @@ assert($('#apiStatus').textContent.includes('已連線'), 'API status pill updat
   assert($('#pieCenterCaption').textContent.trim() === 'VULN', 'hovering a slice names the category');
 
   pie.canvas.dispatchEvent(new window.MouseEvent('mouseleave'));
-  assert($('#pieCenterTotal').textContent.trim() === '100', 'leaving the doughnut restores the total');
+  assert($('#pieCenterTotal').textContent.trim() === '200', 'leaving the doughnut restores the total');
   assert($('#pieCenterCaption').textContent.trim() === 'articles', 'leaving the doughnut restores the caption');
 }
 

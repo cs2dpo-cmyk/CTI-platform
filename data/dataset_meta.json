@@ -5,8 +5,8 @@
   "date_column": "published_at",
   "provenance": {
     "source_directory": "C:\\AI_Rsearch_Data",
-    "exported_at": "2026-10-30",
-    "note": "由 tools/enrich_dates.py 以來源 feed／列表頁補齊真實發布日期：The Hacker News Blogger JSON feed、TWCERT/CC RSS 與年度列表、iThome 新聞列表。"
+    "exported_at": "2026-11-12",
+    "note": "以 tools/build_corpus.py 重建：The Hacker News 100 篇、iThome 50 篇、TWCERT/CC 50 篇，共 200 篇；每篇皆抓取原始內文並以 jieba 斷詞，日期取自各站列表／feed 的實際發布日。"
   },
   "classifier": "services/classify.py",
   "classification_note": "Meta-Category 由逐篇規則分類決定（CVE／修補語彙 → VULN；具名行為者與入侵事件 → MALWARE；治理、研究與法規 → RESEARCH；無資安語彙的產品與財報 → OTHER）。舊版的 cluster_to_meta 整叢對應已移除：叢集只描述用詞相近，不代表風險類別。",
@@ -14,8 +14,9 @@
     "gold_labels": "data/gold_labels.csv",
     "tool": "tools/eval_classifier.py",
     "n": 100,
+    "graded_rows": 200,
     "accuracy": 0.91,
     "baseline_cluster_mapping": 0.45,
-    "note": "100 筆人工判讀標註；規則在同一批資料上評估（in-sample）。殘留 9 筆多為治理類短文（無資安語彙）與研究型標題。"
+    "note": "人工標註涵蓋原始 100 篇（語料擴充後新增的 100 篇尚未標註，因此僅以這 100 篇計分）。規則在同一批資料上評估（in-sample），殘留 9 筆多為治理類短文與研究型標題。"
   }
 }

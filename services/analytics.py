@@ -7,7 +7,7 @@ CSVs — there is no hard-coded distribution.
 from __future__ import annotations
 
 from collections import Counter, defaultdict
-from datetime import date, datetime, timezone
+from datetime import date, datetime, timedelta, timezone
 from typing import Any, Iterable, Protocol
 
 from services import risk_engine
@@ -183,19 +183,29 @@ def build_stats(threats: list[ThreatLike], dataset_info: dict[str, Any] | None =
         for source, count in source_counts.most_common()
     ]
 
-    timeline_map: dict[str, dict[str, int]] = defaultdict(lambda: {"taiwan": 0, "global": 0})
+    # Weekly bins on a continuous axis. A corpus that spans 16 months (TWCERT
+    # publishes ~20 advisories per half-year) must not plot one point per
+    # *day that happens to have news*: that draws a six-month gap as one step.
+    def week_start(day: date) -> date:
+        return day - timedelta(days=day.weekday())
+
+    timeline_map: dict[date, dict[str, int]] = defaultdict(lambda: {"taiwan": 0, "global": 0})
     for row in scored:
-        day = row["published_at"].isoformat()
-        timeline_map[day][row["region"]] += 1
-    timeline = [
-        {
-            "date": day,
-            "taiwan": counts["taiwan"],
-            "global": counts["global"],
-            "total": counts["taiwan"] + counts["global"],
-        }
-        for day, counts in sorted(timeline_map.items())
-    ]
+        timeline_map[week_start(row["published_at"])][row["region"]] += 1
+
+    timeline = []
+    if timeline_map:
+        cursor = min(timeline_map)
+        last = max(timeline_map)
+        while cursor <= last:
+            counts = timeline_map.get(cursor, {"taiwan": 0, "global": 0})
+            timeline.append({
+                "date": cursor.isoformat(),
+                "taiwan": counts["taiwan"],
+                "global": counts["global"],
+                "total": counts["taiwan"] + counts["global"],
+            })
+            cursor += timedelta(days=7)
 
     matrix = risk_engine.build_decision_matrix(scored)
 

@@ -3,9 +3,9 @@
 > 基於機器學習之跨平台網路威脅情資（CTI）分析與決策支援系統
 > — 嶺東 SmartTech AI 創新應用挑戰賽參賽作品 · 可部署至 Render 的全端 PoC
 
-把 100 篇平衡語料（TWCERT 20 + iThome 30 + The Hacker News 50）經過
-TF-IDF 向量化與 K-Means 分群後，以**可解釋的加權風險模型**轉譯成 CISO 可執行的
-P1–P3 處置優先級、回應 SLA 與標準處置劇本（playbook）。
+把 200 篇平衡語料（TWCERT 50 + iThome 50 + The Hacker News 100）以 TF-IDF 向量化與
+K-Means 分群做主題探索、再逐篇規則分類成四種 Meta-Category，最後以**可解釋的加權
+風險模型**轉譯成 CISO 可執行的 P1–P3 處置優先級、回應 SLA 與標準處置劇本（playbook）。
 
 | 層 | 技術 |
 | --- | --- |
@@ -41,15 +41,17 @@ cti-platform/
 │   └── frontend_smoke.mjs      # jsdom 煙霧測試（需啟動本機伺服器）
 ├── data/
 │   ├── gold_labels.csv         # 100 筆人工標註（分類器驗證用）
+│   ├── corpus_summary.json     # 重建結果（各來源篇數、K、輪廓係數）
 │   ├── classification_audit.csv # 逐筆分類／證據／分數稽核檔（由工具產生）
-│   ├── Taiwan_security_dataset_cleaned.csv        # 研究語料（台灣 50 筆）
-│   ├── Global_security_dataset_cleaned.csv        # 研究語料（國際 50 筆）
+│   ├── Taiwan_security_dataset_with_dates.csv     # 平台語料（台灣 100 筆，含日期與網址）
+│   ├── Global_security_dataset_with_dates.csv     # 平台語料（國際 100 筆）
 │   ├── Taiwan_security_dataset_with_dates.csv     # 加上真實發布日期（平台使用）
 │   ├── Global_security_dataset_with_dates.csv     # 加上真實發布日期（平台使用）
 │   ├── dataset_meta.json       # 來源、叢集對應表、日期政策
 │   └── cti.db                  # 執行時自動產生（已列入 .gitignore）
 ├── tools/
-│   └── enrich_dates.py         # 從 THN feed / TWCERT / iThome 補齊真實日期
+│   ├── build_corpus.py         # 重建語料：抓取 → 清洗 → 分群 → 分類 → 產出 CSV
+│   ├── enrich_dates.py         # 從 THN feed / TWCERT / iThome 補齊真實日期
 ├── dev.cmd                     # 雙擊啟動（Windows 用；會帶 ExecutionPolicy Bypass）
 ├── dev.ps1                     # 啟動邏輯：找 Python → 檢查套件 → 挑埠 → 開瀏覽器
 ├── requirements.txt            # 執行期依賴
@@ -101,7 +103,7 @@ uvicorn main:app --reload --port 8000
 
 開啟 <http://127.0.0.1:8000> 即為儀表板；<http://127.0.0.1:8000/api/docs> 為 Swagger UI。
 
-首次啟動時 `database.init_db()` 會自動建表並寫入 100 筆種子資料；
+首次啟動時 `database.init_db()` 會自動建表並寫入 200 筆種子資料；
 資料庫已有資料時不會重複寫入（冪等）。
 
 ### 執行測試
@@ -288,19 +290,19 @@ Meta-Category 不再由叢集決定。K-Means 叢集是**詞彙群**：同一叢
 
 | Meta-Category | 台灣 | 國際 | 合計 | 佔比 |
 | --- | --- | --- | --- | --- |
-| 系統漏洞與修補對策（VULN） | 10 | 12 | **22** | 22% |
-| 惡意威脅與主動攻擊（MALWARE） | 19 | 27 | **46** | 46% |
-| 前瞻研究與平台治理（RESEARCH） | 8 | 9 | **17** | 17% |
-| 產業與產品動態（OTHER，不計風險） | 13 | 2 | **15** | 15% |
+| 系統漏洞與修補對策（VULN） | 20 | 26 | **46** | 23% |
+| 惡意威脅與主動攻擊（MALWARE） | 44 | 50 | **94** | 47% |
+| 前瞻研究與平台治理（RESEARCH） | 20 | 22 | **42** | 21% |
+| 產業與產品動態（OTHER，不計風險） | 16 | 2 | **18** | 9% |
 
 | 決策分派 | P1 | P2 | P3 | 平均分數 |
 | --- | --- | --- | --- | --- |
-| 篇數（85 筆威脅） | 5 | 65 | 15 | 64.4 |
+| 篇數（182 筆威脅） | 25 | 124 | 33 | 67.6 |
 
 > **與舊數字的關係**
 > 舊版的 `55 / 42 / 3` 來自「叢集 → 類別」對應；論文原圖的 `65 / 32 / 3` 則是筆記本
 > 手動填入的 `meta_tw = [23, 27, 0]`、`meta_en = [42, 5, 3]`。兩者都無法由逐篇內容
-> 重現，已由本節的 `22 / 46 / 17`（另 15 筆產業動態）取代，論文與海報請改用新數字。
+> 重現，已由本節的 `46 / 94 / 42`（另 18 筆產業動態）取代，論文與海報請改用新數字。
 
 #### 情資列表的日期與原始連結
 
@@ -342,7 +344,7 @@ python tools/enrich_dates.py --report   # 只看比對結果
 `dataset_meta.json` 的 `date_policy` 設為 `column`，平台直接讀 `published_at`；
 若某列缺日期仍會退回擷取順序推估並標記 `estimated`，時間軸不會中斷。
 
-目前分布：100 筆全部為來源實際日期（`estimated` = 0），橫跨 **2026-04-30 → 2026-10-30**，
+目前分布：200 筆全部為來源實際日期（`estimated` = 0），橫跨 **2025-07-21 → 2026-11-09**，
 共 15 個不同日期；國際情資集中在 10/26–10/30，台灣則因 TWCERT 發稿頻率較低而橫跨數月。
 
 ---
@@ -377,7 +379,7 @@ python tools/enrich_dates.py --report   # 只看比對結果
 | `PYTHON_VERSION` | `3.12.7` | Render 建置用 Python 版本 |
 
 > **SQLite 與 Render 的持久化**：免費方案的檔案系統是暫時性的，重啟後資料庫會重置，
-> 但應用程式啟動時會自動重新種子化 100 筆語料，因此儀表板不會壞。
+> 但應用程式啟動時會自動重新種子化 200 筆語料，因此儀表板不會壞。
 > 若需要保存執行期寫入，請掛載 Render Disk 並設定
 > `DATABASE_URL=sqlite:////var/data/cti.db`。
 
@@ -407,7 +409,9 @@ python tools/enrich_dates.py --report   # 只看比對結果
 
 ## 7. 已知限制
 
-- Meta-Category 由規則分類器判定（91% 與 100 筆人工標註一致）；治理類短文若完全沒有
+- 語料時間跨度 16 個月：TWCERT/CC 每半年約 20 篇通報，湊到 50 篇必須回溯到 2025 年，
+  因此發布節奏圖以「週」為單位並補零，國際情資則集中在最近兩週。
+- Meta-Category 由規則分類器判定（91% 與 100 筆人工標註一致，涵蓋擴充前的 100 篇）；治理類短文若完全沒有
   資安語彙，會被歸為 `OTHER`。改規則後請重跑 `tools/eval_classifier.py`。
 - Tailwind 以 Play CDN 載入（PoC 便利性）；正式環境建議以 CLI 產出最小化 CSS。
 - SQLite 不支援並發寫入；正式上線請改用 PostgreSQL（`DATABASE_URL` 已預留）。

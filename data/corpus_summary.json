@@ -1,0 +1,43 @@
+{
+  "sources": {
+    "taiwan": {
+      "rows": 100,
+      "k": 3,
+      "silhouette": 0.063,
+      "by_source": {
+        "TWCERT": 50,
+        "iThome": 50
+      },
+      "clusters": {
+        "0": 69,
+        "1": 12,
+        "2": 19
+      }
+    },
+    "global": {
+      "rows": 100,
+      "k": 3,
+      "silhouette": 0.0506,
+      "by_source": {
+        "THN": 100
+      },
+      "clusters": {
+        "0": 38,
+        "1": 20,
+        "2": 42
+      }
+    }
+  },
+  "fetched": 200,
+  "empty_bodies": [],
+  "written": {
+    "Taiwan_security_dataset_with_dates.csv": 100,
+    "Global_security_dataset_with_dates.csv": 100
+  },
+  "classification": {
+    "MALWARE": 94,
+    "VULN": 46,
+    "RESEARCH": 42,
+    "OTHER": 18
+  }
+}

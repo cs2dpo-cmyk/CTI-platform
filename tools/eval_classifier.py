@@ -42,29 +42,33 @@ def load() -> list[dict[str, str]]:
             old = str(mapping.get(region, {}).get(cluster, "VULN")).upper()
             if title in overrides:
                 old = "RESEARCH"
-            category, reason = classify.classify(title, row.get("cleaned_text", ""))
+            category, reason = classify.classify(title)
             rows.append({
                 "region": region, "cluster": cluster, "title": title,
-                "gold": gold[title], "old": old, "new": category, "reason": reason,
+                "gold": gold.get(title, ""), "old": old, "new": category, "reason": reason,
             })
     return rows
 
 
 def report(rows: list[dict[str, str]], key: str, title: str) -> None:
-    correct = sum(1 for r in rows if r[key] == r["gold"])
-    total = len(rows)
-    print(f"\n=== {title}: {correct}/{total} = {correct / total:.1%} ===")
+    # Only rows with a hand label can be scored; the corpus can grow past the
+    # labelled set without invalidating the measurement.
+    graded = [r for r in rows if r["gold"]]
+    correct = sum(1 for r in graded if r[key] == r["gold"])
+    total = len(graded)
+    print(f"\n=== {title}: {correct}/{total} = {correct / total:.1%} "
+          f"(graded {total} of {len(rows)} rows) ===")
     print("gold\\pred " + "".join(f"{c:>9}" for c in ORDER))
     for g in ORDER:
         line = [f"{g:<9}"]
         for p in ORDER:
-            line.append(f"{sum(1 for r in rows if r['gold'] == g and r[key] == p):>9}")
+            line.append(f"{sum(1 for r in graded if r['gold'] == g and r[key] == p):>9}")
         print(" ".join(line))
 
     for category in ORDER:
-        tp = sum(1 for r in rows if r["gold"] == category and r[key] == category)
-        fp = sum(1 for r in rows if r["gold"] != category and r[key] == category)
-        fn = sum(1 for r in rows if r["gold"] == category and r[key] != category)
+        tp = sum(1 for r in graded if r["gold"] == category and r[key] == category)
+        fp = sum(1 for r in graded if r["gold"] != category and r[key] == category)
+        fn = sum(1 for r in graded if r["gold"] == category and r[key] != category)
         precision = tp / (tp + fp) if tp + fp else 0.0
         recall = tp / (tp + fn) if tp + fn else 0.0
         print(f"  {category:<9} P={precision:.2f} R={recall:.2f} n={tp + fn}")
@@ -72,9 +76,10 @@ def report(rows: list[dict[str, str]], key: str, title: str) -> None:
 
 def main() -> None:
     rows = load()
-    report(rows, "old", "previous cluster -> meta-category mapping")
+    # The cluster -> category table no longer exists; the historical baseline
+    # (45% on the old 100-row corpus) is documented in the README instead.
     report(rows, "new", "services/classify.py rules")
-    wrong = [r for r in rows if r["new"] != r["gold"]]
+    wrong = [r for r in rows if r["gold"] and r["new"] != r["gold"]]
     print(f"\n--- {len(wrong)} disagreements ---")
     for r in wrong:
         print(f"[{r['region'][:2]} {r['cluster']}] gold={r['gold']:<8} new={r['new']:<8} | {r['title'][:78]}")

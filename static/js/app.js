@@ -229,6 +229,14 @@
     const strip = $('#categoryStrip');
     if (!strip) return;
 
+    // The cluster count is chosen per region, so the caption is derived from
+    // the data instead of assuming C0/C1/C2.
+    const caption = $('#clusterCaption');
+    if (caption) {
+      const ids = [...new Set((stats.clusters || []).map((row) => String(row.cluster)))].sort();
+      caption.textContent = ids.length ? `叢集明細（${ids.map((id) => `C${id}`).join(' / ')}）` : '叢集明細';
+    }
+
     const groups = { taiwan: [], global: [] };
     for (const row of stats.clusters || []) {
       (groups[row.region] ||= []).push(row);

@@ -181,7 +181,9 @@ def load_dataset(*, refresh: bool = False) -> tuple[list[DatasetRecord], dict[st
                 continue
             cluster = str(row.get("cluster", "")).strip()
             text = row.get("cleaned_text", "")
-            category, _reason = classify.classify(title, text)
+            # Classify on the headline: the gold labels are headline judgements,
+            # and full article bodies push almost everything into MALWARE.
+            category, _reason = classify.classify(title)
             evidence = classify.extract_evidence(title, text)
 
             source = row.get("platform") or ("THN" if region == "global" else "UNKNOWN")

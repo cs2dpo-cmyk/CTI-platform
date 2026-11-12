@@ -1,101 +1,201 @@
 ﻿region,source,cluster,meta_category,reason,cves,cvss,exploit,exposure,risk_score,priority,title,gold
-taiwan,TWCERT,1,MALWARE,named actor with attack/breach evidence,,,unknown,internal,69.3,P2,駭客利用AI滲透測試工具ARTEX竊取韓國金融業資料,MALWARE
-taiwan,TWCERT,2,VULN,patch/advisory action,CVE-2026-111497,,unknown,internal,75.1,P2,Node.js發布安全性更新修補10項漏洞，其中CVE-2026-111497可導致遠端程式碼執行，籲儘速更新,VULN
-taiwan,TWCERT,2,VULN,patch/advisory action,,,unknown,internal,70.4,P2,PHP發布安全性更新修補2項可導致遠端程式碼執行之嚴重漏洞，國際資安機構籲儘速更新,VULN
-taiwan,TWCERT,2,RESEARCH,governance/research vocabulary,,,unknown,internal,36.2,P3,CISA更新Medusa勒索軟體安全防護指引：揭露新型勒索手法與入侵指標,RESEARCH
-taiwan,TWCERT,2,VULN,CVE/flaw/patch vocabulary,,,unknown,internal,67.1,P2,PostgreSQL潛藏12年高風險漏洞，恐導致任意程式碼執行,VULN
-taiwan,TWCERT,2,VULN,patch/advisory action,CVE-2026-62911,,active,internal,86.3,P1,Microsoft發布Exchange Server系列安全性更新， CVE-2026-62911已有攻擊利用程式碼流通，籲儘速修補,VULN
+taiwan,TWCERT,0,MALWARE,attack vocabulary,,,unknown,internal,69.3,P2,從Windows到Linux勒索軟體BERT的演化與擴散,
+taiwan,TWCERT,0,MALWARE,breach reported without a patch action,,4.0,poc_public,internal,46.8,P3,CitrixBleed2漏洞可能引發記憶體資料外洩風險,
+taiwan,TWCERT,0,MALWARE,breach reported without a patch action,,,unknown,internal,70.4,P2,機密早已外洩！GitHub Actions 成內鬼溫床，寫入權限竟等同全權存取！,
+taiwan,TWCERT,0,MALWARE,named actor with attack/breach evidence,,9.0,unknown,internal,69.3,P2,駭客利用SonicWall裝置植入「隱形後門」，恐長期竊取組織機密,
+taiwan,TWCERT,0,MALWARE,attack vocabulary,,7.0,unknown,internal,58.2,P3,Outlook「一鍵後門」一年後仍未封堵！Specula 框架持續威脅企業資安,
+taiwan,TWCERT,0,RESEARCH,governance/research vocabulary,,,unknown,internal,70.4,P2,半導體戰略背後的網路戰–資安攻擊鎖定設計、生產與財經分析師,
+taiwan,TWCERT,0,MALWARE,attack vocabulary,,,unknown,internal,69.3,P2,LLM防線全面失守？資安研究員用ChatGPT模擬攻擊竟生成數千惡意樣本,
+taiwan,TWCERT,0,MALWARE,named actor with attack/breach evidence,,,unknown,internal,69.3,P2,解密「長線佈局」與跨領域攻擊：CrowdStrike 深入解析 2025 駭客戰術演進,
+taiwan,TWCERT,0,MALWARE,named actor with attack/breach evidence,,,unknown,internal,69.3,P2,駭客組織疑似聯手，資安威脅再升級,
+taiwan,TWCERT,0,MALWARE,named actor with attack/breach evidence,CVE-2025-61882,9.0,unknown,internal,77.3,P2,Oracle E-Business Suite曝嚴重漏洞CVE-2025-61882，恐遭駭客利用入侵,
+taiwan,TWCERT,0,MALWARE,attack vocabulary,,,unknown,internal,70.4,P2,LockBit 5.0 勒索軟體再度活躍，展現更高技術複雜度與跨平台攻擊能力,
+taiwan,TWCERT,0,RESEARCH,governance note without a concrete event,,,unknown,internal,36.2,P3,社交工程手法再升級：結合雲端服務與短期憑證規避防禦,
+taiwan,TWCERT,0,VULN,patch/advisory action,,,unknown,internal,70.4,P2,全球網路威脅活動「Operation WrtHug」鎖定華碩 (ASUS) 路由器，呼籲用戶立即更新韌體,
+taiwan,TWCERT,0,MALWARE,named actor with attack/breach evidence,,,unknown,internal,69.3,P2,新興區塊鏈 C2 威脅浮現，「EtherHide」成駭客新寵,
+taiwan,TWCERT,0,MALWARE,exploitation reported as an event,CVE-2025-59287,9.0,active,public,94.5,P1,WSUS 高嚴重性漏洞 CVE-2025-59287 已遭利用，呼籲用戶儘速更新,
+taiwan,TWCERT,2,RESEARCH,governance note without a concrete event,,,unknown,internal,36.2,P3,TWCERT/CC 2025台灣資安通報應變年會：打造安全產品 串聯信任防線,
+taiwan,TWCERT,0,RESEARCH,governance note without a concrete event,,,unknown,internal,70.4,P2,提高社交工程警覺！偽冒主管要求建群組與提供個資,
+taiwan,TWCERT,0,VULN,CVE/flaw/patch vocabulary,,,unknown,public,73.0,P2,OWASP 2025年Web應用安全十大威脅揭曉，存取控制漏洞位居榜首,
+taiwan,TWCERT,0,VULN,CVE/flaw/patch vocabulary,,3.0,active,internal,47.5,P3,關鍵 RCE 漏洞「React2Shell」遭大規模積極利用,
+taiwan,TWCERT,0,MALWARE,breach reported without a patch action,,4.0,poc_public,public,52.8,P3,MongoDB伺服器面臨MongoBleed記憶體資料外洩風險,
+taiwan,TWCERT,0,MALWARE,attack vocabulary,,,unknown,internal,70.4,P2,「Contagious Interview」攻擊手法再進化：濫用 VS Code Tasks 建立持久化機制,
+taiwan,TWCERT,0,VULN,patch/advisory action,,10.0,unknown,internal,74.8,P2,n8n自動化平台存在多項嚴重漏洞，呼籲用戶立即更新版本,
+taiwan,TWCERT,2,OTHER,no security vocabulary; product/industry signal,,,unknown,internal,,,ETSI發布EN 304 223標準，強化人工智慧模型與系統資安防護,
+taiwan,TWCERT,0,MALWARE,attack vocabulary,,,unknown,internal,69.3,P2,CISA發布警告：間諜軟體向即時通訊應用程式用戶發動攻擊,
+taiwan,TWCERT,0,VULN,patch/advisory action,,,unknown,internal,67.1,P2,Notepad++自動更新機制遭攻陷，請儘速手動更新,
+taiwan,TWCERT,0,MALWARE,attack vocabulary,,,unknown,internal,69.3,P2,新型惡意軟體 KadNap 鎖定家用路由器,
+taiwan,TWCERT,0,MALWARE,named actor with attack/breach evidence,,10.0,unknown,internal,74.8,P2,Interlock 勒索軟體組織利用 Cisco FMC 零日漏洞發動攻擊，呼籲用戶儘速修補,
+taiwan,TWCERT,0,MALWARE,attack vocabulary,,,unknown,public,75.2,P2,開源漏洞掃描工具 Trivy 遭 TeamPCP 供應鏈攻擊，恐導致CI/CD 機敏資料外洩,
+taiwan,TWCERT,0,MALWARE,named actor with attack/breach evidence,,,unknown,internal,69.3,P2,勒索軟體組織「The Gentlemen」結合SystemBC惡意軟體擴大攻擊版圖,MALWARE
+taiwan,TWCERT,0,MALWARE,named actor with attack/breach evidence,,,unknown,internal,70.4,P2,UAT-10608大規模自動化竊密行動：鎖定React2Shell漏洞入侵逾700台Next.js伺服器,MALWARE
+taiwan,TWCERT,0,MALWARE,named actor with attack/breach evidence,,,unknown,public,75.2,P2,KrCERT/CC發布「Operation SearchStrike」報告：駭客以SEO毒化Github散布惡意軟體,
+taiwan,TWCERT,0,MALWARE,named actor with attack/breach evidence,,10.0,unknown,internal,74.8,P2,駭客組織 UAT-8616 鎖定 Cisco Catalyst SD-WAN 滿分漏洞發動攻擊,MALWARE
+taiwan,TWCERT,0,RESEARCH,governance note without a concrete event,,,active,public,87.6,P2,歐盟 CRA 進入強制合規階段！全球聯網製造商迎戰 SBOM 管理新挑戰,RESEARCH
+taiwan,TWCERT,0,MALWARE,attack vocabulary,,,unknown,public,76.4,P2,「裝置碼」釣魚攻擊成新興威脅，企業與組織成主要目標,MALWARE
+taiwan,TWCERT,0,RESEARCH,governance note without a concrete event,,,unknown,internal,36.2,P3,旅遊 eSIM 的陷阱：流量路徑不揭露，出差人員連線資料恐暴露境外,RESEARCH
+taiwan,TWCERT,0,MALWARE,attack vocabulary,,,unknown,internal,69.3,P2,知名開源框架 TanStack 遭「Mini Shai-Hulud」供應鏈攻擊，開源安全風險受關注,MALWARE
+taiwan,TWCERT,0,MALWARE,breach reported without a patch action,,,unknown,public,75.2,P2,「FortiBleed」大規模憑證竊取行動：企業防火牆與VPN設備面臨風險,MALWARE
+taiwan,TWCERT,0,RESEARCH,governance note without a concrete event,,,unknown,internal,36.2,P3,SBOM做了，為什麼還可能不合規？ENISA調查揭露近三成企業用錯格式,RESEARCH
+taiwan,TWCERT,0,MALWARE,named actor with attack/breach evidence,,,poc_public,internal,75.4,P2,防禦工具反成駭客利器？最新研究揭露「Friendly Fire」攻擊，誘導 AI Agent 觸發遠端控制,MALWARE
+taiwan,TWCERT,0,MALWARE,named actor with attack/breach evidence,,,unknown,internal,69.3,P2,駭客結合惡意廣告與 AI 平台發動 ClickFix 攻擊,MALWARE
 taiwan,TWCERT,0,OTHER,no security vocabulary; product/industry signal,,,unknown,internal,,,CRA強化軟體供應鏈安全要求，SBOM成企業重要管理工具,RESEARCH
 taiwan,TWCERT,0,MALWARE,named actor with attack/breach evidence,,,unknown,internal,69.3,P2,惡意npm攻擊再進化！駭客利用區塊鏈隱藏C2位址,MALWARE
-taiwan,TWCERT,0,MALWARE,attack vocabulary,,,unknown,internal,69.3,P2,CISA與多國安全機構聯合發布「Gunra」勒索軟體預警通報,MALWARE
-taiwan,TWCERT,0,MALWARE,named actor with attack/breach evidence,,,unknown,internal,69.3,P2,駭客結合惡意廣告與 AI 平台發動 ClickFix 攻擊,MALWARE
-taiwan,TWCERT,1,RESEARCH,governance note without a concrete event,,,unknown,internal,36.2,P3,SBOM做了，為什麼還可能不合規？ENISA調查揭露近三成企業用錯格式,RESEARCH
-taiwan,TWCERT,1,MALWARE,named actor with attack/breach evidence,,,unknown,internal,69.3,P2,防禦工具反成駭客利器？最新研究揭露「Friendly Fire」攻擊，誘導 AI Agent 觸發遠端控制,MALWARE
-taiwan,TWCERT,1,MALWARE,breach reported without a patch action,,,unknown,internal,69.3,P2,「FortiBleed」大規模憑證竊取行動：企業防火牆與VPN設備面臨風險,MALWARE
-taiwan,TWCERT,1,RESEARCH,governance note without a concrete event,,,unknown,internal,36.2,P3,旅遊 eSIM 的陷阱：流量路徑不揭露，出差人員連線資料恐暴露境外,RESEARCH
-taiwan,TWCERT,1,MALWARE,attack vocabulary,,,unknown,internal,69.3,P2,知名開源框架 TanStack 遭「Mini Shai-Hulud」供應鏈攻擊，開源安全風險受關注,MALWARE
-taiwan,TWCERT,2,MALWARE,named actor with attack/breach evidence,,,unknown,internal,70.4,P2,駭客組織 UAT-8616 鎖定 Cisco Catalyst SD-WAN 滿分漏洞發動攻擊,MALWARE
-taiwan,TWCERT,1,RESEARCH,governance note without a concrete event,,,unknown,internal,36.2,P3,歐盟 CRA 進入強制合規階段！全球聯網製造商迎戰 SBOM 管理新挑戰,RESEARCH
-taiwan,TWCERT,1,MALWARE,attack vocabulary,,,unknown,internal,69.3,P2,「裝置碼」釣魚攻擊成新興威脅，企業與組織成主要目標,MALWARE
-taiwan,TWCERT,0,MALWARE,named actor with attack/breach evidence,,,unknown,internal,69.3,P2,勒索軟體組織「The Gentlemen」結合SystemBC惡意軟體擴大攻擊版圖,MALWARE
-taiwan,TWCERT,2,MALWARE,named actor with attack/breach evidence,,,unknown,internal,69.3,P2,UAT-10608大規模自動化竊密行動：鎖定React2Shell漏洞入侵逾700台Next.js伺服器,MALWARE
-taiwan,iThome,1,MALWARE,attack vocabulary,,,unknown,internal,69.3,P2,日本樂天兩個旅遊網站遭駭外洩用戶個資354萬，臺灣網站不受影響,MALWARE
-taiwan,iThome,2,VULN,patch/advisory action,,,unknown,internal,70.4,P2,微軟發布Windows緊急更新，移除eMudhra問題憑證的預設信任,VULN
-taiwan,iThome,2,RESEARCH,governance/research vocabulary,,,unknown,internal,36.2,P3,AI加快漏洞發現，CSA提出VulnOps模式改善企業漏洞管理,RESEARCH
-taiwan,iThome,1,OTHER,no security vocabulary; product/industry signal,,,unknown,internal,,,英國擬修法強化海底電纜安全，要求業者管理安全風險並通報事故,RESEARCH
+taiwan,TWCERT,0,MALWARE,attack vocabulary,,9.0,unknown,internal,69.3,P2,CISA與多國安全機構聯合發布「Gunra」勒索軟體預警通報,MALWARE
+taiwan,TWCERT,1,VULN,patch/advisory action,CVE-2026-62911,,active,public,95.6,P1,Microsoft發布Exchange Server系列安全性更新， CVE-2026-62911已有攻擊利用程式碼流通，籲儘速修補,VULN
+taiwan,TWCERT,0,RESEARCH,governance/research vocabulary,,,unknown,internal,36.2,P3,CISA更新Medusa勒索軟體安全防護指引：揭露新型勒索手法與入侵指標,RESEARCH
+taiwan,TWCERT,0,VULN,CVE/flaw/patch vocabulary,,7.0,unknown,public,64.2,P3,PostgreSQL潛藏12年高風險漏洞，恐導致任意程式碼執行,VULN
+taiwan,TWCERT,0,VULN,patch/advisory action,CVE-2026-111497,,unknown,internal,75.1,P2,Node.js發布安全性更新修補10項漏洞，其中CVE-2026-111497可導致遠端程式碼執行，籲儘速更新,VULN
+taiwan,TWCERT,1,VULN,patch/advisory action,,4.0,poc_public,public,52.8,P3,PHP發布安全性更新修補2項可導致遠端程式碼執行之嚴重漏洞，國際資安機構籲儘速更新,VULN
+taiwan,TWCERT,0,MALWARE,named actor with attack/breach evidence,,,unknown,internal,69.3,P2,駭客利用AI滲透測試工具ARTEX竊取韓國金融業資料,MALWARE
+taiwan,iThome,2,OTHER,no security vocabulary; product/industry signal,,,unknown,internal,,,千家臺灣中小企業採用，老牌印度協作軟體業者主打企業級AI、擴大在臺布局,OTHER
+taiwan,iThome,2,OTHER,no security vocabulary; product/industry signal,,,unknown,internal,,,GitHub開源AI原型工具Replica，可參考企業設計規範製作互動介面,OTHER
+taiwan,iThome,0,RESEARCH,governance/research vocabulary,,,unknown,internal,36.2,P3,行動App安全規範與技術持續更新，執行環境防護與白箱加密成焦點,RESEARCH
+taiwan,iThome,2,OTHER,no security vocabulary; product/industry signal,,,unknown,public,,,高雄打造城市AI大腦，讓AI從看懂影像到推理事件原因，早一步發現淹水、塞車與道路異常,OTHER
+taiwan,iThome,0,RESEARCH,governance note without a concrete event,,,unknown,internal,36.2,P3,AI降低App逆向分析門檻帶來資安挑戰，企業App安全策略須兼顧發布後防護,RESEARCH
+taiwan,iThome,2,OTHER,no security vocabulary; product/industry signal,,,unknown,internal,,,Google推出Connected Apps平臺，第三方應用可一次串接Gemini與搜尋,OTHER
+taiwan,iThome,0,VULN,patch/advisory action,,,unknown,internal,70.4,P2,Tailscale釋出1.104.4安全更新，修補SSH與Serve功能共4項漏洞,VULN
+taiwan,iThome,0,MALWARE,named actor with attack/breach evidence,,8.0,unknown,public,69.8,P2,【資安日報】10月29日，北韓駭客鎖定216臺PHP主機掃描PHP2Shell漏洞，臺灣列入目標範圍,MALWARE
+taiwan,iThome,2,OTHER,no security vocabulary; product/industry signal,,,unknown,internal,,,Nvidia釋出Nemotron 3.5語音模型，整合轉錄、翻譯與講者辨識,OTHER
+taiwan,iThome,1,MALWARE,exploitation reported as an event,,9.0,active,internal,80.5,P1,甫修補的Oracle E-Business Suite重大漏洞遭到利用,MALWARE
+taiwan,iThome,0,VULN,patch/advisory action,,,unknown,internal,67.1,P2,macOS 27.2未修補eMudhra憑證風險，Git與curl仍可能遭中間人攻擊,VULN
+taiwan,iThome,1,VULN,patch/advisory action,,,unknown,internal,70.4,P2,PHP2Shell漏洞影響多家IT與OT廠商的產品，相關公告陸續出爐,VULN
+taiwan,iThome,2,OTHER,no security vocabulary; product/industry signal,,,unknown,internal,,,GitHub發表能在單一任務內跨模型協同的Copilot Fusion,OTHER
+taiwan,iThome,0,MALWARE,named actor with attack/breach evidence,,,unknown,internal,69.3,P2,中國駭客Volt Typhoon綁架連網設備打造攻擊框架Silent Train，用於攻擊美國關鍵基礎設施,MALWARE
+taiwan,iThome,2,OTHER,no security vocabulary; product/industry signal,,,unknown,internal,,,微軟季度營收成長19%，Azure大增48%，Windows裝置下滑22%,OTHER
+taiwan,iThome,0,RESEARCH,governance note without a concrete event,,,unknown,internal,36.2,P3,美國制裁北韓遠端IT工作詐騙網絡，鎖定俄羅斯洗錢中間人,RESEARCH
+taiwan,iThome,1,VULN,patch/advisory action,,,unknown,internal,70.4,P2,Adobe發布10月下半更新，修補8個Campaign Classic重大漏洞,VULN
+taiwan,iThome,0,OTHER,no security vocabulary; product/industry signal,,,unknown,internal,,,CISA提供兩款免費工具，協助檢測M365與Google Workspace的安全設定錯誤,RESEARCH
+taiwan,iThome,0,MALWARE,attack vocabulary,,,unknown,internal,69.3,P2,Sony日本ISP、保險業務系統被駭，外洩258萬會員、38.5萬保戶個資,MALWARE
+taiwan,iThome,1,VULN,CVE/flaw/patch vocabulary,,,active,internal,81.6,P1,Linux核心、VMware ESX漏洞遭積極利用,VULN
+taiwan,iThome,0,MALWARE,named actor with attack/breach evidence,,,unknown,internal,70.4,P2,駭客宣稱竊走美國土安全部員工資料超過4萬筆,MALWARE
+taiwan,iThome,0,MALWARE,attack vocabulary,,,unknown,internal,70.4,P2,汽車零配件製造商橙的遭勒索軟體攻擊,MALWARE
+taiwan,iThome,2,OTHER,no security vocabulary; product/industry signal,,,unknown,internal,,,Google Cloud營收翻倍，搜尋業務成長放緩,OTHER
+taiwan,iThome,0,OTHER,no security vocabulary; product/industry signal,,,unknown,internal,,,"蘋果推出首款觸控MacBook Pro，售價2,899美元起",OTHER
+taiwan,iThome,2,OTHER,no security vocabulary; product/industry signal,,,unknown,internal,,,Google發表Gemini 4 Carbon，綜合能力評測登頂、資安表現創新高,OTHER
+taiwan,iThome,0,MALWARE,attack vocabulary,,,unknown,internal,69.3,P2,日本樂天兩個旅遊網站遭駭外洩用戶個資354萬，臺灣網站不受影響,MALWARE
+taiwan,iThome,0,VULN,patch/advisory action,,,unknown,internal,70.4,P2,微軟發布Windows緊急更新，移除eMudhra問題憑證的預設信任,VULN
+taiwan,iThome,0,RESEARCH,governance/research vocabulary,,,unknown,public,42.2,P3,AI加快漏洞發現，CSA提出VulnOps模式改善企業漏洞管理,RESEARCH
+taiwan,iThome,0,OTHER,no security vocabulary; product/industry signal,,,unknown,internal,,,英國擬修法強化海底電纜安全，要求業者管理安全風險並通報事故,RESEARCH
 taiwan,iThome,0,MALWARE,attack vocabulary,,,unknown,internal,69.3,P2,惡意Markdown指引檔企圖誘使Codex安裝惡意套件，AI程式開發代理面臨攻擊風險,MALWARE
-taiwan,iThome,1,OTHER,no security vocabulary; product/industry signal,,,unknown,internal,,,千家臺灣中小企業採用，老牌印度協作軟體業者主打企業級AI、擴大在臺布局,OTHER
-taiwan,iThome,1,OTHER,no security vocabulary; product/industry signal,,,unknown,internal,,,GitHub開源AI原型工具Replica，可參考企業設計規範製作互動介面,OTHER
-taiwan,iThome,2,RESEARCH,governance/research vocabulary,,,unknown,internal,36.2,P3,行動App安全規範與技術持續更新，執行環境防護與白箱加密成焦點,RESEARCH
-taiwan,iThome,1,OTHER,no security vocabulary; product/industry signal,,,unknown,internal,,,高雄打造城市AI大腦，讓AI從看懂影像到推理事件原因，早一步發現淹水、塞車與道路異常,OTHER
-taiwan,iThome,1,RESEARCH,governance note without a concrete event,,,unknown,internal,36.2,P3,AI降低App逆向分析門檻帶來資安挑戰，企業App安全策略須兼顧發布後防護,RESEARCH
-taiwan,iThome,1,OTHER,no security vocabulary; product/industry signal,,,unknown,internal,,,Google推出Connected Apps平臺，第三方應用可一次串接Gemini與搜尋,OTHER
-taiwan,iThome,2,VULN,patch/advisory action,,,unknown,internal,67.1,P2,Tailscale釋出1.104.4安全更新，修補SSH與Serve功能共4項漏洞,VULN
-taiwan,iThome,2,MALWARE,named actor with attack/breach evidence,,,unknown,public,75.2,P2,【資安日報】10月29日，北韓駭客鎖定216臺PHP主機掃描PHP2Shell漏洞，臺灣列入目標範圍,MALWARE
-taiwan,iThome,1,OTHER,no security vocabulary; product/industry signal,,,unknown,internal,,,Nvidia釋出Nemotron 3.5語音模型，整合轉錄、翻譯與講者辨識,OTHER
-taiwan,iThome,2,MALWARE,exploitation reported as an event,,,active,internal,81.6,P1,甫修補的Oracle E-Business Suite重大漏洞遭到利用,MALWARE
-taiwan,iThome,1,VULN,patch/advisory action,,,unknown,internal,67.1,P2,macOS 27.2未修補eMudhra憑證風險，Git與curl仍可能遭中間人攻擊,VULN
-taiwan,iThome,2,VULN,patch/advisory action,,,unknown,internal,67.1,P2,PHP2Shell漏洞影響多家IT與OT廠商的產品，相關公告陸續出爐,VULN
-taiwan,iThome,1,OTHER,no security vocabulary; product/industry signal,,,unknown,internal,,,GitHub發表能在單一任務內跨模型協同的Copilot Fusion,OTHER
-taiwan,iThome,1,MALWARE,named actor with attack/breach evidence,,,unknown,internal,69.3,P2,中國駭客Volt Typhoon綁架連網設備打造攻擊框架Silent Train，用於攻擊美國關鍵基礎設施,MALWARE
-taiwan,iThome,1,OTHER,no security vocabulary; product/industry signal,,,unknown,internal,,,微軟季度營收成長19%，Azure大增48%，Windows裝置下滑22%,OTHER
-taiwan,iThome,1,RESEARCH,governance note without a concrete event,,,unknown,internal,36.2,P3,美國制裁北韓遠端IT工作詐騙網絡，鎖定俄羅斯洗錢中間人,RESEARCH
-taiwan,iThome,2,VULN,patch/advisory action,,,unknown,internal,70.4,P2,Adobe發布10月下半更新，修補8個Campaign Classic重大漏洞,VULN
-taiwan,iThome,1,OTHER,no security vocabulary; product/industry signal,,,unknown,internal,,,CISA提供兩款免費工具，協助檢測M365與Google Workspace的安全設定錯誤,RESEARCH
-taiwan,iThome,1,MALWARE,attack vocabulary,,,unknown,internal,69.3,P2,Sony日本ISP、保險業務系統被駭，外洩258萬會員、38.5萬保戶個資,MALWARE
-taiwan,iThome,2,VULN,CVE/flaw/patch vocabulary,,,active,internal,81.6,P1,Linux核心、VMware ESX漏洞遭積極利用,VULN
-taiwan,iThome,1,MALWARE,named actor with attack/breach evidence,,,unknown,internal,69.3,P2,駭客宣稱竊走美國土安全部員工資料超過4萬筆,MALWARE
-taiwan,iThome,0,MALWARE,attack vocabulary,,,unknown,internal,69.3,P2,汽車零配件製造商橙的遭勒索軟體攻擊,MALWARE
-taiwan,iThome,1,OTHER,no security vocabulary; product/industry signal,,,unknown,internal,,,Google Cloud營收翻倍，搜尋業務成長放緩,OTHER
-taiwan,iThome,1,OTHER,no security vocabulary; product/industry signal,,,unknown,internal,,,"蘋果推出首款觸控MacBook Pro，售價2,899美元起",OTHER
-taiwan,iThome,1,OTHER,no security vocabulary; product/industry signal,,,unknown,internal,,,Google發表Gemini 4 Carbon，綜合能力評測登頂、資安表現創新高,OTHER
-global,THN,2,RESEARCH,governance/research vocabulary,,,unknown,internal,70.4,P2,"ThreatsDay: Critical Firewall Flaws, Banking Trojans Rented, Weaponized PDF, Token Theft + 26 More Stories",RESEARCH
-global,THN,0,VULN,CVE/flaw/patch vocabulary,,,unknown,internal,67.1,P2,"Linux Kernel TCP Flaw With 9.8 CVSS Score Affects Ubuntu, Red Hat and Other Distributions",VULN
-global,THN,0,MALWARE,attack vocabulary,,,unknown,internal,69.3,P2,Fake ChatGPT and Claude Apps Abuse Signed Executables to Deploy Crypto Miners,MALWARE
-global,THN,0,RESEARCH,governance/research vocabulary,,,unknown,internal,36.2,P3,"Google's Gemini 4 Carbon Leads Benchmarks for Finding, Exploiting, and Patching Vulnerabilities",RESEARCH
-global,THN,0,RESEARCH,governance note without a concrete event,,,unknown,internal,36.2,P3,Webinar: How to Build AI Threat Readiness Into Your Security Operations,RESEARCH
-global,THN,0,MALWARE,named actor with attack/breach evidence,,,unknown,internal,69.3,P2,Telegram Android Flaw Lets Attackers Run Code When Users Answer Voice Calls,VULN
-global,THN,0,RESEARCH,governance note without a concrete event,,,unknown,internal,36.2,P3,The Rise of the Threat Operator: How AI Will Redefine Security Operations and Careers,RESEARCH
-global,THN,2,MALWARE,breach reported without a patch action,,,unknown,internal,69.3,P2,"26,400 Valid Cloud and AI Credentials Found Exposed in Public Gitee Repositories",MALWARE
-global,THN,0,VULN,patch/advisory action,,,active,internal,81.6,P1,Cisco Patches Actively Exploited ASA and FTD VPN Flaw That Can Crash Firewalls,VULN
-global,THN,0,OTHER,no security vocabulary; product/industry signal,,,unknown,internal,,,GitHub Launches npm Firewall to Block Malicious Packages Before Installation,OTHER
-global,THN,0,MALWARE,named actor with attack/breach evidence,,10.0,unknown,internal,74.8,P2,Attacker Tried to Exploit Alpine Linux’s GitLab via CVSS 10.0 Flaw Its Ruby Left Open,MALWARE
-global,THN,0,MALWARE,named actor with attack/breach evidence,,,unknown,internal,69.3,P2,Hackers Exploited Cisco SD-WAN Flaw to Plant Malware Built to Steal Encryption Keys,MALWARE
-global,THN,0,MALWARE,named actor with attack/breach evidence,,,unknown,internal,70.4,P2,China-Linked Hackers Exploited VMware ESX Zero-Day to Reduce Audit Trail Visibility,MALWARE
-global,THN,2,MALWARE,named actor with attack/breach evidence,,,unknown,public,75.2,P2,Attackers Exploit PHP2Shell Flaws in Internet-Exposed Palo Alto Networks Management Interfaces,MALWARE
+taiwan,TWCERT,0,MALWARE,breach reported without a patch action,,,unknown,public,76.4,P2,歐洲超市冷凍設備遭駭，凸顯連網設備對外暴露與預設密碼風險,
+taiwan,iThome,2,OTHER,no security vocabulary; product/industry signal,,,poc_public,internal,,,國網中心布局主權AI，TAIWAN AI RAP擴充模型微調能力，加速AI應用落地,
+taiwan,iThome,0,RESEARCH,governance note without a concrete event,,,unknown,internal,36.2,P3,Amazon ElastiCache Serverless加入向量與全文搜尋，可混合查詢即時資料,
+taiwan,iThome,2,RESEARCH,governance note without a concrete event,,,unknown,internal,36.2,P3,Google Gemini 4 Carbon全面上線，以較低價對打Anthropic Fable/Mythos 5.2,
+taiwan,iThome,1,VULN,patch/advisory action,,,unknown,internal,70.4,P2,Adobe發布11月上半例行更新，修補110個資安漏洞,
+taiwan,iThome,0,RESEARCH,governance note without a concrete event,,,unknown,internal,70.4,P2,漢來美食委外購物商城發生資安事件，部分消費者訂單資料遭異常存取,
+taiwan,iThome,0,MALWARE,named actor with attack/breach evidence,,6.0,unknown,internal,52.8,P3,【資安日報】11月11日，駭客利用大數據平臺Qubole被竊憑證，入侵數十家企業AWS環境竊取資料,
+taiwan,iThome,0,RESEARCH,governance note without a concrete event,,,unknown,internal,70.4,P2,黑松線上商店委外廠商資料庫遭異常存取，訂單資料恐受影響,
+taiwan,iThome,2,OTHER,no security vocabulary; product/industry signal,,,unknown,internal,,,AMD正式推出第6代EPYC伺服器處理器，首波上市產品為SP7平台，主打AI資料中心與企業運算市場,
+taiwan,iThome,0,MALWARE,named actor with attack/breach evidence,,,unknown,internal,69.3,P2,駭客利用大數據平臺Qubole被竊憑證，入侵數十家企業AWS環境竊取資料,
+taiwan,iThome,1,VULN,CVE/flaw/patch vocabulary,,,active,internal,81.6,P1,CISA警告6個弱點遭積極利用，其中包含Outlook、Chrome零時差漏洞,
+taiwan,iThome,2,RESEARCH,governance note without a concrete event,,,unknown,internal,36.2,P3,主動管理AI價值與風險，Gartner建議企業可採取三項措施,
+taiwan,iThome,1,VULN,patch/advisory action,,10.0,unknown,internal,74.8,P2,SAP發布11月例行更新，修補4個滿分漏洞,
+taiwan,iThome,1,VULN,patch/advisory action,,,unknown,internal,70.4,P2,Apple發布iOS、iPadOS 27.2.1與18.7.12版，緊急修補10個資安漏洞,
+taiwan,iThome,2,MALWARE,breach reported without a patch action,,,unknown,internal,69.3,P2,Fireworks AI遭駭波及Notion，部分AI對話紀錄遭未授權存取,
+taiwan,iThome,0,MALWARE,breach reported without a patch action,,,unknown,internal,69.3,P2,"日本宜得利系統遭非法存取，外洩企業會員、客戶個資近3,800萬筆",
+taiwan,iThome,2,RESEARCH,governance note without a concrete event,,,unknown,internal,36.2,P3,Claude新增試算表與協作白板，還能直接操作第三方App,
+taiwan,iThome,2,RESEARCH,governance note without a concrete event,,,unknown,internal,70.4,P2,Anthropic公布Claude Fable、Mythos 5.2，輸出速度最高提升30%、價格降20%,
+taiwan,iThome,1,MALWARE,exploitation reported as an event,,6.0,active,internal,64.0,P3,微軟警告Outlook零時差漏洞已遭到利用,
+taiwan,iThome,1,VULN,patch/advisory action,,,unknown,internal,67.1,P2,"微軟發布11月例行更新，修補1,094個資安漏洞",
+taiwan,iThome,2,RESEARCH,governance note without a concrete event,,,unknown,internal,36.2,P3,Anthropic啟動IPO投資人說明會，最多募資625億美元,
+global,THN,0,MALWARE,named actor with attack/breach evidence,,,active,internal,81.6,P1,"Hackers Infect 953 Online Stores With Scanner-Evading JavaScript, Mostly on Magento",MALWARE
+global,THN,1,VULN,patch/advisory action,,,unknown,internal,70.4,P2,PHP Issues Second Windows Security Update in Five Days to Fix Brotli Code Execution Flaw,VULN
+global,THN,0,MALWARE,named actor with attack/breach evidence,,,unknown,internal,69.3,P2,Attackers Use Microsoft Teams IT Support Scams to Deploy Malware and Ransomware,MALWARE
+global,THN,0,RESEARCH,governance/research vocabulary,,10.0,active,internal,86.0,P2,"⚡ Weekly Recap: This2Shell, That2Shell, Everything's an RCE? Rogue AI, Supply Chain Chaos and More",RESEARCH
+global,THN,2,VULN,CVE/flaw/patch vocabulary,,,unknown,internal,70.4,P2,Two Critical Wasmtime Flaws Could Let Malicious WebAssembly Modules Escape Sandboxes,MALWARE
+global,THN,0,MALWARE,named actor with attack/breach evidence,,,unknown,internal,70.4,P2,Between alerts: What Attackers Do in the Spaces Ordinary Detection Misses,RESEARCH
+global,THN,2,MALWARE,attack vocabulary,,,unknown,internal,69.3,P2,uCreator Android Spyware Can Steal Telegram 2FA Passwords and Clone WeChat Accounts,MALWARE
+global,THN,0,MALWARE,attack vocabulary,,,unknown,internal,69.3,P2,Microsoft 365 Token-Replay Attacks Compromise 97 Accounts at 79 Organizations,MALWARE
+global,THN,2,MALWARE,attack vocabulary,,,unknown,internal,69.3,P2,Gheist Uses Stolen GitHub Tokens to Steal Private Repository Secrets via Actions Logs,MALWARE
+global,THN,2,MALWARE,attack vocabulary,,,poc_public,internal,74.3,P2,Malicious File in Downloads Folder Tries to Trick AI Coding Agent Into Installing Malware,MALWARE
+global,THN,0,MALWARE,attack vocabulary,,,unknown,internal,69.3,P2,CyberStrikeAI Uses 44 AI Agents to Automate Hacking Operations Against Japan Targets,MALWARE
+global,THN,2,VULN,CVE/flaw/patch vocabulary,,,poc_public,internal,75.4,P2,GoAhead TLS Flaws Allow Revoked Client Certificates and Enable Session Decryption,VULN
+global,THN,1,VULN,patch/advisory action,,,active,internal,81.6,P1,Apple Backports Fix for Exploited CoreGraphics Flaw to Older iPhones and iPads,VULN
+global,THN,2,VULN,CVE/flaw/patch vocabulary,,,poc_public,internal,72.1,P2,Microsoft Authenticator Flaw Let Permissionless Android Apps Steal Work Account Tokens,VULN
+global,THN,2,MALWARE,named actor with attack/breach evidence,,,unknown,internal,69.3,P2,"Keystone to Destroy 18,835 Hardware Wallets After Hackers Steal Device Verification Key",MALWARE
+global,THN,0,MALWARE,breach reported without a patch action,,,unknown,internal,69.3,P2,AI-Generated Fake Login Pages Are Making Account Takeovers Easier,MALWARE
+global,THN,0,MALWARE,named actor with attack/breach evidence,,,unknown,internal,70.4,P2,Lazarus Abuses South Korean Security Software to Deploy Malware Using Post-Quantum Encryption,MALWARE
+global,THN,0,MALWARE,attack vocabulary,,,unknown,internal,69.3,P2,"Australia Gets Into Amadey Malware Backend, Cuts Off Access to 180,000 Infected Computers",MALWARE
+global,THN,2,RESEARCH,governance/research vocabulary,,,active,internal,47.5,P3,OpenAI Compaction Flaw Let Researchers Bypass Hidden Reasoning Protections,VULN
+global,THN,0,MALWARE,named actor with attack/breach evidence,,,unknown,public,76.4,P2,Attackers Hijack Dahua IP Cameras in Ukraine Using P2P Access and Auth Weaknesses,MALWARE
+global,THN,1,VULN,CVE/flaw/patch vocabulary,,,active,internal,81.6,P1,CISA Confirms Active Exploitation of Two PHP2Shell Flaws Enabling Remote Code Execution,VULN
 global,THN,0,MALWARE,named actor with attack/breach evidence,,,unknown,internal,70.4,P2,Volt Typhoon Used Covert Silent Train Network in Four Zero-Day Exploitation Campaigns,MALWARE
-global,THN,1,OTHER,no security vocabulary; product/industry signal,,,unknown,internal,,,Google to Allow One-Tap Android App Installs From Approved Third-Party Stores Outside U.S.,OTHER
-global,THN,0,RESEARCH,governance note without a concrete event,,,unknown,internal,36.2,P3,"Researcher Reveals How Logic Bugs Alone Cracked Microsoft Edge in $175,000 Pwn2Own Win",RESEARCH
-global,THN,0,MALWARE,attack vocabulary,,,unknown,internal,69.3,P2,"PHP2Shell Attack Roots 25 Servers, Breaches U.S. Government-Affiliated Network",MALWARE
-global,THN,0,MALWARE,named actor with attack/breach evidence,,,unknown,internal,70.4,P2,Hackers Target Critical Oracle E-Business Suite RCE Flaw Days After Security Patch,MALWARE
-global,THN,0,VULN,CVE/flaw/patch vocabulary,,,unknown,internal,70.4,P2,Critical 16-Year-Old UEFI Flaw Can Run Code Before Secure Boot on Network-Booting Servers,VULN
-global,THN,2,RESEARCH,governance note without a concrete event,,,unknown,internal,36.2,P3,Wazuh and AI for Enhanced SOC Workflows,RESEARCH
-global,THN,0,VULN,patch/advisory action,,,unknown,internal,70.4,P2,Adobe Fixes 8 Critical Campaign Classic Flaws Allowing Code Execution and Security Bypass,VULN
-global,THN,2,MALWARE,attack vocabulary,,,unknown,internal,69.3,P2,American Organizations Under Attack: Skyw4lker Device Code Phishing Campaign Exposed,MALWARE
-global,THN,1,VULN,CVE/flaw/patch vocabulary,,,unknown,internal,67.1,P2,"Anthropic's Unreleased AI Model Chains Flaws Into Working Chrome, Safari, Windows and Linux Exploits",RESEARCH
+global,THN,2,OTHER,no security vocabulary; product/industry signal,,,unknown,internal,,,Google to Allow One-Tap Android App Installs From Approved Third-Party Stores Outside U.S.,OTHER
+global,THN,2,RESEARCH,governance note without a concrete event,,,active,internal,47.5,P3,"Researcher Reveals How Logic Bugs Alone Cracked Microsoft Edge in $175,000 Pwn2Own Win",RESEARCH
+global,THN,0,MALWARE,attack vocabulary,,,active,internal,81.6,P1,"PHP2Shell Attack Roots 25 Servers, Breaches U.S. Government-Affiliated Network",MALWARE
+global,THN,1,MALWARE,named actor with attack/breach evidence,,,active,internal,81.6,P1,Hackers Target Critical Oracle E-Business Suite RCE Flaw Days After Security Patch,MALWARE
+global,THN,2,VULN,CVE/flaw/patch vocabulary,,,unknown,internal,70.4,P2,Critical 16-Year-Old UEFI Flaw Can Run Code Before Secure Boot on Network-Booting Servers,VULN
+global,THN,0,RESEARCH,governance note without a concrete event,,,unknown,internal,70.4,P2,Wazuh and AI for Enhanced SOC Workflows,RESEARCH
+global,THN,1,VULN,patch/advisory action,,,active,internal,81.6,P1,Adobe Fixes 8 Critical Campaign Classic Flaws Allowing Code Execution and Security Bypass,VULN
+global,THN,0,MALWARE,attack vocabulary,,,unknown,internal,70.4,P2,American Organizations Under Attack: Skyw4lker Device Code Phishing Campaign Exposed,MALWARE
+global,THN,2,VULN,CVE/flaw/patch vocabulary,,,poc_public,internal,75.4,P2,"Anthropic's Unreleased AI Model Chains Flaws Into Working Chrome, Safari, Windows and Linux Exploits",RESEARCH
 global,THN,0,RESEARCH,governance note without a concrete event,,,unknown,internal,36.2,P3,FBI Seizes Virtualine Domain Over Alleged Criminal Hosting and Bitcoin Money Laundering,RESEARCH
 global,THN,2,MALWARE,named actor with attack/breach evidence,,,unknown,internal,69.3,P2,Japan's GMO Offers $1 Million Bounty to Catch Hackers Behind FX Trading Cloud Breach,RESEARCH
-global,THN,1,VULN,patch/advisory action,,,unknown,internal,67.1,P2,Tailscale Patches SSH Flaws That Could Let Hacked Devices Gain Root Access on Other Servers,VULN
-global,THN,0,MALWARE,named actor with attack/breach evidence,,,unknown,internal,70.4,P2,ShinyHunters-Exploited Oracle PeopleSoft Zero-Day Turns Out to Be Three Chained Flaws,MALWARE
-global,THN,0,MALWARE,attack vocabulary,,,unknown,internal,69.3,P2,Adobe Commerce PolyShell Attacks Breach Hundreds of Stores as Brotli Exploit Traffic Emerges,MALWARE
-global,THN,2,MALWARE,attack vocabulary,,,unknown,internal,69.3,P2,CyberStrikeAI Uses 44 AI Agents to Automate Hacking Operations Against Japan Targets,MALWARE
-global,THN,1,VULN,CVE/flaw/patch vocabulary,,,unknown,internal,67.1,P2,GoAhead TLS Flaws Allow Revoked Client Certificates and Enable Session Decryption,VULN
-global,THN,0,VULN,patch/advisory action,,,unknown,internal,67.1,P2,Apple Backports Fix for Exploited CoreGraphics Flaw to Older iPhones and iPads,VULN
-global,THN,0,VULN,CVE/flaw/patch vocabulary,,,unknown,internal,67.1,P2,Microsoft Authenticator Flaw Let Permissionless Android Apps Steal Work Account Tokens,VULN
-global,THN,0,MALWARE,named actor with attack/breach evidence,,,unknown,internal,69.3,P2,"Keystone to Destroy 18,835 Hardware Wallets After Hackers Steal Device Verification Key",MALWARE
-global,THN,2,MALWARE,breach reported without a patch action,,,unknown,internal,69.3,P2,AI-Generated Fake Login Pages Are Making Account Takeovers Easier,MALWARE
-global,THN,0,MALWARE,named actor with attack/breach evidence,,,unknown,internal,69.3,P2,Lazarus Abuses South Korean Security Software to Deploy Malware Using Post-Quantum Encryption,MALWARE
-global,THN,0,MALWARE,attack vocabulary,,,unknown,internal,69.3,P2,"Australia Gets Into Amadey Malware Backend, Cuts Off Access to 180,000 Infected Computers",MALWARE
-global,THN,0,RESEARCH,governance/research vocabulary,,,unknown,internal,36.2,P3,OpenAI Compaction Flaw Let Researchers Bypass Hidden Reasoning Protections,VULN
-global,THN,0,MALWARE,named actor with attack/breach evidence,,,unknown,internal,69.3,P2,Attackers Hijack Dahua IP Cameras in Ukraine Using P2P Access and Auth Weaknesses,MALWARE
-global,THN,1,VULN,CVE/flaw/patch vocabulary,,,active,internal,81.6,P1,CISA Confirms Active Exploitation of Two PHP2Shell Flaws Enabling Remote Code Execution,VULN
-global,THN,0,MALWARE,named actor with attack/breach evidence,,,unknown,internal,69.3,P2,"Hackers Infect 953 Online Stores With Scanner-Evading JavaScript, Mostly on Magento",MALWARE
-global,THN,0,VULN,patch/advisory action,,,unknown,internal,67.1,P2,PHP Issues Second Windows Security Update in Five Days to Fix Brotli Code Execution Flaw,VULN
-global,THN,0,MALWARE,named actor with attack/breach evidence,,,unknown,internal,69.3,P2,Attackers Use Microsoft Teams IT Support Scams to Deploy Malware and Ransomware,MALWARE
-global,THN,0,RESEARCH,governance/research vocabulary,,,unknown,internal,70.4,P2,"⚡ Weekly Recap: This2Shell, That2Shell, Everything's an RCE? Rogue AI, Supply Chain Chaos and More",RESEARCH
-global,THN,1,VULN,CVE/flaw/patch vocabulary,,,unknown,internal,70.4,P2,Two Critical Wasmtime Flaws Could Let Malicious WebAssembly Modules Escape Sandboxes,MALWARE
-global,THN,0,MALWARE,named actor with attack/breach evidence,,,unknown,internal,69.3,P2,Between alerts: What Attackers Do in the Spaces Ordinary Detection Misses,RESEARCH
-global,THN,0,MALWARE,attack vocabulary,,,unknown,internal,69.3,P2,uCreator Android Spyware Can Steal Telegram 2FA Passwords and Clone WeChat Accounts,MALWARE
-global,THN,0,MALWARE,attack vocabulary,,,unknown,internal,69.3,P2,Microsoft 365 Token-Replay Attacks Compromise 97 Accounts at 79 Organizations,MALWARE
-global,THN,0,MALWARE,attack vocabulary,,,unknown,internal,69.3,P2,Gheist Uses Stolen GitHub Tokens to Steal Private Repository Secrets via Actions Logs,MALWARE
-global,THN,2,MALWARE,attack vocabulary,,,unknown,internal,69.3,P2,Malicious File in Downloads Folder Tries to Trick AI Coding Agent Into Installing Malware,MALWARE
+global,THN,2,VULN,patch/advisory action,,,poc_public,internal,72.1,P2,Tailscale Patches SSH Flaws That Could Let Hacked Devices Gain Root Access on Other Servers,VULN
+global,THN,2,MALWARE,named actor with attack/breach evidence,,,unknown,internal,70.4,P2,ShinyHunters-Exploited Oracle PeopleSoft Zero-Day Turns Out to Be Three Chained Flaws,MALWARE
+global,THN,1,MALWARE,attack vocabulary,,,active,internal,81.6,P1,Adobe Commerce PolyShell Attacks Breach Hundreds of Stores as Brotli Exploit Traffic Emerges,MALWARE
+global,THN,1,VULN,CVE/flaw/patch vocabulary,,,poc_public,internal,72.1,P2,"Linux Kernel TCP Flaw With 9.8 CVSS Score Affects Ubuntu, Red Hat and Other Distributions",VULN
+global,THN,0,MALWARE,attack vocabulary,,,unknown,internal,69.3,P2,Fake ChatGPT and Claude Apps Abuse Signed Executables to Deploy Crypto Miners,MALWARE
+global,THN,0,RESEARCH,governance/research vocabulary,,,unknown,internal,70.4,P2,"Google's Gemini 4 Carbon Leads Benchmarks for Finding, Exploiting, and Patching Vulnerabilities",RESEARCH
+global,THN,0,RESEARCH,governance note without a concrete event,,,poc_public,internal,41.2,P3,Webinar: How to Build AI Threat Readiness Into Your Security Operations,RESEARCH
+global,THN,2,MALWARE,named actor with attack/breach evidence,,,unknown,internal,70.4,P2,Telegram Android Flaw Lets Attackers Run Code When Users Answer Voice Calls,VULN
+global,THN,0,RESEARCH,governance note without a concrete event,,,unknown,internal,70.4,P2,The Rise of the Threat Operator: How AI Will Redefine Security Operations and Careers,RESEARCH
+global,THN,2,MALWARE,breach reported without a patch action,,,unknown,internal,69.3,P2,"26,400 Valid Cloud and AI Credentials Found Exposed in Public Gitee Repositories",MALWARE
+global,THN,1,VULN,patch/advisory action,,,active,internal,81.6,P1,Cisco Patches Actively Exploited ASA and FTD VPN Flaw That Can Crash Firewalls,VULN
+global,THN,0,OTHER,no security vocabulary; product/industry signal,,,unknown,internal,,,GitHub Launches npm Firewall to Block Malicious Packages Before Installation,OTHER
+global,THN,2,MALWARE,named actor with attack/breach evidence,,10.0,poc_public,internal,79.8,P2,Attacker Tried to Exploit Alpine Linux’s GitLab via CVSS 10.0 Flaw Its Ruby Left Open,MALWARE
+global,THN,2,MALWARE,named actor with attack/breach evidence,,10.0,unknown,internal,74.8,P2,Hackers Exploited Cisco SD-WAN Flaw to Plant Malware Built to Steal Encryption Keys,MALWARE
+global,THN,0,MALWARE,named actor with attack/breach evidence,,,active,internal,81.6,P1,China-Linked Hackers Exploited VMware ESX Zero-Day to Reduce Audit Trail Visibility,MALWARE
+global,THN,1,MALWARE,named actor with attack/breach evidence,,,active,public,87.6,P1,Attackers Exploit PHP2Shell Flaws in Internet-Exposed Palo Alto Networks Management Interfaces,MALWARE
+global,THN,0,RESEARCH,governance/research vocabulary,,,unknown,internal,70.4,P2,"ThreatsDay: Critical Firewall Flaws, Banking Trojans Rented, Weaponized PDF, Token Theft + 26 More Stories",RESEARCH
+global,THN,2,VULN,patch/advisory action,,,unknown,internal,70.4,P2,OpenSSH Issues Emergency Fix for Flaw Letting Long Passwords Bypass SSH Auth on Alpine Linux,
+global,THN,0,RESEARCH,governance note without a concrete event,,,poc_public,internal,75.4,P2,Researchers Bypass ChatGPT Lockdown Mode to Exfiltrate Chats Without User Interaction,
+global,THN,2,VULN,patch/advisory action,,,active,internal,81.6,P1,Installing the Fix for an Exploited WordPress Flaw Can Expose Some Sites One Last Time,
+global,THN,2,MALWARE,named actor with attack/breach evidence,,,unknown,internal,69.3,P2,"Hackers Target OpenSSH SSHole Flaw Within Hours of Disclosure, Gain Root on Honeypot",
+global,THN,0,VULN,CVE/flaw/patch vocabulary,,,unknown,internal,70.4,P2,"OpenAI Launches GPT-6 Cyber After AI Helps Find 81 Firefox Flaws, 948 Linux Exploits",
+global,THN,2,VULN,patch/advisory action,,,unknown,internal,70.4,P2,"Microsoft Paint RCE Fix Now Available, but Windows Update Won't Deliver It",
+global,THN,2,RESEARCH,governance note without a concrete event,,,unknown,internal,36.2,P3,Malicious Browser Extensions Could Use Claude Dispatch to Run Code on Users' Computers,
+global,THN,2,RESEARCH,governance note without a concrete event,,,unknown,internal,70.4,P2,The Flood is Coming And The Pipes Were Already Full,
+global,THN,0,MALWARE,breach reported without a patch action,,,unknown,internal,69.3,P2,"Chainalysis Breach Exposes All Users' Credentials, Forces Shutdown of Key Services",
+global,THN,2,MALWARE,named actor with attack/breach evidence,,,active,internal,80.5,P1,Hackers Hide Linux Backdoor in Control Web Panel Server to Execute Commands Without Logs,
+global,THN,1,RESEARCH,governance note without a concrete event,,,unknown,internal,70.4,P2,Experts Demonstrate Barracuda Email Security Gateway Chain Enabling Root Access Without Login,
+global,THN,2,RESEARCH,governance note without a concrete event,,,unknown,internal,36.2,P3,"Claude Code's “Don't Ask Again” File Exposes Passwords and Keys in 1,122 Public Copies on GitHub",
+global,THN,2,MALWARE,named actor with attack/breach evidence,,,unknown,internal,69.3,P2,Hackers Exploit Qubole's Trusted AWS Access to Breach Customer Accounts and Steal Data,
+global,THN,2,MALWARE,named actor with attack/breach evidence,,,unknown,internal,69.3,P2,Hackers Compromise Ethersphere's bee-js and Swarm Desktop to Deliver Wallet-Stealing Malware,
+global,THN,0,MALWARE,named actor with attack/breach evidence,,,unknown,internal,69.3,P2,Bitter Hackers Deploy New PapRAT Backdoor in Cyberespionage Campaign Targeting South Asia,
+global,THN,0,MALWARE,named actor with attack/breach evidence,,,active,internal,81.6,P1,"⚡ Weekly Recap: SSHole Exploited, APT Root RCE, Robot Takeovers, 15K Hacked Sites, and More",
+global,THN,2,RESEARCH,governance note without a concrete event,,,unknown,internal,36.2,P3,"Default 'admin:admin' Server Password Helps Researchers Hack Two Automakers, Unlock and Start Cars",
+global,THN,2,MALWARE,attack vocabulary,,,unknown,internal,69.3,P2,"Web3Auth Flaw Exploited to Steal Keplr Crypto, Provider Empties Other Wallets for Safety",
+global,THN,2,MALWARE,attack vocabulary,,,unknown,internal,69.3,P2,LNbits Urges All Operators to Shut Down Their Bitcoin Lightning Wallet Servers Amid Attacks,
+global,THN,2,MALWARE,named actor with attack/breach evidence,,,poc_public,public,81.4,P1,Taiwan-Based Hacker Used BOSSAI AI Agents to Steal Taipei Emergency Dispatch Records,
+global,THN,2,RESEARCH,governance note without a concrete event,,,unknown,internal,36.2,P3,Former OpenAI Engineer Pleads Not Guilty to Planting Covert Device in Executive Meeting Room,
+global,THN,0,MALWARE,attack vocabulary,,,unknown,internal,70.4,P2,U.S. Agencies Warn Refrigeration Controller Attacks Could Cause Fires and Inventory Losses,
+global,THN,1,VULN,CVE/flaw/patch vocabulary,,,unknown,internal,67.1,P2,CISA Flags SonicWall SonicOS MFA Bypass Flaw Amid Reports of Possible Exploitation,
+global,THN,1,MALWARE,named actor with attack/breach evidence,,,active,internal,81.6,P1,Hackers Exploit Critical Xen Orchestra Auth Bypass Flaw to Gain Admin Access,
+global,THN,0,MALWARE,attack vocabulary,,,active,internal,81.6,P1,Three China-Nexus Espionage Campaigns Linked Through Sparrow Malware Ecosystem,
+global,THN,0,MALWARE,named actor with attack/breach evidence,,,unknown,internal,70.4,P2,Attackers Exploit AhsayCBS Flaws to Deploy Sandbox-Evading Python Backdoor,
+global,THN,0,MALWARE,attack vocabulary,,,unknown,internal,70.4,P2,Blind Eagle Uses Fake Court Notices to Deliver Remote Access Trojan Across Latin America,
+global,THN,0,MALWARE,breach reported without a patch action,,,unknown,internal,69.3,P2,"Fireworks AI Confirms Wider Breach Affecting Customer Datasets, Model Weights and Notion AI Chats",
+global,THN,2,VULN,patch/advisory action,,,poc_public,internal,72.1,P2,"Binance Warns of iOS Sandbox Escape That Could Expose Crypto Wallet Keys, No Fix Confirmed",
+global,THN,0,RESEARCH,governance note without a concrete event,,,unknown,internal,36.2,P3,Beyond the Alert: The Case for Rich Network Data,
+global,THN,1,VULN,CVE/flaw/patch vocabulary,,,unknown,internal,67.1,P2,Apple Patches iMessage Group Chat Privacy Flaws and Bluetooth Pairing Vulnerabilities,
+global,THN,0,MALWARE,named actor with attack/breach evidence,,,unknown,internal,69.3,P2,Russian Turla Hackers Use New Cereal Malware to Steal Emails From Government Exchange Servers,
+global,THN,1,VULN,patch/advisory action,,10.0,poc_public,internal,79.8,P2,"SAP Patches Four CVSS 10.0 Flaws, Including Two Enabling Remote Code Execution",
+global,THN,2,MALWARE,attack vocabulary,,,unknown,internal,69.3,P2,France Blames Iran for Sabotage Attack on Refrigeration Controllers at About 700 Retail Sites,
+global,THN,0,RESEARCH,governance note without a concrete event,,,unknown,internal,36.2,P3,Anthropic's Claude Fable 5.2 Beats GPT-6 Cyber in Multi-Stage Cyberattack Benchmark,
+global,THN,1,VULN,patch/advisory action,,,active,internal,81.6,P1,Google Issues Chrome Security Update for Eighth Actively Exploited Zero-Day of 2026,
+global,THN,0,RESEARCH,governance/research vocabulary,,,active,public,87.6,P2,N-able Takes N-central Cloud Offline After Researcher Discloses 33 Zero-Days with PoC Exploits,
+global,THN,1,VULN,CVE/flaw/patch vocabulary,,,active,internal,78.3,P2,"CISA Warns of Active Exploitation of OpenSSH, GPUStack, FreeSWITCH, and IBM Flaws",
+global,THN,1,VULN,CVE/flaw/patch vocabulary,,,active,internal,81.6,P1,Critical Zoom Workplace Flaw Could Allow Unauthenticated Remote Privilege Escalation,
+global,THN,0,MALWARE,attack vocabulary,,,unknown,internal,70.4,P2,AntiFox AI Pentesting Platform Linked to Attacks That Accessed AWS Production Secrets,
+global,THN,0,MALWARE,named actor with attack/breach evidence,,,unknown,internal,70.4,P2,"Hackers Target Qlik Sense Servers With Reverse Shells, Stage ActiveMQ and Veeam Exploits",
+global,THN,2,RESEARCH,governance note without a concrete event,,,unknown,internal,70.4,P2,"Over 35,000 Grok-Built Apps Exposed Online, Some Leaking Confidential Data and Passwords",
+global,THN,2,RESEARCH,governance note without a concrete event,,,unknown,internal,70.4,P2,We Built An Agent That Broke All of Our Security Rules. Here's What We Learned.,
+global,THN,2,MALWARE,attack vocabulary,,,unknown,internal,69.3,P2,eMudhra Revokes 8 More CAs It Previously Declared Unaffected by Key Compromise,
+global,THN,1,VULN,patch/advisory action,,,active,internal,81.6,P1,"Microsoft Patches 1,259 Flaws, Including Exploited Outlook Bug That May Expose NTLMv2 Hashes",
+global,THN,2,MALWARE,breach reported without a patch action,,,unknown,internal,69.3,P2,"Railway Says Stolen Customer AI Keys Led to $740,000 in Estimated Unauthorized Usage Charges",
+global,THN,2,RESEARCH,governance note without a concrete event,,,poc_public,internal,41.2,P3,Microsoft Researchers Show AI Agents Can Be Backdoored by Editing Fewer Than 10 Neurons,
+global,THN,1,VULN,patch/advisory action,,10.0,active,internal,86.0,P1,Cisco BroadWorks and Openwave Flaws Actively Exploited Despite Available Patches,
+global,THN,1,VULN,patch/advisory action,,,unknown,internal,67.1,P2,Git Patches Flaw That Lets Malicious Repositories Execute Code During Recursive Clones,
+global,THN,2,MALWARE,attack vocabulary,,,unknown,internal,70.4,P2,"SGLang RCE Exploit Breaches NEAR AI, Steals Data From 18 Agents and About 100 Users",
