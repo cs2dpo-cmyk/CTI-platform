@@ -1,0 +1,101 @@
+region,cluster,position,title,gold
+taiwan,1,1,駭客利用AI滲透測試工具ARTEX竊取韓國金融業資料,M
+taiwan,2,1,Node.js發布安全性更新修補10項漏洞，其中CVE-2026-111497可導致遠端程式碼執行，籲儘速更新,V
+taiwan,2,2,PHP發布安全性更新修補2項可導致遠端程式碼執行之嚴重漏洞，國際資安機構籲儘速更新,V
+taiwan,2,3,CISA更新Medusa勒索軟體安全防護指引：揭露新型勒索手法與入侵指標,R
+taiwan,2,4,PostgreSQL潛藏12年高風險漏洞，恐導致任意程式碼執行,V
+taiwan,2,5,Microsoft發布Exchange Server系列安全性更新， CVE-2026-62911已有攻擊利用程式碼流通，籲儘速修補,V
+taiwan,0,1,CRA強化軟體供應鏈安全要求，SBOM成企業重要管理工具,R
+taiwan,0,2,惡意npm攻擊再進化！駭客利用區塊鏈隱藏C2位址,M
+taiwan,0,3,CISA與多國安全機構聯合發布「Gunra」勒索軟體預警通報,M
+taiwan,0,4,駭客結合惡意廣告與 AI 平台發動 ClickFix 攻擊,M
+taiwan,1,2,SBOM做了，為什麼還可能不合規？ENISA調查揭露近三成企業用錯格式,R
+taiwan,1,3,防禦工具反成駭客利器？最新研究揭露「Friendly Fire」攻擊，誘導 AI Agent 觸發遠端控制,M
+taiwan,1,4,「FortiBleed」大規模憑證竊取行動：企業防火牆與VPN設備面臨風險,M
+taiwan,1,5,旅遊 eSIM 的陷阱：流量路徑不揭露，出差人員連線資料恐暴露境外,R
+taiwan,1,6,知名開源框架 TanStack 遭「Mini Shai-Hulud」供應鏈攻擊，開源安全風險受關注,M
+taiwan,2,6,駭客組織 UAT-8616 鎖定 Cisco Catalyst SD-WAN 滿分漏洞發動攻擊,M
+taiwan,1,7,歐盟 CRA 進入強制合規階段！全球聯網製造商迎戰 SBOM 管理新挑戰,R
+taiwan,1,8,「裝置碼」釣魚攻擊成新興威脅，企業與組織成主要目標,M
+taiwan,0,5,勒索軟體組織「The Gentlemen」結合SystemBC惡意軟體擴大攻擊版圖,M
+taiwan,2,7,UAT-10608大規模自動化竊密行動：鎖定React2Shell漏洞入侵逾700台Next.js伺服器,M
+taiwan,1,9,日本樂天兩個旅遊網站遭駭外洩用戶個資354萬，臺灣網站不受影響,M
+taiwan,2,8,微軟發布Windows緊急更新，移除eMudhra問題憑證的預設信任,V
+taiwan,2,9,AI加快漏洞發現，CSA提出VulnOps模式改善企業漏洞管理,R
+taiwan,1,10,英國擬修法強化海底電纜安全，要求業者管理安全風險並通報事故,R
+taiwan,0,6,惡意Markdown指引檔企圖誘使Codex安裝惡意套件，AI程式開發代理面臨攻擊風險,M
+taiwan,1,11,千家臺灣中小企業採用，老牌印度協作軟體業者主打企業級AI、擴大在臺布局,O
+taiwan,1,12,GitHub開源AI原型工具Replica，可參考企業設計規範製作互動介面,O
+taiwan,2,10,行動App安全規範與技術持續更新，執行環境防護與白箱加密成焦點,R
+taiwan,1,13,高雄打造城市AI大腦，讓AI從看懂影像到推理事件原因，早一步發現淹水、塞車與道路異常,O
+taiwan,1,14,AI降低App逆向分析門檻帶來資安挑戰，企業App安全策略須兼顧發布後防護,R
+taiwan,1,15,Google推出Connected Apps平臺，第三方應用可一次串接Gemini與搜尋,O
+taiwan,2,11,Tailscale釋出1.104.4安全更新，修補SSH與Serve功能共4項漏洞,V
+taiwan,2,12,【資安日報】10月29日，北韓駭客鎖定216臺PHP主機掃描PHP2Shell漏洞，臺灣列入目標範圍,M
+taiwan,1,16,Nvidia釋出Nemotron 3.5語音模型，整合轉錄、翻譯與講者辨識,O
+taiwan,2,13,甫修補的Oracle E-Business Suite重大漏洞遭到利用,M
+taiwan,1,17,macOS 27.2未修補eMudhra憑證風險，Git與curl仍可能遭中間人攻擊,V
+taiwan,2,14,PHP2Shell漏洞影響多家IT與OT廠商的產品，相關公告陸續出爐,V
+taiwan,1,18,GitHub發表能在單一任務內跨模型協同的Copilot Fusion,O
+taiwan,1,19,中國駭客Volt Typhoon綁架連網設備打造攻擊框架Silent Train，用於攻擊美國關鍵基礎設施,M
+taiwan,1,20,微軟季度營收成長19%，Azure大增48%，Windows裝置下滑22%,O
+taiwan,1,21,美國制裁北韓遠端IT工作詐騙網絡，鎖定俄羅斯洗錢中間人,R
+taiwan,2,15,Adobe發布10月下半更新，修補8個Campaign Classic重大漏洞,V
+taiwan,1,22,CISA提供兩款免費工具，協助檢測M365與Google Workspace的安全設定錯誤,R
+taiwan,1,23,Sony日本ISP、保險業務系統被駭，外洩258萬會員、38.5萬保戶個資,M
+taiwan,2,16,Linux核心、VMware ESX漏洞遭積極利用,V
+taiwan,1,24,駭客宣稱竊走美國土安全部員工資料超過4萬筆,M
+taiwan,0,7,汽車零配件製造商橙的遭勒索軟體攻擊,M
+taiwan,1,25,Google Cloud營收翻倍，搜尋業務成長放緩,O
+taiwan,1,26,"蘋果推出首款觸控MacBook Pro，售價2,899美元起",O
+taiwan,1,27,Google發表Gemini 4 Carbon，綜合能力評測登頂、資安表現創新高,O
+global,2,1,"ThreatsDay: Critical Firewall Flaws, Banking Trojans Rented, Weaponized PDF, Token Theft + 26 More Stories",R
+global,0,1,"Linux Kernel TCP Flaw With 9.8 CVSS Score Affects Ubuntu, Red Hat and Other Distributions",V
+global,0,2,Fake ChatGPT and Claude Apps Abuse Signed Executables to Deploy Crypto Miners,M
+global,0,3,"Google's Gemini 4 Carbon Leads Benchmarks for Finding, Exploiting, and Patching Vulnerabilities",R
+global,0,4,Webinar: How to Build AI Threat Readiness Into Your Security Operations,R
+global,0,5,Telegram Android Flaw Lets Attackers Run Code When Users Answer Voice Calls,V
+global,0,6,The Rise of the Threat Operator: How AI Will Redefine Security Operations and Careers,R
+global,2,2,"26,400 Valid Cloud and AI Credentials Found Exposed in Public Gitee Repositories",M
+global,0,7,Cisco Patches Actively Exploited ASA and FTD VPN Flaw That Can Crash Firewalls,V
+global,0,8,GitHub Launches npm Firewall to Block Malicious Packages Before Installation,O
+global,0,9,Attacker Tried to Exploit Alpine Linux’s GitLab via CVSS 10.0 Flaw Its Ruby Left Open,M
+global,0,10,Hackers Exploited Cisco SD-WAN Flaw to Plant Malware Built to Steal Encryption Keys,M
+global,0,11,China-Linked Hackers Exploited VMware ESX Zero-Day to Reduce Audit Trail Visibility,M
+global,2,3,Attackers Exploit PHP2Shell Flaws in Internet-Exposed Palo Alto Networks Management Interfaces,M
+global,0,12,Volt Typhoon Used Covert Silent Train Network in Four Zero-Day Exploitation Campaigns,M
+global,1,1,Google to Allow One-Tap Android App Installs From Approved Third-Party Stores Outside U.S.,O
+global,0,13,"Researcher Reveals How Logic Bugs Alone Cracked Microsoft Edge in $175,000 Pwn2Own Win",R
+global,0,14,"PHP2Shell Attack Roots 25 Servers, Breaches U.S. Government-Affiliated Network",M
+global,0,15,Hackers Target Critical Oracle E-Business Suite RCE Flaw Days After Security Patch,M
+global,0,16,Critical 16-Year-Old UEFI Flaw Can Run Code Before Secure Boot on Network-Booting Servers,V
+global,2,4,Wazuh and AI for Enhanced SOC Workflows,R
+global,0,17,Adobe Fixes 8 Critical Campaign Classic Flaws Allowing Code Execution and Security Bypass,V
+global,2,5,American Organizations Under Attack: Skyw4lker Device Code Phishing Campaign Exposed,M
+global,1,2,"Anthropic's Unreleased AI Model Chains Flaws Into Working Chrome, Safari, Windows and Linux Exploits",R
+global,0,18,FBI Seizes Virtualine Domain Over Alleged Criminal Hosting and Bitcoin Money Laundering,R
+global,2,6,Japan's GMO Offers $1 Million Bounty to Catch Hackers Behind FX Trading Cloud Breach,R
+global,1,3,Tailscale Patches SSH Flaws That Could Let Hacked Devices Gain Root Access on Other Servers,V
+global,0,19,ShinyHunters-Exploited Oracle PeopleSoft Zero-Day Turns Out to Be Three Chained Flaws,M
+global,0,20,Adobe Commerce PolyShell Attacks Breach Hundreds of Stores as Brotli Exploit Traffic Emerges,M
+global,2,7,CyberStrikeAI Uses 44 AI Agents to Automate Hacking Operations Against Japan Targets,M
+global,1,4,GoAhead TLS Flaws Allow Revoked Client Certificates and Enable Session Decryption,V
+global,0,21,Apple Backports Fix for Exploited CoreGraphics Flaw to Older iPhones and iPads,V
+global,0,22,Microsoft Authenticator Flaw Let Permissionless Android Apps Steal Work Account Tokens,V
+global,0,23,"Keystone to Destroy 18,835 Hardware Wallets After Hackers Steal Device Verification Key",M
+global,2,8,AI-Generated Fake Login Pages Are Making Account Takeovers Easier,M
+global,0,24,Lazarus Abuses South Korean Security Software to Deploy Malware Using Post-Quantum Encryption,M
+global,0,25,"Australia Gets Into Amadey Malware Backend, Cuts Off Access to 180,000 Infected Computers",M
+global,0,26,OpenAI Compaction Flaw Let Researchers Bypass Hidden Reasoning Protections,V
+global,0,27,Attackers Hijack Dahua IP Cameras in Ukraine Using P2P Access and Auth Weaknesses,M
+global,1,5,CISA Confirms Active Exploitation of Two PHP2Shell Flaws Enabling Remote Code Execution,V
+global,0,28,"Hackers Infect 953 Online Stores With Scanner-Evading JavaScript, Mostly on Magento",M
+global,0,29,PHP Issues Second Windows Security Update in Five Days to Fix Brotli Code Execution Flaw,V
+global,0,30,Attackers Use Microsoft Teams IT Support Scams to Deploy Malware and Ransomware,M
+global,0,31,"⚡ Weekly Recap: This2Shell, That2Shell, Everything's an RCE? Rogue AI, Supply Chain Chaos and More",R
+global,1,6,Two Critical Wasmtime Flaws Could Let Malicious WebAssembly Modules Escape Sandboxes,M
+global,0,32,Between alerts: What Attackers Do in the Spaces Ordinary Detection Misses,R
+global,0,33,uCreator Android Spyware Can Steal Telegram 2FA Passwords and Clone WeChat Accounts,M
+global,0,34,Microsoft 365 Token-Replay Attacks Compromise 97 Accounts at 79 Organizations,M
+global,0,35,Gheist Uses Stolen GitHub Tokens to Steal Private Repository Secrets via Actions Logs,M
+global,2,9,Malicious File in Downloads Folder Tries to Trick AI Coding Agent Into Installing Malware,M

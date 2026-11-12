@@ -14,6 +14,7 @@ const CTICharts = (() => {
     p1: '#fb7185',
     p2: '#fbbf24',
     p3: '#22d3ee',
+    other: '#94a3b8',
     grid: 'rgba(39, 56, 79, 0.55)',
     tick: '#8b9ab2',
     axisTitle: '#cbd5e1',
@@ -24,6 +25,8 @@ const CTICharts = (() => {
     VULN: COLORS.vuln,
     MALWARE: COLORS.malware,
     RESEARCH: COLORS.research,
+    // Industry/product news: deliberately neutral so it reads as "not a threat".
+    OTHER: COLORS.other,
   };
 
   const instances = { pie: null, comparison: null, timeline: null, priority: null };
@@ -91,7 +94,7 @@ const CTICharts = (() => {
     const labels = meta.map((m) => m.label);
     const data = meta.map((m) => m.count);
     const colors = meta.map((m) => META_KEY_COLOR[m.key] || COLORS.vuln);
-    const total = Number(stats.totals?.threats ?? data.reduce((sum, value) => sum + value, 0));
+    const total = Number(stats.totals?.corpus ?? data.reduce((sum, value) => sum + value, 0));
     pieState = { total, meta };
 
     const dataset = {

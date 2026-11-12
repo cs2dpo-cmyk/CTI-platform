@@ -126,7 +126,7 @@ assert($('#kpiP1').textContent.trim().length > 0 && $('#kpiP1').textContent.trim
 assert($('#kpiTopMeta').textContent.trim() !== '—', 'KPI top meta-category rendered');
 assert($('#kpiAvgScore').textContent.trim() !== '—', 'KPI average score rendered');
 
-assert($$('#metaLegend .legend-row').length === 3, `meta legend rows (got ${$$('#metaLegend .legend-row').length})`);
+assert($$('#metaLegend .legend-row').length === 4, `meta legend rows (got ${$$('#metaLegend .legend-row').length})`);
 assert($$('#categoryStrip .tally').length === 6, `cluster tallies (got ${$$('#categoryStrip .tally').length})`);
 assert(
   $$('#categoryStrip .tally')
@@ -181,8 +181,12 @@ assert($('#apiStatus').textContent.includes('已連線'), 'API status pill updat
   assert(legend.position === 'top', `legend position (got ${legend.position})`);
 
   const series = { tw: bar.data.datasets[0].data, gl: bar.data.datasets[1].data };
-  assert(series.tw.join(',') === '16,34,0', `Taiwan CSV series (got ${series.tw.join(',')})`);
-  assert(series.gl.join(',') === '39,8,3', `Global CSV series (got ${series.gl.join(',')})`);
+  // Expected values come from the API, so the assertion checks the wiring
+  // rather than freezing today's classification numbers into the test.
+  const expectTw = Object.keys(AXIS).map((key) => metaByKey[key]?.by_region?.taiwan ?? 0);
+  const expectGl = Object.keys(AXIS).map((key) => metaByKey[key]?.by_region?.global ?? 0);
+  assert(series.tw.join(',') === expectTw.join(','), `Taiwan series matches API (got ${series.tw.join(',')}, expected ${expectTw.join(',')})`);
+  assert(series.gl.join(',') === expectGl.join(','), `Global series matches API (got ${series.gl.join(',')}, expected ${expectGl.join(',')})`);
   assert($('#baselineNote').textContent.includes('with_dates.csv'), 'dataset provenance is displayed');
 
   const items = legend.labels.generateLabels(bar);

@@ -27,9 +27,11 @@ class Threat(Base):
     region: Mapped[str] = mapped_column(String(16), nullable=False, index=True)
     category: Mapped[str] = mapped_column(String(32), nullable=False, index=True)
     meta_category: Mapped[str] = mapped_column(String(16), nullable=False, index=True)
-    risk_score: Mapped[float] = mapped_column(Float, nullable=False, index=True)
-    risk_level: Mapped[str] = mapped_column(String(16), nullable=False)
-    priority: Mapped[str] = mapped_column(String(4), nullable=False, index=True)
+    # NULL for rows classified as OTHER (industry news): they are corpus
+    # members but not threats, so they carry no score or disposition.
+    risk_score: Mapped[float | None] = mapped_column(Float, nullable=True, index=True)
+    risk_level: Mapped[str | None] = mapped_column(String(16), nullable=True)
+    priority: Mapped[str | None] = mapped_column(String(4), nullable=True, index=True)
     cluster: Mapped[str | None] = mapped_column(String(8), nullable=True)
     source_url: Mapped[str | None] = mapped_column(String(512), nullable=True)
     action_plan: Mapped[str] = mapped_column(Text, nullable=False, default="[]")

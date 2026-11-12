@@ -41,9 +41,9 @@ class ThreatOut(BaseModel):
     meta_label: str
     cluster: str | None = None
     source_url: str | None = None
-    risk_score: float
-    risk_level: RiskLevel
-    priority: Priority
+    risk_score: float | None = None
+    risk_level: RiskLevel | None = None
+    priority: Priority | None = None
     action_plan: list[ActionStep] = Field(default_factory=list)
     published_at: date
     created_at: datetime | None = None
@@ -199,6 +199,14 @@ class DatasetInfo(BaseModel):
     source_directory: str = ""
     exported_at: str = ""
     note: str = ""
+    # Per-article classification (services/classify.py) replaced the old
+    # cluster -> meta-category table; the counts and the validation result are
+    # served so the dashboard can state how the corpus was labelled.
+    classifier: str = ""
+    classification_note: str = ""
+    classification: dict[str, int] = Field(default_factory=dict)
+    threats: int = 0
+    validation: dict[str, Any] = Field(default_factory=dict)
     mapping_note: str = ""
     date_policy: str = ""
     date_column: str = ""
@@ -243,10 +251,11 @@ class ModelInfo(BaseModel):
     vectorizer: str
     clustering: str
     clusters: int
-    noise_reduction: float
     corpus: str
     balance: str
     scoring: str
+    classification: str = ""
+    classification_accuracy: float | None = None
 
 
 class StatsResponse(BaseModel):
@@ -295,7 +304,7 @@ def threat_to_schema(threat_row: Any) -> ThreatOut:
         # Rows no longer store their playbook: it is a pure function of
         # (meta_category, priority), so it is derived on read instead of being
         # duplicated into every database row.
-        plan = risk_engine.playbook(meta, get("priority", "P3"))
+        plan = risk_engine.playbook(meta, get("priority") or "P3")
 
     return ThreatOut(
         id=get("id"),
@@ -308,9 +317,9 @@ def threat_to_schema(threat_row: Any) -> ThreatOut:
         meta_label=risk_engine.META_CATEGORY_META.get(meta, {}).get("label", meta),
         cluster=get("cluster"),
         source_url=get("source_url"),
-        risk_score=round(float(get("risk_score") or 0.0), 1),
-        risk_level=get("risk_level", "MEDIUM"),
-        priority=get("priority", "P3"),
+        risk_score=None if get("risk_score") is None else round(float(get("risk_score")), 1),
+        risk_level=get("risk_level"),
+        priority=get("priority"),
         action_plan=[ActionStep(**step) for step in plan if isinstance(step, dict)],
         published_at=get("published_at"),
         created_at=get("created_at"),

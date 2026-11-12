@@ -2,9 +2,10 @@
 
 The two ``*_with_dates.csv`` files are the single source of truth: every
 article's cluster, publication date and source URL come straight from the file.
-The cluster is mapped to a Meta-Category through ``data/dataset_meta.json``, and
-every derived number in the API (stats, feed, decision matrix) is computed from
-these rows — there are no hard-coded counts and no simulated dates.
+Each article is classified individually by :mod:`services.classify` (the K-Means
+cluster is kept for topic exploration only), and every derived number in the API
+(stats, feed, decision matrix) is computed from these rows -- there are no
+hard-coded counts and no simulated dates.
 """
 
 from __future__ import annotations
@@ -13,24 +14,17 @@ import csv
 import io
 import json
 import os
-import re
 from dataclasses import dataclass
 from datetime import date
 from pathlib import Path
 from typing import Any, Iterable
 
+from services import classify
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 DEFAULT_DATASET_DIR = BASE_DIR / "data"
 
-VALID_META = ("VULN", "MALWARE", "RESEARCH")
 DEFAULT_DATE_COLUMN = "published_at"
-
-# Titles that read like a critical advisory get a HIGH hint; the rest MEDIUM.
-_SEVERE = re.compile(
-    r"critical|zero[- ]day|0-day|actively exploited|remote code|arbitrary code|\brce\b"
-    r"|滿分|在野|遠端程式碼|任意程式碼|緊急|重大|rce|exploited in the wild",
-    re.IGNORECASE,
-)
 
 
 @dataclass(frozen=True)
@@ -40,8 +34,8 @@ class DatasetRecord:
     source: str
     region: str
     cluster: str
-    category: str  # VULN | MALWARE | RESEARCH
-    risk_hint: str  # HIGH | MEDIUM | LOW
+    category: str  # VULN | MALWARE | RESEARCH | OTHER
+    evidence: dict[str, Any]  # CVSS / exploitation / exposure / CVE ids
     published_at: date
     source_url: str = ""
     date_source: str = ""
@@ -54,7 +48,7 @@ class DatasetRecord:
             "region": self.region,
             "cluster": self.cluster,
             "category": self.category,
-            "risk_hint": self.risk_hint,
+            "evidence": self.evidence,
         }
 
 
@@ -130,12 +124,6 @@ def _signature(paths: Iterable[Path]) -> tuple:
 # --------------------------------------------------------------------------- #
 
 
-def _risk_hint(title: str, meta_category: str) -> str:
-    if meta_category == "RESEARCH":
-        return "LOW"
-    return "HIGH" if _SEVERE.search(title) else "MEDIUM"
-
-
 def _rows_from_csv(path: Path) -> list[dict[str, str]]:
     with io.open(path, encoding="utf-8-sig", newline="") as handle:
         return [{k.strip(): (v or "").strip() for k, v in row.items()} for row in csv.DictReader(handle)]
@@ -167,8 +155,6 @@ def load_dataset(*, refresh: bool = False) -> tuple[list[DatasetRecord], dict[st
         return _cache["records"], _cache["info"]
 
     provenance = meta.get("provenance", {})
-    mapping = meta.get("cluster_to_meta", {})
-    overrides = {title.strip() for title in meta.get("research_overrides", []) if title.strip()}
     date_column = (meta.get("date_column") or DEFAULT_DATE_COLUMN).strip()
     export_date = _parse_date(provenance.get("exported_at", "")) or date(2026, 10, 30)
 
@@ -188,18 +174,15 @@ def load_dataset(*, refresh: bool = False) -> tuple[list[DatasetRecord], dict[st
 
     for region, path in (("taiwan", taiwan_path), ("global", global_path)):
         rows = _rows_from_csv(path)
-        region_map = {str(key): str(value).upper() for key, value in mapping.get(region, {}).items()}
 
         for row in rows:
             title = row.get("title", "")
             if not title:
                 continue
             cluster = str(row.get("cluster", "")).strip()
-            category = region_map.get(cluster, "VULN")
-            if category not in VALID_META:
-                category = "VULN"
-            if title in overrides:
-                category = "RESEARCH"
+            text = row.get("cleaned_text", "")
+            category, _reason = classify.classify(title, text)
+            evidence = classify.extract_evidence(title, text)
 
             source = row.get("platform") or ("THN" if region == "global" else "UNKNOWN")
             published = _parse_date(row.get(date_column, ""))
@@ -219,7 +202,7 @@ def load_dataset(*, refresh: bool = False) -> tuple[list[DatasetRecord], dict[st
                     region=region,
                     cluster=cluster,
                     category=category,
-                    risk_hint=_risk_hint(title, category),
+                    evidence=evidence,
                     published_at=published,
                     source_url=(row.get("source_url") or "").strip(),
                     date_source=date_source,
@@ -229,19 +212,25 @@ def load_dataset(*, refresh: bool = False) -> tuple[list[DatasetRecord], dict[st
             per_region[region] = per_region.get(region, 0) + 1
             date_sources[date_source] = date_sources.get(date_source, 0) + 1
 
+    classification = {key: 0 for key in classify.CATEGORIES}
+    for record in records:
+        classification[record.category] = classification.get(record.category, 0) + 1
+
     info = {
         "sources": [str(taiwan_path), str(global_path)],
         "source_directory": provenance.get("source_directory", str(directory)),
         "exported_at": export_date.isoformat(),
         "note": provenance.get("note", ""),
-        "mapping_note": meta.get("mapping_note", ""),
-        "cluster_to_meta": mapping,
+        "classification_note": meta.get("classification_note", ""),
+        "classifier": meta.get("classifier", "services/classify.py"),
+        "validation": meta.get("validation", {}),
+        "classification": classification,
+        "threats": len(records) - classification.get("OTHER", 0),
         "date_policy": meta.get("date_policy", "column"),
         "date_column": date_column,
         "date_sources": date_sources,
         "rows": per_region,
         "total": len(records),
-        "overrides": sorted(overrides),
         "unknown_dates": unknown_dates,
     }
 
@@ -250,13 +239,20 @@ def load_dataset(*, refresh: bool = False) -> tuple[list[DatasetRecord], dict[st
 
 
 def group_clusters(records: Iterable[DatasetRecord]) -> list[dict[str, Any]]:
-    """Region × cluster tally with the Meta-Category each cluster maps to."""
+    """Region × cluster tally, with the category mix inside each cluster.
+
+    A cluster is no longer assumed to be one category: the labels come from the
+    per-article classifier, so a cluster can legitimately mix (for example the
+    Taiwan C1 group holds attacks, policy notes and product news).
+    """
     buckets: dict[tuple[str, str], dict[str, Any]] = {}
     for record in records:
         key = (record.region, record.cluster)
         bucket = buckets.setdefault(
             key,
-            {"region": record.region, "cluster": record.cluster, "category": record.category, "count": 0},
+            {"region": record.region, "cluster": record.cluster, "category": record.category,
+             "count": 0, "breakdown": {}},
         )
+        bucket["breakdown"][record.category] = bucket["breakdown"].get(record.category, 0) + 1
         bucket["count"] += 1
     return sorted(buckets.values(), key=lambda item: (item["region"], int(item["cluster"] or 0)))

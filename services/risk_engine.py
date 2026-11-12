@@ -33,6 +33,16 @@ CATEGORY_TAXONOMY: dict[str, dict[str, Any]] = {
         "label_en": "Research & Governance",
         "severity": 0.30,
     },
+    # Not a threat: industry/product/earnings news that shares the corpus with
+    # the advisories. It is classified explicitly so it can be excluded from
+    # P1-P3, the average score and the decision matrix instead of being scored
+    # as if it were an incident.
+    "OTHER": {
+        "label": "產業與產品動態",
+        "label_en": "Industry & Product News",
+        "severity": 0.0,
+        "is_threat": False,
+    },
 }
 
 META_CATEGORY_META: dict[str, dict[str, str]] = {
@@ -266,6 +276,8 @@ def stable_unit(*parts: Any) -> float:
 
 
 def playbook(meta: str, priority: str) -> list[dict[str, Any]]:
+    if meta == "OTHER":
+        return []
     steps = PLAYBOOKS.get((meta, priority)) or PLAYBOOKS[("VULN", priority)]
     return [
         {"order": index, "title": step["title"], "owner": step["owner"],
@@ -377,25 +389,74 @@ def assess(
     return result
 
 
-def score_seed_record(record: dict[str, Any]) -> RiskResult:
-    """Deterministic scoring for a corpus row (CSV cluster already mapped)."""
-    category = record["category"]
-    taxonomy = CATEGORY_TAXONOMY[category]
-    hint_bonus = {"HIGH": 0.18, "MEDIUM": 0.06, "LOW": 0.0}[record["risk_hint"]]
-    jitter = stable_unit(record["id"], record["title"])
-    raw = 100 * (0.55 * taxonomy["severity"] + hint_bonus + 0.30 * jitter)
-    score = round(max(4.0, min(raw, 98.5)), 1)
+def score_seed_record(record: dict[str, Any]) -> RiskResult | None:
+    """Score one corpus row from evidence the article actually carries.
 
+    Every input is checkable in the text: a stated CVSS score, whether
+    exploitation is described as something that already happened, whether the
+    affected system is described as internet-facing, and whether a CVE is
+    named. Nothing is random -- an earlier build mixed 30% of a title hash into
+    the score, which is how a laptop announcement reached P1.
+    """
+    category = record["category"]
+    if category == "OTHER":
+        return None
+
+    evidence = record.get("evidence") or {}
+    taxonomy = CATEGORY_TAXONOMY[category]
+
+    cvss = evidence.get("cvss")
+    if cvss is not None:
+        severity, severity_note = cvss / 10.0, f"CVSS {cvss:.1f}"
+    elif evidence.get("critical_wording"):
+        severity, severity_note = 0.92, "標題載明 RCE / 零日 / 重大"
+    else:
+        severity, severity_note = taxonomy["severity"], "依情資類別推估"
+
+    # A news article rarely states the victim's exposure, so "internal" is used
+    # as a neutral prior rather than as a low-exposure penalty. Exploitation
+    # evidence is weighted a little higher than in a hypothetical assessment
+    # because an incident report describes something that actually happened.
+    corpus_exploit = {"active": 1.0, "poc_public": 0.75, "unknown": 0.55, "none": 0.2}
+    exploit_key = evidence.get("exploit", "unknown")
+    exploit = corpus_exploit.get(exploit_key, 0.55)
+    exposure = 1.0 if evidence.get("exposure") == "public" else 0.5
+    cves = evidence.get("cves") or []
+    corroboration = 1.0 if cves else 0.0
+
+    raw = 100.0 * (
+        0.55 * severity + 0.25 * exploit + 0.12 * exposure + 0.08 * corroboration
+    )
+    score = round(max(4.0, min(raw, 98.5)), 1)
     priority = priority_for(score)
     if category == "RESEARCH" and priority == "P1":
         priority = "P2"
+
+    confidence = round(
+        0.55
+        + (0.15 if cves else 0.0)
+        + (0.15 if cvss is not None else 0.0)
+        + (0.10 if exploit_key != "unknown" else 0.0),
+        3,
+    )
+
+    factors = [
+        Factor("severity", "漏洞嚴重度", severity_note, severity, 0.55, severity * 0.55 * 100),
+        Factor("exploit", "利用成熟度",
+               EXPLOIT_STATUS.get(exploit_key, EXPLOIT_STATUS["unknown"])["label"],
+               exploit, 0.25, exploit * 0.25 * 100),
+        Factor("exposure", "暴露程度",
+               EXPOSURE["public" if evidence.get("exposure") == "public" else "internal"]["label"],
+               exposure, 0.12, exposure * 0.12 * 100),
+        Factor("corroboration", "CVE 具名", "、".join(cves) or "未提及", corroboration, 0.08, corroboration * 0.08 * 100),
+    ]
 
     return RiskResult(
         score=score,
         priority=priority,
         risk_level=risk_level_for(score),
-        confidence=round(0.72 + 0.22 * jitter, 3),
-        factors=[],
+        confidence=confidence,
+        factors=factors,
         adjustments=[],
         action_plan=playbook(category, priority),
     )

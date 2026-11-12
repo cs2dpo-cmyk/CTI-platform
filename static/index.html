@@ -126,9 +126,9 @@
           <div class="flex flex-wrap items-center gap-x-5 gap-y-2 pt-1 text-[11px] text-[color:var(--faint)]">
             <span class="mono">TF-IDF · 1,000 dims</span>
             <span class="h-3 w-px bg-[#27384f]"></span>
-            <span class="mono">K-Means · K=3</span>
+            <span class="mono">逐篇規則分類</span>
             <span class="h-3 w-px bg-[#27384f]"></span>
-            <span class="mono">降噪 95.8%</span>
+            <span class="mono">分類準確率 91%</span>
             <span class="h-3 w-px bg-[#27384f]"></span>
             <span class="mono">FastAPI + SQLite</span>
           </div>
@@ -523,10 +523,10 @@
           </div>
           <select class="select w-[150px]" id="categoryFilter" aria-label="依類別篩選">
             <option value="">所有類別</option>
-            <option value="Vulnerability">系統漏洞與修補</option>
-            <option value="Malware">惡意威脅與攻擊</option>
-            <option value="SupplyChain">供應鏈與資安</option>
-            <option value="Research">前瞻研究與治理</option>
+            <option value="VULN">系統漏洞與修補</option>
+            <option value="MALWARE">惡意威脅與主動攻擊</option>
+            <option value="RESEARCH">前瞻研究與平台治理</option>
+            <option value="OTHER">產業與產品動態</option>
           </select>
           <select class="select w-[126px]" id="sortSelect" aria-label="排序方式">
             <option value="risk">依風險分數</option>

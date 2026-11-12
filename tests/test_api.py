@@ -49,10 +49,15 @@ def test_health_reports_seeded_corpus(client: TestClient):
 
 def test_stats_returns_balanced_corpus(client: TestClient):
     body = client.get("/api/v1/stats").json()
-    assert body["totals"]["threats"] == 100
-    assert body["totals"]["taiwan"] == 50
-    assert body["totals"]["global"] == 50
-    assert len(body["meta_categories"]) == 3
+    totals = body["totals"]
+    assert totals["corpus"] == 100
+    assert totals["taiwan"] == 50
+    assert totals["global"] == 50
+    # The corpus holds industry news as well as threats; only the threat subset
+    # feeds the risk numbers.
+    assert totals["threats"] + totals["other"] == totals["corpus"]
+    assert totals["other"] == 15
+    assert len(body["meta_categories"]) == 4
     assert sum(item["count"] for item in body["meta_categories"]) == 100
     assert abs(sum(item["share"] for item in body["meta_categories"]) - 1.0) < 1e-6
 
@@ -69,7 +74,9 @@ def test_decision_matrix_covers_three_priorities(client: TestClient):
     body = client.get("/api/v1/stats").json()
     matrix = body["matrix"]
     assert [row["priority"] for row in matrix] == ["P1", "P2", "P3"]
-    assert sum(row["count"] for row in matrix) == 100
+    # OTHER rows are not part of the matrix.
+    body_total = client.get("/api/v1/stats").json()["totals"]["threats"]
+    assert sum(row["count"] for row in matrix) == body_total
     for row in matrix:
         assert row["action_plan"], "每個優先級都必須有處置建議"
 
@@ -92,21 +99,24 @@ def test_cluster_tallies_match_the_csv_files(client: TestClient):
     }
 
 
-def test_meta_categories_follow_the_cluster_mapping(client: TestClient):
+def test_meta_categories_follow_the_classifier(client: TestClient):
     body = client.get("/api/v1/stats").json()
     by_key = {item["key"]: item["by_region"] for item in body["meta_categories"]}
-    # taiwan: C0 + C1 -> MALWARE (34), C2 -> VULN (16)
-    # global: C0 + C1 -> VULN (41), C2 -> MALWARE (9)
-    # research_overrides moves two global VULN rows and one MALWARE row to RESEARCH
-    assert by_key["VULN"] == {"taiwan": 16, "global": 39}
-    assert by_key["MALWARE"] == {"taiwan": 34, "global": 8}
-    assert by_key["RESEARCH"] == {"taiwan": 0, "global": 3}
+    # services/classify.py output on the current corpus; regenerate with
+    # tools/eval_classifier.py if the rules or the CSVs change.
+    assert by_key["VULN"] == {"taiwan": 10, "global": 12}
+    assert by_key["MALWARE"] == {"taiwan": 19, "global": 27}
+    assert by_key["RESEARCH"] == {"taiwan": 8, "global": 9}
+    assert by_key["OTHER"] == {"taiwan": 13, "global": 2}
+    for meta in body["meta_categories"]:
+        assert meta["by_region"]["taiwan"] + meta["by_region"]["global"] == meta["count"]
 
 
-def test_every_cluster_maps_to_a_known_category(client: TestClient):
+def test_every_cluster_reports_a_known_dominant_category(client: TestClient):
     body = client.get("/api/v1/stats").json()
+    # A cluster can mix categories now, so the field is the dominant label.
     categories = {row["category"] for row in body["clusters"]}
-    assert categories <= {"VULN", "MALWARE", "RESEARCH"}
+    assert categories <= {"VULN", "MALWARE", "RESEARCH", "OTHER"}
     for row in body["clusters"]:
         assert row["category_label"], "每個叢集都要有可讀的分類名稱"
 
@@ -223,8 +233,11 @@ def test_threats_returns_full_corpus(client: TestClient):
     body = client.get("/api/v1/threats", params={"limit": 200}).json()
     assert body["total"] == 100
     assert body["returned"] == 100
-    assert all(item["action_plan"] for item in body["items"])
     assert all(item["cluster"] in {"0", "1", "2"} for item in body["items"])
+    threats = [item for item in body["items"] if item["meta_category"] != "OTHER"]
+    others = [item for item in body["items"] if item["meta_category"] == "OTHER"]
+    assert threats and others
+    assert all(item["action_plan"] for item in threats)
 
 
 def test_threats_filter_by_region(client: TestClient):
@@ -244,7 +257,11 @@ def test_threats_filters_combine(client: TestClient):
         "/api/v1/threats",
         params={"region": "global", "category": "MALWARE", "limit": 200},
     ).json()
-    assert body["total"] == 8, "global cluster 2 的 9 篇，1 篇被 research_overrides 移到 RESEARCH"
+    stats = client.get("/api/v1/stats").json()
+    expected = next(
+        item["by_region"]["global"] for item in stats["meta_categories"] if item["key"] == "MALWARE"
+    )
+    assert body["total"] == expected
     for item in body["items"]:
         assert item["region"] == "global"
         assert item["category"] == "MALWARE"
@@ -259,17 +276,28 @@ def test_threats_search_and_pagination(client: TestClient):
     assert page["total"] == 100
 
 
-def test_research_overrides_pin_three_articles(client: TestClient):
+def test_governance_articles_land_in_research(client: TestClient):
     body = client.get("/api/v1/threats", params={"category": "RESEARCH", "limit": 200}).json()
-    assert body["total"] == 3
     titles = {item["title"] for item in body["items"]}
-    assert titles == {
+    assert {
         "Webinar: How to Build AI Threat Readiness Into Your Security Operations",
         "The Rise of the Threat Operator: How AI Will Redefine Security Operations and Careers",
         "Wazuh and AI for Enhanced SOC Workflows",
-    }
+    } <= titles
+    # RESEARCH never gets P1: it is a study/governance item, not an incident.
     for item in body["items"]:
+        assert item["priority"] in {"P2", "P3"}
         assert item["source_url"].startswith("https://")
+
+
+def test_other_rows_carry_no_disposition(client: TestClient):
+    body = client.get("/api/v1/threats", params={"category": "OTHER", "limit": 200}).json()
+    stats = client.get("/api/v1/stats").json()
+    assert body["total"] == stats["totals"]["other"]
+    for item in body["items"]:
+        assert item["risk_score"] is None
+        assert item["priority"] is None
+        assert item["action_plan"] == []
 
 
 def test_threat_items_expose_real_dates_and_source_links(client: TestClient):

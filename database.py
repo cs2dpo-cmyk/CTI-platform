@@ -121,6 +121,7 @@ def _seed_corpus() -> int:
         records, info = dataset.load_dataset(refresh=True)
         for record in records:
             result = risk_engine.score_seed_record(record.as_seed())
+            cves = record.evidence.get("cves") or []
             db.add(
                 Threat(
                     id=record.id,
@@ -131,12 +132,14 @@ def _seed_corpus() -> int:
                     meta_category=risk_engine.meta_of(record.category),
                     cluster=record.cluster,
                     source_url=record.source_url or None,
-                    risk_score=result.score,
-                    risk_level=result.risk_level,
-                    priority=result.priority,
+                    # OTHER rows are corpus members, not threats: no score, no
+                    # priority, no playbook.
+                    risk_score=result.score if result else None,
+                    risk_level=result.risk_level if result else None,
+                    priority=result.priority if result else None,
                     # The playbook is derived from (meta_category, priority) at
                     # read time; storing it per row duplicated ~35 KB in 100 rows.
-                    cve_id=extract_cve(record.title),
+                    cve_id=cves[0] if cves else extract_cve(record.title),
                     published_at=record.published_at,
                 )
             )
@@ -171,7 +174,7 @@ def _upgrade_rows(db: Session) -> int:
     for row in db.execute(
         select(Threat.id, Threat.meta_category, Threat.priority, Threat.action_plan)
     ).all():
-        if not row.action_plan or row.action_plan == "[]":
+        if not row.action_plan or row.action_plan == "[]" or not row.priority:
             continue
         derived = risk_engine.playbook(risk_engine.meta_of(row.meta_category), row.priority)
         try:

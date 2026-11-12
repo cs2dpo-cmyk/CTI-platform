@@ -150,10 +150,14 @@
 
   function renderKpis(stats) {
     const totals = stats.totals || {};
-    $('#kpiTotal').textContent = num(totals.threats);
+    // The corpus still holds 100 rows; only 85 of them are threats, so the
+    // headline number is the corpus and the P1 share is computed against the
+    // threat subset.
+    const corpus = totals.corpus ?? totals.threats ?? 0;
+    $('#kpiTotal').textContent = num(corpus);
     $('#kpiTw').textContent = num(totals.taiwan);
     $('#kpiGlobal').textContent = num(totals.global);
-    $('#heroCorpus').innerHTML = `${num(totals.threats)}<span class="ml-1 text-[11px] text-[color:var(--faint)]">篇</span>`;
+    $('#heroCorpus').innerHTML = `${num(corpus)}<span class="ml-1 text-[11px] text-[color:var(--faint)]">篇</span>`;
 
     $('#kpiP1').textContent = num(totals.p1);
     $('#kpiP1Share').textContent = totals.threats ? pct(totals.p1 / totals.threats) : '0%';
@@ -195,11 +199,11 @@
 
   function renderMetaLegend(stats) {
     const meta = stats.meta_categories || [];
-    $('#pieCenterTotal').textContent = num(stats.totals?.threats);
+    $('#pieCenterTotal').textContent = num(stats.totals?.corpus ?? stats.totals?.threats);
 
     const badge = $('#metaSourceBadge');
     if (badge) {
-      badge.textContent = 'CSV 叢集 · K=3';
+      badge.textContent = '逐篇分類 · 4 類';
     }
 
     $('#metaLegend').innerHTML = meta
@@ -267,7 +271,7 @@
 
     if (!twTop || !glTop) return;
 
-    const modeNote = '（CSV 叢集）';
+    const modeNote = '（逐篇分類）';
     const pieces = [
       `台灣以「${twTop.label}」（${num(twTop.by_region?.taiwan ?? 0)} 篇）為最大宗`,
       `國際則以「${glTop.label}」（${num(glTop.by_region?.global ?? 0)} 篇）為主`,
@@ -299,9 +303,17 @@
         ? `時間軸為來源實際發布日期（已驗證 ${num(verified)} 筆${estimated ? `，推估 ${num(estimated)} 筆` : ''}）`
         : '原始 CSV 未含發布日期，時間軸依擷取順序回推';
 
+    const accuracy = info.validation?.accuracy;
+    const classified = Object.entries(info.classification || {})
+      .map(([key, value]) => `${key} ${num(value)}`)
+      .join(' / ');
+    const labelNote = accuracy
+      ? `逐篇規則分類（${classified}；對 ${num(info.validation?.n ?? 0)} 筆人工標註準確率 ${Math.round(accuracy * 100)}%）`
+      : '逐篇規則分類（services/classify.py）';
+
     node.textContent = `資料來源：${files || '—'}（匯出 ${esc(info.exported_at || '—')}，台灣 ${
       num(rows.taiwan ?? 0)
-    } 筆 / 國際 ${num(rows.global ?? 0)} 筆）｜叢集對應：C→Meta-Category 由 dataset_meta.json 定義｜${dateNote}`;
+    } 筆 / 國際 ${num(rows.global ?? 0)} 筆）｜${labelNote}｜${dateNote}`;
   }
 
   function renderTimelineRange(stats) {
@@ -538,8 +550,9 @@
     return `<tr class="feed-detail-row"><td colspan="6">
               <div class="feed-detail-grid">
                 <div>
-                  <div class="kicker mb-2">Recommended Playbook · ${esc(item.priority)}</div>
+                  <div class="kicker mb-2">${item.priority ? `Recommended Playbook · ${esc(item.priority)}` : '產業動態 · 不進入處置流程'}</div>
                   <ol class="steps">${stepsHtml(item.action_plan)}</ol>
+                  ${item.action_plan?.length ? '' : '<p class="text-[11.5px] text-[color:var(--faint)]">此篇為產品／財報類消息，經分類後排除於 P1–P3 與平均分數之外。</p>'}
                 </div>
                 <div class="rounded-xl border border-[#1b2739] bg-[#08101b]/70 p-3">
                   <div class="kicker mb-2">Signal</div>
@@ -563,8 +576,15 @@
   }
 
   function feedRowHtml(item) {
-    const metaColor = CTICharts.META_KEY_COLOR[item.meta_category] || '#22d3ee';
+    const metaColor = CTICharts.META_KEY_COLOR[item.meta_category] || '#64748b';
     const sourceTone = item.source === 'THN' ? 'global' : 'tw';
+    const scored = item.risk_score != null;
+    const scoreCell = scored
+      ? `<span class="mono text-[12px] font-semibold text-[color:var(--ink)]">${esc(item.risk_score)}</span>`
+      : '<span class="mono text-[11px] text-[color:var(--faint)]">—</span>';
+    const priorityCell = item.priority
+      ? `<span class="badge" data-tone="${esc(LEVEL_TONE[item.risk_level] || 'low')}">${esc(item.priority)}</span>`
+      : '<span class="badge" data-tone="low">產業</span>';
     return `
         <tr class="feed-row" data-row="${item.id}" data-open="false" tabindex="0" aria-expanded="false">
           <td><span class="badge" data-tone="${sourceTone}">${esc(item.source)}</span></td>
@@ -588,8 +608,8 @@
               ${esc(item.meta_label)}
             </span>
           </td>
-          <td><span class="mono text-[12px] font-semibold text-[color:var(--ink)]">${esc(item.risk_score)}</span></td>
-          <td><span class="badge" data-tone="${esc(LEVEL_TONE[item.risk_level] || 'low')}">${esc(item.priority)}</span></td>
+          <td>${scoreCell}</td>
+          <td>${priorityCell}</td>
           <td><span class="mono text-[10.5px] text-[color:var(--faint)]">${esc(item.published_at)}</span></td>
         </tr>`;
   }

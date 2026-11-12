@@ -26,7 +26,8 @@ cti-platform/
 ├── schemas.py                  # Pydantic v2 請求 / 回應契約
 ├── services/
 │   ├── __init__.py
-│   ├── dataset.py              # 讀取 research CSV → 叢集對應 → 情資資料列
+│   ├── classify.py             # 逐篇 Meta-Category 分類（規則式，可稽核）
+│   ├── dataset.py              # 讀取 research CSV → 逐篇分類 → 情資資料列
 │   ├── risk_engine.py          # 可解釋風險評分 + P1-P3 分流 + 處置劇本
 │   └── analytics.py            # 儀表板統計聚合與 AI 洞察文字
 ├── static/
@@ -36,9 +37,11 @@ cti-platform/
 │       ├── charts.js           # Chart.js 四張圖表（就地更新，不清空重建）
 │       └── app.js              # 狀態管理、Fetch、渲染、互動
 ├── tests/
-│   ├── test_api.py             # 20 個 API 契約測試
+│   ├── test_api.py             # 26 個 API 契約測試
 │   └── frontend_smoke.mjs      # jsdom 煙霧測試（需啟動本機伺服器）
 ├── data/
+│   ├── gold_labels.csv         # 100 筆人工標註（分類器驗證用）
+│   ├── classification_audit.csv # 逐筆分類／證據／分數稽核檔（由工具產生）
 │   ├── Taiwan_security_dataset_cleaned.csv        # 研究語料（台灣 50 筆）
 │   ├── Global_security_dataset_cleaned.csv        # 研究語料（國際 50 筆）
 │   ├── Taiwan_security_dataset_with_dates.csv     # 加上真實發布日期（平台使用）
@@ -192,6 +195,22 @@ score = 100 × (0.30 × 資產關鍵度
       + 情資語料佐證 (命中 CVE 每筆 +2，上限 6)
 ```
 
+**語料列（情資列表）的分數另用一套證據驅動公式**，沒有隨機項：
+
+```
+score = 100 × (0.55 × 嚴重度
+             + 0.25 × 利用成熟度
+             + 0.12 × 暴露程度
+             + 0.08 × CVE 具名)
+
+嚴重度   = 文章載明的 CVSS/10 → 否則 0.92（載明 RCE／零日／重大）→ 否則類別基準
+利用成熟度 = 已在野利用 1.0 / PoC 0.75 / 未確認 0.55
+暴露程度  = 對外公開 1.0 / 內部 0.5（新聞多半未載明，採中性先驗）
+```
+
+舊版有 30% 是標題雜湊的偽隨機值，會讓「蘋果推出觸控 MacBook Pro」拿到 83.6 分、被判 P1；
+新版移除隨機項，該篇由分類器判為 `OTHER`，不計分也不進 P1–P3。
+
 | 優先級 | 分數區間 | SLA | 負責人 |
 | --- | --- | --- | --- |
 | P1 立即處置 | ≥ 80，或 CVSS ≥ 9.0 且已在野利用 | 24 h | CISO / SOC 值班主管 |
@@ -210,9 +229,9 @@ CREATE TABLE threats (
     region        VARCHAR(16)  NOT NULL,   -- taiwan / global
     category      VARCHAR(32)  NOT NULL,   -- Vulnerability / Malware / SupplyChain / Research
     meta_category VARCHAR(16)  NOT NULL,   -- VULN / MALWARE / RESEARCH
-    risk_score    FLOAT   NOT NULL,
-    risk_level    VARCHAR(16)  NOT NULL,   -- CRITICAL / HIGH / MEDIUM / LOW
-    priority      VARCHAR(4)   NOT NULL,   -- P1 / P2 / P3
+    risk_score    FLOAT   NULL,            -- OTHER 列為 NULL
+    risk_level    VARCHAR(16)  NULL,       -- CRITICAL / HIGH / MEDIUM / LOW
+    priority      VARCHAR(4)   NULL,       -- P1 / P2 / P3；OTHER 列為 NULL
     cluster       VARCHAR(8),              -- K-Means 叢集代號（C0–C2）
     action_plan   TEXT    NOT NULL,        -- JSON 陣列的處置步驟
     cve_id        VARCHAR(24),
@@ -238,52 +257,50 @@ CREATE TABLE threats (
 CTI_DATASET_DIR=C:\AI_Rsearch_Data uvicorn main:app
 ```
 
-#### 叢集 → Meta-Category 對應
+#### 逐篇分類（services/classify.py）
 
-| 地區 | C0 | C1 | C2 | 對應規則 |
-| --- | --- | --- | --- | --- |
-| 台灣 | 7 | 27 | 16 | C0、C1 → MALWARE；C2 → VULN |
-| 國際 | 35 | 6 | 9 | C0、C1 → VULN；C2 → MALWARE |
+Meta-Category 不再由叢集決定。K-Means 叢集是**詞彙群**：同一叢集裡可能同時有攻擊、
+政策與產品新聞，實測把整個叢集貼上一個標籤，只有 45% 與人工判讀一致。更關鍵的是
+叢集編號在兩地各訓練一次，台灣 C0 與國際 C0 指的是不同主題。
 
-判定依據是叢集內容：台灣 C2 全是修補／漏洞公告（Node.js、PHP、PostgreSQL、Exchange、
-Cisco、PHP2Shell…），C0 與 C1 為攻擊事件與產業動態；國際 C0 與 C1 以漏洞與資安公告為主
-（Linux Kernel、Cisco、Adobe、Wasmtime、Tailscale…），C2 為攻擊事件（ThreatsDay、
-憑證外洩、PHP2Shell 實際利用、網釣活動…）。
+現在由 `services/classify.py` 逐篇分類，規則是可閱讀、可重跑的順序判斷：
 
-要調整只需改 `data/dataset_meta.json` 的 `cluster_to_meta`，不需動程式碼。
+1. 沒有任何資安語彙 → `OTHER`（產業與產品動態，不計風險）
+2. 「遭到利用／在野」等事件語氣 → `MALWARE`
+3. 具名行為者（駭客、APT、組織）＋攻擊或外洩證據 → `MALWARE`
+4. 兩個以上獨立攻擊詞且無修補動作 → `MALWARE`
+5. 治理／研究語彙 → `RESEARCH`
+6. 修補／公告動作 → `VULN`
+7. 其餘依序降級
 
-`research_overrides` 目前指定三篇「AI 治理／研究」性質的文章為 RESEARCH，讓第三類在 API 與
-儀表板上顯示為 3 筆：
+`data/gold_labels.csv` 是 100 筆人工判讀標註；`tools/eval_classifier.py` 會印出
+混淆矩陣與每一筆的分歧原因：
 
-- Webinar: How to Build AI Threat Readiness Into Your Security Operations
-- The Rise of the Threat Operator: How AI Will Redefine Security Operations and Careers
-- Wazuh and AI for Enhanced SOC Workflows
+| 方法 | 與人工標註一致 |
+| --- | --- |
+| 舊：叢集 → Meta-Category | 45 / 100（45%） |
+| 新：逐篇規則分類 | **91 / 100（91%）** |
+
+重跑驗證：`python tools/eval_classifier.py`。輸出逐筆稽核檔：`python tools/export_audit.py`
+（`data/classification_audit.csv`，研究資料夾的筆記本讀同一個檔）。
 
 #### 實算結果（`GET /api/v1/stats` 即時回傳）
 
 | Meta-Category | 台灣 | 國際 | 合計 | 佔比 |
 | --- | --- | --- | --- | --- |
-| 系統漏洞與修補對策（VULN） | 16 | 39 | **55** | 55% |
-| 惡意威脅與主動攻擊（MALWARE） | 34 | 8 | **42** | 42% |
-| 前瞻研究與平台治理（RESEARCH） | 0 | 3 | **3** | 3% |
+| 系統漏洞與修補對策（VULN） | 10 | 12 | **22** | 22% |
+| 惡意威脅與主動攻擊（MALWARE） | 19 | 27 | **46** | 46% |
+| 前瞻研究與平台治理（RESEARCH） | 8 | 9 | **17** | 17% |
+| 產業與產品動態（OTHER，不計風險） | 13 | 2 | **15** | 15% |
 
 | 決策分派 | P1 | P2 | P3 | 平均分數 |
 | --- | --- | --- | --- | --- |
-| 篇數 | 25 | 51 | 24 | 72.9 |
+| 篇數（85 筆威脅） | 5 | 65 | 15 | 64.4 |
 
-> **口徑決策（已定案）：以 CSV 為準。**
-> `Global_Side-Project.ipynb` 的繪圖儲存格寫死 `meta_tw = [23, 27, 0]`、
-> `meta_en = [42, 5, 3]`，與 CSV 的叢集統計（台灣 7/27/16、國際 35/6/9）不一致。
-> 論文／海報上的 `65 / 32 / 3` 不再使用，簡報請改為 **55 / 42 / 3**。
->
-> | 項目 | 論文原圖 | CSV 實算（現行） |
-> | --- | --- | --- |
-> | 台灣 VULN / MALWARE / RESEARCH | 23 / 27 / 0 | 16 / 34 / 0 |
-> | 國際 VULN / MALWARE / RESEARCH | 42 / 5 / 3 | 39 / 8 / 3 |
-> | 合計 | 65 / 32 / 3 | **55 / 42 / 3** |
->
-> 第三類（RESEARCH）來自 `research_overrides` 指派的 3 篇文章；其餘 97 篇由叢集對應決定。
-> 叢集明細會顯示混合情況（例如國際 C0 = VULN 33 + RESEARCH 2）。
+> **與舊數字的關係**
+> 舊版的 `55 / 42 / 3` 來自「叢集 → 類別」對應；論文原圖的 `65 / 32 / 3` 則是筆記本
+> 手動填入的 `meta_tw = [23, 27, 0]`、`meta_en = [42, 5, 3]`。兩者都無法由逐篇內容
+> 重現，已由本節的 `22 / 46 / 17`（另 15 筆產業動態）取代，論文與海報請改用新數字。
 
 #### 情資列表的日期與原始連結
 
@@ -384,12 +401,14 @@ python tools/enrich_dates.py --report   # 只看比對結果
 - 分層清楚：`models`（儲存）／`schemas`（契約）／`services`（領域邏輯）／`main`（傳輸）。
 - 領域邏輯不依賴 FastAPI，`risk_engine` 可單獨測試與重用。
 - 種子資料冪等（idempotent），重啟不重複寫入。
-- 契約測試先於前端整合：17 個測試涵蓋統計一致性、篩選、分頁、驗證錯誤與 404。
+- 契約測試先於前端整合：26 個測試涵蓋統計一致性、篩選、分頁、驗證錯誤與 404。
 
 ---
 
 ## 7. 已知限制
 
+- Meta-Category 由規則分類器判定（91% 與 100 筆人工標註一致）；治理類短文若完全沒有
+  資安語彙，會被歸為 `OTHER`。改規則後請重跑 `tools/eval_classifier.py`。
 - Tailwind 以 Play CDN 載入（PoC 便利性）；正式環境建議以 CLI 產出最小化 CSS。
 - SQLite 不支援並發寫入；正式上線請改用 PostgreSQL（`DATABASE_URL` 已預留）。
 - K-Means 分群結果目前以類別對應 Meta-Category 呈現，未在執行期重新訓練；
