@@ -1,17 +1,33 @@
 # CTI 資安風險決策支援平台
 
-> 基於機器學習之跨平台網路威脅情資（CTI）分析與決策支援系統
-> — 嶺東 SmartTech AI 創新應用挑戰賽參賽作品 · 可部署至 Render 的全端 PoC
+> 跨平台網路威脅情資（CTI）分析與決策支援系統 — 嶺東 SmartTech AI 創新應用挑戰賽參賽作品，
+> 可部署至 Render 的全端 PoC。
 
-把 200 篇平衡語料（TWCERT 50 + iThome 50 + The Hacker News 100）以 TF-IDF 向量化與
-K-Means 分群做主題探索、再逐篇規則分類成四種 Meta-Category，最後以**可解釋的加權
-風險模型**轉譯成 CISO 可執行的 P1–P3 處置優先級、回應 SLA 與標準處置劇本（playbook）。
+把情資語料轉成 CISO 可執行的 **P1–P3 處置優先級、回應 SLA 與修補清單**。
+分類採規則式（可稽核、可重現），利用機率採 FIRST EPSS，已遭利用的事實採 CISA KEV，
+再以資產曝險調整修補順序。
+
+## 目前狀態（2026-11-13）
+
+| 項目 | 值 |
+| --- | --- |
+| 語料 | **788 篇**（平衡對照 200 + 自然語料 588）｜35 個月（2024-01 ～ 2026-11） |
+| 去重後事件 | 783（5 筆重複已合併） |
+| 分類器（開發期） | 91%（100 筆 gold，in-sample） |
+| 分類器（第一輪 held-out） | 77%（κ 0.741） |
+| 分類器（第二輪 held-out） | **73%**（κ 0.818；多數類別 baseline 44%） |
+| 排序（KEV 為 ground truth） | precision@10 **1.00**、AUC **0.843**（純 CVSS 0.546） |
+| 時間切分回測 | 測試窗口 AUC 0.88（發展窗口 0.51，樣本僅 24 筆） |
+| 測試 | 後端 82 項、前端 smoke 58 項 |
+
+> 對外引用的數字一律以 docs/evaluation.md 為準，該檔案由 tools/make_eval_doc.py 自動產生。
 
 | 層 | 技術 |
 | --- | --- |
 | 前端 | HTML5 · Tailwind CSS · 原生 JavaScript (Fetch API) · Chart.js 4 |
 | 後端 | Python 3.12 · FastAPI · Pydantic v2 · SQLAlchemy 2 |
 | 資料庫 | SQLite（PoC）· 可切換 `DATABASE_URL` 至 PostgreSQL |
+| 外部資料 | FIRST EPSS、CISA KEV、資產清單（皆為版本化快照） |
 | 部署 | Render Web Service · `uvicorn main:app --host 0.0.0.0 --port $PORT` |
 
 ---
@@ -21,408 +37,159 @@ K-Means 分群做主題探索、再逐篇規則分類成四種 Meta-Category，�
 ```
 cti-platform/
 ├── main.py                     # FastAPI 應用：路由、靜態檔案、生命週期
-├── database.py                 # SQLite engine / Session / 建表 + 冪等種子資料
-├── models.py                   # SQLAlchemy ORM：threats 資料表
-├── schemas.py                  # Pydantic v2 請求 / 回應契約
+├── database.py                 # engine / Session / 建表 + 冪等種子 + 升級步驟
+├── models.py                   # ORM：threats（含 cve_ids、duplicate_of）
+├── schemas.py                  # Pydantic 契約（含 DataProvenance）
 ├── services/
-│   ├── __init__.py
-│   ├── classify.py             # 逐篇 Meta-Category 分類（規則式，可稽核）
-│   ├── dataset.py              # 讀取 research CSV → 逐篇分類 → 情資資料列
-│   ├── risk_engine.py          # 可解釋風險評分 + P1-P3 分流 + 處置劇本
-│   └── analytics.py            # 儀表板統計聚合與 AI 洞察文字
-├── static/
-│   ├── index.html              # 深色 CISO 儀表板（單頁）
-│   ├── css/styles.css          # 設計系統：設計權杖、元件、動效
-│   └── js/
-│       ├── charts.js           # Chart.js 四張圖表（就地更新，不清空重建）
-│       └── app.js              # 狀態管理、Fetch、渲染、互動
-├── tests/
-│   ├── test_api.py             # 26 個 API 契約測試
-│   └── frontend_smoke.mjs      # jsdom 煙霧測試（需啟動本機伺服器）
-├── data/
-│   ├── gold_labels.csv         # 100 筆人工標註（分類器驗證用）
-│   ├── corpus_summary.json     # 重建結果（各來源篇數、K、輪廓係數）
-│   ├── classification_audit.csv # 逐筆分類／證據／分數稽核檔（由工具產生）
-│   ├── Taiwan_security_dataset_with_dates.csv     # 平台語料（台灣 100 筆，含日期與網址）
-│   ├── Global_security_dataset_with_dates.csv     # 平台語料（國際 100 筆）
-│   ├── Taiwan_security_dataset_with_dates.csv     # 加上真實發布日期（平台使用）
-│   ├── Global_security_dataset_with_dates.csv     # 加上真實發布日期（平台使用）
-│   ├── dataset_meta.json       # 來源、叢集對應表、日期政策
-│   └── cti.db                  # 執行時自動產生（已列入 .gitignore）
-├── tools/
-│   ├── build_corpus.py         # 重建語料：抓取 → 清洗 → 分群 → 分類 → 產出 CSV
-│   ├── enrich_dates.py         # 從 THN feed / TWCERT / iThome 補齊真實日期
-├── dev.cmd                     # 雙擊啟動（Windows 用；會帶 ExecutionPolicy Bypass）
-├── dev.ps1                     # 啟動邏輯：找 Python → 檢查套件 → 挑埠 → 開瀏覽器
-├── requirements.txt            # 執行期依賴
-├── requirements-dev.txt        # pytest / httpx
-├── Procfile                    # web: uvicorn main:app --host 0.0.0.0 --port $PORT
-├── render.yaml                 # Render Blueprint（build / start / health check）
-├── runtime.txt                 # python-3.12.7
-├── .gitignore
-└── README.md
+│   ├── classify.py             # 逐篇規則分類（四類）＋ 證據抽取
+│   ├── cve.py                  # CVE 抽取（容忍 jieba 斷詞後的「cve 2025 5777」）
+│   ├── dataset.py              # 讀取 CSV（含擴充語料）→ 分類 → 評分
+│   ├── risk_engine.py          # 可解釋評分、P1–P3、處置劇本、控制項折減
+│   ├── analytics.py            # 統計聚合（以去重後事件為單位）
+│   ├── dedup.py                # 近重複偵測（URL／CVE／標題／digest 包含）
+│   ├── epss.py / kev.py        # 外部快照查詢
+│   ├── patch_priority.py       # 修補優先級（EPSS + KEV + 曝險）
+│   ├── exposure.py / assets.py # 曝險推斷與資產清單比對
+│   ├── snapshots.py            # 快照版本與 data_as_of
+│   ├── agreement.py            # Cohen's kappa 等標註一致性
+│   └── time_split.py           # 時間切分（標註感知的切點選擇）
+├── static/                     # 單頁儀表板（HTML / CSS / JS）
+├── tools/                      # 抓取、標註、評估、文件產生（見第 5 節）
+├── tests/                      # 後端 pytest + 前端 jsdom smoke
+├── docs/
+│   ├── evaluation.md           # 唯一有效的評估結果（自動產生）
+│   ├── annotation-guide.md     # 標註指南（含爭議類型判定表）
+│   └── scrape-feasibility.md   # 語料擴充的可行性實測
+└── data/                       # 語料 CSV、快照 JSON、標註檔
 ```
 
 ---
 
-## 2. 快速開始（本機）
-
-### 2.1 一鍵啟動（Windows，建議）
-
-**雙擊 `dev.cmd`**。Windows 預設會用記事本開啟 `.ps1`，所以要透過 `.cmd` 進入。
-
-它會自動完成這些事：
-
-1. 依序尋找可用的 Python：專案 `.venv` → 系統 Python（若上層有 `.pylibs` 會自動加進 `PYTHONPATH`）。
-2. 檢查 `fastapi / uvicorn / sqlalchemy / pydantic`，缺少時詢問是否安裝。
-3. 從 8123 起挑一個空閒埠；若該埠上已經有本平台在跑，直接開瀏覽器重用，不會重複啟動。
-4. 等伺服器回應健康檢查後，自動用預設瀏覽器開啟儀表板。
-5. 伺服器在此視窗前景執行，**關閉視窗或 Ctrl+C 即停止**。
-
-進階參數（在終端機執行時可用）：
-
-```powershell
-.\dev.ps1 -Port 9000 -Reload    # 指定埠號 + 熱重載
-.\dev.ps1 -NoBrowser            # 不自動開瀏覽器
-.\dev.ps1 -Install              # 缺套件時直接安裝，不詢問
-```
-
-> 若系統執行原則封鎖腳本（`未進行數位簽章`），改用：
-> `powershell -ExecutionPolicy Bypass -File .\dev.ps1`
-> `dev.cmd` 已自動帶上 `-ExecutionPolicy Bypass`，雙擊不受影響。
-
-### 2.2 手動啟動（macOS / Linux / Render）
+## 2. 快速開始
 
 ```bash
-cd cti-platform
-python -m venv .venv && source .venv/bin/activate    # Windows: .venv\Scripts\activate
-pip install -r requirements.txt
-
-uvicorn main:app --reload --port 8000
+python -m venv .venv
+.venv/Scripts/pip install -r requirements.txt          # Windows
+./.venv/Scripts/python.exe -m uvicorn main:app --host 127.0.0.1 --port 8123
+# http://127.0.0.1:8123/        儀表板
+# http://127.0.0.1:8123/api/docs OpenAPI
 ```
 
-開啟 <http://127.0.0.1:8000> 即為儀表板；<http://127.0.0.1:8000/api/docs> 為 Swagger UI。
-
-首次啟動時 `database.init_db()` 會自動建表並寫入 200 筆種子資料；
-資料庫已有資料時不會重複寫入（冪等）。
+第一次啟動會從 data/*.csv 建立 SQLite 並評分（約 2 秒）。
 
 ### 執行測試
 
 ```bash
-pip install -r requirements-dev.txt
-pytest tests -q
+PYTHONPATH=./.pylibs ./.venv/Scripts/python.exe -m pytest tests -q   # 82 項
+node tests/frontend_smoke.mjs                                        # 58 項（需先啟動服務）
 ```
 
-測試使用獨立的 `data/test_cti.db`，不影響開發資料庫。
-
-### 前端煙霧測試（選用）
-
-jsdom 不負責繪製畫面，但會**實際執行** `charts.js` 與 `app.js`，對著執行中的 API
-驗證渲染管線：KPI 文字、圖例、決策矩陣、情資列表、篩選、展開列與評估流程。
-
-```bash
-# 另開一個終端機啟動伺服器
-uvicorn main:app --port 8123
-
-# 安裝 jsdom（只需一次）
-npm i -D jsdom      # 或 pnpm add -D jsdom
-
-node tests/frontend_smoke.mjs
-# 環境變數：CTI_BASE_URL（預設 http://127.0.0.1:8123）、CTI_STATIC_DIR、JSDOM_MODULE
-```
-
-### 視覺截圖（選用）
-
-用機器上既有的 Edge / Chrome 截圖，**不下载第二個瀏覽器**（`puppeteer-core` 只負責驅動）：
-
-```bash
-npm install                     # 第一次：jsdom + puppeteer-core
-node tools/shot.mjs http://127.0.0.1:8123 1440 900 .tmp/desktop.png
-node tools/shot.mjs http://127.0.0.1:8123 390 844   .tmp/mobile.png
-```
-
-輸出會印出 `scrollWidth` / `clientWidth` / `overflowX`；`overflowX: true` 就代表有
-橫向溢出，比肉眼看圖可靠。視窗寬度是用 DevTools 的 `setViewport` 覆寫，所以 390 是真正的
-手機寬度 —— Edge 的 `--window-size` 在 Windows 有約 500px 下限，直接呼叫會變成
-「500 寬的版面被裁成 390」。
-
-VS Code 也可以用 **終端機 → 執行工作…** 跑 `CTI: 截圖（桌面 1440）` / `CTI: 截圖（手機 390）`。
+前端 smoke 的預期值直接從 /api/v1/stats 取得，**語料變動不會讓測試整批失敗**。
 
 ---
 
 ## 3. API 規格
 
-| Method | Path | 說明 |
+| 方法 | 路徑 | 用途 |
 | --- | --- | --- |
-| `GET` | `/api/v1/health` | 健康檢查（Render health check 使用） |
-| `GET` | `/api/v1/stats` | 全球 vs 台灣統計、Meta-Category 分布、時間軸、P1–P3 決策矩陣、AI 洞察 |
-| `POST` | `/api/v1/assess` | 即時風險評估：分數、影響因子、調整項、處置劇本 |
-| `GET` | `/api/v1/threats` | 情資列表，支援 `priority` / `region` / `category` / `meta_category` / `source` / `q` / `min_score` / `sort` / `limit` / `offset` |
-| `GET` | `/api/v1/threats/{id}` | 單筆情資明細 |
+| GET | /api/v1/health | 健康檢查（含語料筆數、資料版本） |
+| GET | /api/v1/stats | 統計、類別分布、時間軸、決策矩陣、data_as_of |
+| GET | /api/v1/threats | 情資列表；支援 priority / region / source / 搜尋 / 分頁 / dedupe |
+| GET | /api/v1/threats/{id} | 單筆明細（含處置劇本、CVE 清單） |
+| POST | /api/v1/assess | 即時風險評估；帶 cve_id 時自動查 EPSS／KEV |
+| GET | /api/v1/patch-priority | 修補清單（EPSS + KEV + 曝險），可加 ?exposure=false 對照 |
 
-### `POST /api/v1/assess` 範例
+三個統計端點都回傳 `data_as_of`、`stale_days` 與各快照的來源與筆數。
+
+### 範例
 
 ```bash
-curl -X POST http://127.0.0.1:8000/api/v1/assess \
+curl "http://127.0.0.1:8123/api/v1/patch-priority?limit=5"
+curl "http://127.0.0.1:8123/api/v1/threats?priority=P1&dedupe=true"
+curl -X POST http://127.0.0.1:8123/api/v1/assess \
   -H 'Content-Type: application/json' \
-  -d '{
-        "asset_type": "core_datacenter",
-        "threat_source": "ransomware",
-        "category": "MALWARE",
-        "region": "taiwan",
-        "cve_id": "CVE-2026-111497",
-        "cvss": 9.8,
-        "exploit_status": "active",
-        "exposure": "public",
-        "data_sensitivity": "high",
-        "controls": ["edr", "mfa"]
-      }'
+  -d '{"asset_type":"web_app","threat_source":"zero_day","cve_id":"CVE-2023-4966"}'
 ```
-
-回應含 `score`、`priority`、`risk_level`、`confidence`、`factors[]`（每個因子的
-權重與貢獻分數）、`adjustments[]`（在地情資 +3、控制項折減、語料佐證等）
-與 `action_plan[]`（含負責人與 SLA）。
-
-### 風險模型
-
-```
-score = 100 × (0.30 × 資產關鍵度
-             + 0.26 × 威脅來源強度
-             + 0.20 × 嚴重度（CVSS/10，未提供則用類別基準）
-             + 0.14 × 利用成熟度
-             + 0.10 × 曝險程度)
-      + 在地情資關聯 (+3)
-      + 資料敏感度 (±4)
-      - 已佈建控制項折減 (每項 2.2–3.0，上限 12)
-      + 情資語料佐證 (命中 CVE 每筆 +2，上限 6)
-```
-
-**語料列（情資列表）的分數另用一套證據驅動公式**，沒有隨機項：
-
-```
-score = 100 × (0.55 × 嚴重度
-             + 0.25 × 利用成熟度
-             + 0.12 × 暴露程度
-             + 0.08 × CVE 具名)
-
-嚴重度   = 文章載明的 CVSS/10 → 否則 0.92（載明 RCE／零日／重大）→ 否則類別基準
-利用成熟度 = 已在野利用 1.0 / PoC 0.75 / 未確認 0.55
-暴露程度  = 對外公開 1.0 / 內部 0.5（新聞多半未載明，採中性先驗）
-```
-
-舊版有 30% 是標題雜湊的偽隨機值，會讓「蘋果推出觸控 MacBook Pro」拿到 83.6 分、被判 P1；
-新版移除隨機項，該篇由分類器判為 `OTHER`，不計分也不進 P1–P3。
-
-| 優先級 | 分數區間 | SLA | 負責人 |
-| --- | --- | --- | --- |
-| P1 立即處置 | ≥ 80，或 CVSS ≥ 9.0 且已在野利用 | 24 h | CISO / SOC 值班主管 |
-| P2 計畫處置 | 66 – 79 | 7 日 | 資安維運團隊 (SecOps) |
-| P3 觀測追蹤 | < 66 | 30 日 | 資安治理 / 情資研究組 |
 
 ---
 
-## 4. 資料庫 Schema
+## 4. 評分與優先級
 
-```sql
-CREATE TABLE threats (
-    id            INTEGER PRIMARY KEY,
-    title         TEXT    NOT NULL,
-    source        VARCHAR(32)  NOT NULL,   -- TWCERT / iThome / THN
-    region        VARCHAR(16)  NOT NULL,   -- taiwan / global
-    category      VARCHAR(32)  NOT NULL,   -- Vulnerability / Malware / SupplyChain / Research
-    meta_category VARCHAR(16)  NOT NULL,   -- VULN / MALWARE / RESEARCH
-    risk_score    FLOAT   NULL,            -- OTHER 列為 NULL
-    risk_level    VARCHAR(16)  NULL,       -- CRITICAL / HIGH / MEDIUM / LOW
-    priority      VARCHAR(4)   NULL,       -- P1 / P2 / P3；OTHER 列為 NULL
-    cluster       VARCHAR(8),              -- K-Means 叢集代號（C0–C2）
-    action_plan   TEXT    NOT NULL,        -- JSON 陣列的處置步驟
-    cve_id        VARCHAR(24),
-    published_at  DATE    NOT NULL,
-    created_at    DATETIME
-);
+### 情資評分（語料）
+
+```
+score = 100 × (0.50 × 嚴重度 + 0.30 × 利用機率 + 0.12 × 暴露 + 0.08 × CVE 具名)
+利用機率：有 CVE 時採 EPSS 實測值，否則退回文字判斷
 ```
 
-### 資料來源：直接讀取 research CSV（單一真實來源）
+### 修補優先級（CVE 層級）
 
-平台不再有任何寫死的統計數字。啟動時 `services/dataset.py` 會：
-
-1. 依 `data/dataset_meta.json` 的 `taiwan_csv` / `global_csv` 讀取兩份 **with_dates** 檔
-   （platform / title / cleaned_text / cluster / published_at / date_source / source_url）。
-2. 以 `cluster_to_meta` 把叢集代號對應成 Meta-Category，再套用 `research_overrides`。
-3. 以 `date_column`（預設 `published_at`）讀取真實發布日期，不做事後推估。
-4. 交給 `risk_engine` 產生 `risk_score` / `priority` / `action_plan`，連同 `source_url` 寫入 SQLite。
-5. `/api/v1/stats`、`/api/v1/threats`、決策矩陣全部由同一批資料列計算，口徑一致。
-
-原始檔案位於 `C:\AI_Rsearch_Data`，專案內已放一份快照；要改讀原始資料夾：
-
-```bash
-CTI_DATASET_DIR=C:\AI_Rsearch_Data uvicorn main:app
-```
-
-#### 逐篇分類（services/classify.py）
-
-Meta-Category 不再由叢集決定。K-Means 叢集是**詞彙群**：同一叢集裡可能同時有攻擊、
-政策與產品新聞，實測把整個叢集貼上一個標籤，只有 45% 與人工判讀一致。更關鍵的是
-叢集編號在兩地各訓練一次，台灣 C0 與國際 C0 指的是不同主題。
-
-現在由 `services/classify.py` 逐篇分類，規則是可閱讀、可重跑的順序判斷：
-
-1. 沒有任何資安語彙 → `OTHER`（產業與產品動態，不計風險）
-2. 「遭到利用／在野」等事件語氣 → `MALWARE`
-3. 具名行為者（駭客、APT、組織）＋攻擊或外洩證據 → `MALWARE`
-4. 兩個以上獨立攻擊詞且無修補動作 → `MALWARE`
-5. 治理／研究語彙 → `RESEARCH`
-6. 修補／公告動作 → `VULN`
-7. 其餘依序降級
-
-`data/gold_labels.csv` 是 100 筆人工判讀標註；`tools/eval_classifier.py` 會印出
-混淆矩陣與每一筆的分歧原因：
-
-| 方法 | 與人工標註一致 |
-| --- | --- |
-| 舊：叢集 → Meta-Category | 45 / 100（45%） |
-| 新：逐篇規則分類 | **91 / 100（91%）** |
-
-重跑驗證：`python tools/eval_classifier.py`。輸出逐筆稽核檔：`python tools/export_audit.py`
-（`data/classification_audit.csv`，研究資料夾的筆記本讀同一個檔）。
-
-#### 實算結果（`GET /api/v1/stats` 即時回傳）
-
-| Meta-Category | 台灣 | 國際 | 合計 | 佔比 |
-| --- | --- | --- | --- | --- |
-| 系統漏洞與修補對策（VULN） | 20 | 26 | **46** | 23% |
-| 惡意威脅與主動攻擊（MALWARE） | 44 | 50 | **94** | 47% |
-| 前瞻研究與平台治理（RESEARCH） | 20 | 22 | **42** | 21% |
-| 產業與產品動態（OTHER，不計風險） | 16 | 2 | **18** | 9% |
-
-| 決策分派 | P1 | P2 | P3 | 平均分數 |
-| --- | --- | --- | --- | --- |
-| 篇數（182 筆威脅） | 25 | 124 | 33 | 67.6 |
-
-> **與舊數字的關係**
-> 舊版的 `55 / 42 / 3` 來自「叢集 → 類別」對應；論文原圖的 `65 / 32 / 3` 則是筆記本
-> 手動填入的 `meta_tw = [23, 27, 0]`、`meta_en = [42, 5, 3]`。兩者都無法由逐篇內容
-> 重現，已由本節的 `46 / 94 / 42`（另 18 筆產業動態）取代，論文與海報請改用新數字。
-
-#### 情資列表的日期與原始連結
-
-`/api/v1/threats` 每筆都帶 `published_at` 與 `source_url`。前端列表的標題即為外連
-（`target="_blank" rel="noopener noreferrer"`），展開列另顯示「原始報導 ↗」，
-審查委員可逐筆回查原始文章；點擊連結不會觸發展開／收合。
-
-圖表文字色：圖例（legend）文字維持 `#FFFFFF`；四張圖的 X/Y 軸刻度統一為 `#8b9ab2`
-（與次要文字同色），軸標題為 `#cbd5e1`，讓「數據亮、座標暗」的層級一致。
-圓餅中心預設顯示語料總數，滑過區塊時改顯示該類別佔比，離開後即復原。
-
-#### 發布日期（真實來源，非推估）
-
-原始 CSV 只有 `title` / `cluster`，沒有日期。`tools/enrich_dates.py` 會向三個來源補齊：
-
-| 來源 | 取得方式 | 命中 |
+| 級別 | 條件 | SLA |
 | --- | --- | --- |
-| The Hacker News | Blogger JSON feed 的 `published` 時間戳 | 50 / 50 |
-| TWCERT/CC | RSS `<pubDate>` 與年度列表 `<time>` | 20 / 20 |
-| iThome | 新聞列表頁 `p.post-at` | 30 / 30 |
+| P1 | 列入 CISA KEV（已遭利用） | 24 小時 |
+| P2 | 對外曝險且 EPSS ≥ 0.10 或 CVSS ≥ 9.0 | 7 天 |
+| P3 | 其餘 | 30 天 |
 
-比對採標題正規化（去空白、統一全形標點、HTML unescape）後完全相符；僅 1 筆以
-0.98 相似度近似比對。輸出檔新增四個欄位：
+曝險來源順序：人工指定 → 資產清單 → 情資描述 → 產品名推斷 → 未知。
+對外曝險升一級、內網降一級、未知維持；KEV 永不降級。
 
-| 欄位 | 說明 |
-| --- | --- |
-| `published_at` | `YYYY-MM-DD` 實際發布日期 |
-| `date_source` | `thehackernews.com` / `twcert.org.tw` / `ithome.com.tw` / `estimated` |
-| `source_url` | 對應文章網址，可逐筆回查 |
-| `date_note` | 近似比對或推估時的原因 |
+### 資料快照
 
-重新產生（會覆寫 `*_with_dates.csv`）：
-
-```bash
-python tools/enrich_dates.py            # 寫檔
-python tools/enrich_dates.py --report   # 只看比對結果
-```
-
-`dataset_meta.json` 的 `date_policy` 設為 `column`，平台直接讀 `published_at`；
-若某列缺日期仍會退回擷取順序推估並標記 `estimated`，時間軸不會中斷。
-
-目前分布：200 筆全部為來源實際日期（`estimated` = 0），橫跨 **2025-07-21 → 2026-11-09**，
-共 15 個不同日期；國際情資集中在 10/26–10/30，台灣則因 TWCERT 發稿頻率較低而橫跨數月。
-
----
-
-## 5. 部署至 Render
-
-### 方式 A：Blueprint（建議）
-
-1. 將 `cti-platform/` 推上 GitHub（此資料夾即為 repo 根目錄）。
-2. Render → **New → Blueprint** → 選擇 repo，Render 會讀取 `render.yaml`。
-3. 部署完成後開 `https://<service>.onrender.com/api/v1/health` 確認 `threats: 100`。
-
-### 方式 B：手動 Web Service
-
-| 設定 | 值 |
-| --- | --- |
-| Environment | Python 3 |
-| Build Command | `pip install -r requirements.txt` |
-| Start Command | `uvicorn main:app --host 0.0.0.0 --port $PORT` |
-| Health Check Path | `/api/v1/health` |
-
-`Procfile` 內容即為上述啟動指令，亦適用於 Railway / Heroku 類平台。
-
-### 環境變數
-
-| 變數 | 預設 | 說明 |
+| 快照 | 檔案 | 更新方式 |
 | --- | --- | --- |
-| `DATABASE_URL` | `sqlite:///./data/cti.db` | 可換成 PostgreSQL 連線字串 |
-| `CTI_DATASET_DIR` | `./data` | research CSV 所在資料夾（可指向 `C:\AI_Rsearch_Data`） |
-| `ALLOWED_ORIGINS` | `*` | CORS 允許來源，逗號分隔 |
-| `LOG_LEVEL` | `INFO` | 日誌等級 |
-| `PYTHON_VERSION` | `3.12.7` | Render 建置用 Python 版本 |
+| EPSS | data/epss.json | node tools/refresh_snapshots.mjs |
+| KEV | data/kev_ids.json | 同上 |
+| 資產 | data/assets.csv | tools/asset_import.py --file ... --apply |
 
-> **SQLite 與 Render 的持久化**：免費方案的檔案系統是暫時性的，重啟後資料庫會重置，
-> 但應用程式啟動時會自動重新種子化 200 筆語料，因此儀表板不會壞。
-> 若需要保存執行期寫入，請掛載 Render Disk 並設定
-> `DATABASE_URL=sqlite:////var/data/cti.db`。
+data/snapshots.json 記錄每個快照的來源與擷取日期；data_as_of 取**最舊**的那一個。
 
 ---
 
-## 6. 設計原則（對應 skills-main / Superpowers）
+## 5. 工具（tools/）
 
-**前端（emil-design-eng 風格）**
+| 類別 | 工具 |
+| --- | --- |
+| 抓取 | build_corpus.py、build_stratified.py（按月分層）、import_expanded.py |
+| 標註 | make_holdout.py、make_relabel.py、label_agreement.py、make_disputes.py、apply_relabel.py |
+| 評估 | eval_classifier.py、eval_holdout.py、eval_round2.py、kev_precision.py、tune_weights.py、time_split_eval.py、simulate_digest_class.py |
+| 分析 | dataset_comparison.py（平衡 vs 自然）、dedup_report.py、patch_report.py、export_audit.py |
+| 文件 | make_eval_doc.py（產生 docs/evaluation.md） |
+| 維運 | asset_import.py、refresh_snapshots.mjs、shot.mjs（截圖） |
 
-- 只對 `transform` / `opacity` / 顏色做動效；`transition` 明確列出屬性，不用 `all`。
-- 自訂緩動曲線 `cubic-bezier(0.23, 1, 0.32, 1)`（ease-out），UI 動效 ≤ 300 ms。
-- 所有可按壓元件在 `:active` 縮放至 `0.97`，提供即時回饋。
-- 進場用 `scale(0.95) + opacity`，不用 `scale(0)`；清單以 30–80 ms 交錯進場。
-- 數字使用 `font-variant-numeric: tabular-nums`，避免跳動。
-- Hover 效果包在 `@media (hover: hover) and (pointer: fine)`，避免觸控誤觸。
-- 完整支援 `prefers-reduced-motion`：保留顏色/透明度提示，移除位移。
-- 折疊面板用 `grid-template-rows: 0fr → 1fr` 過場（可中斷），不用 height 寫死。
+---
 
-**後端（superpowers 架構原則）**
+## 6. 部署至 Render
 
-- 分層清楚：`models`（儲存）／`schemas`（契約）／`services`（領域邏輯）／`main`（傳輸）。
-- 領域邏輯不依賴 FastAPI，`risk_engine` 可單獨測試與重用。
-- 種子資料冪等（idempotent），重啟不重複寫入。
-- 契約測試先於前端整合：26 個測試涵蓋統計一致性、篩選、分頁、驗證錯誤與 404。
+render.yaml 已包含 Blueprint 設定；推送 main 後自動部署。
+
+| 環境變數 | 說明 |
+| --- | --- |
+| PORT | Render 自動注入 |
+| DATABASE_URL | 選填；未設定時使用 data/cti.db（SQLite） |
+| CTI_DATASET_DIR | 選填；指向替代的語料資料夾 |
+
+免費方案冷啟動約 30 秒，部署約 5–15 分鐘。
 
 ---
 
 ## 7. 已知限制
 
-- 語料時間跨度 16 個月：TWCERT/CC 每半年約 20 篇通報，湊到 50 篇必須回溯到 2025 年，
-  因此發布節奏圖以「週」為單位並補零，國際情資則集中在最近兩週。
-- Meta-Category 由規則分類器判定（91% 與 100 筆人工標註一致，涵蓋擴充前的 100 篇）；治理類短文若完全沒有
-  資安語彙，會被歸為 `OTHER`。改規則後請重跑 `tools/eval_classifier.py`。
-- Tailwind 以 Play CDN 載入（PoC 便利性）；正式環境建議以 CLI 產出最小化 CSS。
-- SQLite 不支援並發寫入；正式上線請改用 PostgreSQL（`DATABASE_URL` 已預留）。
-- K-Means 分群結果目前以類別對應 Meta-Category 呈現，未在執行期重新訓練；
-  `TF-IDF + K-Means` 屬研究階段的離線分析。
-- 無身分驗證與速率限制，公開部署前應加上 API key 或 OAuth2。
+| 限制 | 說明 |
+| --- | --- |
+| 語料區域傾斜 | 國際 79% / 台灣 21%。平衡樣本與自然語料的比較見 docs/evaluation.md 第 7 節 |
+| 平衡樣本會放大急迫性 | P1 佔比：平衡樣本 20%、自然語料 2.6%；儀表板已加註說明 |
+| 週報／彙整類爭議 | 佔語料 2.5%，兩個標註者與分類器三方說法不同，尚未定案 |
+| 發布節奏的週間斷層 | 分層抓取每月取最新 N 篇，導致週圖月初空缺、月底尖峰 |
+| 沒有認證 | API 目前公開，正式部署前需加 API key |
+| 資產清單為示範資料 | 14 台，曝險覆蓋 44% |
+| 快照需手動更新 | 逾時不會自動告警，僅反映在 data_as_of |
 
+---
 
-## 評估與標註
+## 8. 文件
 
-- 訓練期（100 筆 gold，in-sample）：`tools/eval_classifier.py`
-- held-out（另 100 筆、未參與調參）：先依 [docs/annotation-guide.md](docs/annotation-guide.md) 標註
-  `data/holdout_labels.csv`，兩人成果用 `tools/label_agreement.py` 算 Cohen's kappa，
-  最後用 `tools/eval_holdout.py` 產出準確率、baseline 與各類別 P/R/F1。
+| 文件 | 內容 |
+| --- | --- |
+| docs/evaluation.md | 唯一有效的評估結果（自動產生） |
+| docs/annotation-guide.md | 標註指南、爭議類型判定表、κ 流程 |
+| docs/scrape-feasibility.md | 各來源可回溯深度與語料擴充決策 |
