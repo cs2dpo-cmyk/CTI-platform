@@ -178,12 +178,20 @@ def main() -> int:
         add()
         add(f"兩位標註者：同意率 {agreement['raw']:.0%}，Cohen's kappa {agreement['kappa']:.3f}，"
             f"不一致 {agreement['disputes']} 列。")
+        relabel = round2.get("relabel")
+        if relabel:
+            add()
+            add(f"**追加一輪規則化重新標註**（{relabel['rows']} 列爭議）：")
+            add(f"同意率 {relabel['raw']:.0%}，kappa {relabel['kappa']:.3f}"
+                f"（原為 {agreement['kappa']:.3f}），共改動 {relabel['changed_vs_previous']} 個標籤。")
+            add("規則化後 kappa 明顯上升，代表新增的判定表確實消除了歧義；"
+                "裁決也改依新規則，因此最終準確率由 90% 修正為 "
+                f"{round2['adjudicated']['accuracy']:.0%}。")
         add()
-        add("> 這三個數字（51% / 52% / 90%）的差距就是本專題最重要的限制：")
-        add("> 分類正確率高度取決於**類別慣例**，尤其是週報、研討會、政策類該算")
-        add("> RESEARCH 還是 VULN／MALWARE。裁決者在 36 列「兩位標註者一致但模型")
-        add("> 不同」的爭議中，有 27 列（75%）判給模型慣例，因此 90% 不能當成")
-        add("> 獨立驗證；報告時應同時揭露 51%／52% 與 kappa。")
+        add("> 這組數字（51% / 52% / 裁決後）的差距，就是本專題最重要的限制：")
+        add("> 分類正確率高度取決於**類別慣例**，尤其是週報、研討會、政策類。")
+        add("> 最終值已依新規則重標並重新裁決，但仍應同時揭露兩位標註者的原始")
+        add("> 準確率與 kappa，不能只報裁決後的單一數字。")
         add()
 
     add("## 6. 資料溯源")

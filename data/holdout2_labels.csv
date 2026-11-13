@@ -1,101 +1,101 @@
 id,title,source,region,label,notes
 H2001,URGENT: Upgrade GitLab - Critical Workspace Creation Flaw Allows File Overwrite,THN,global,VULN,
-H2002,WordPress LiteSpeed Plugin Vulnerability Puts 5 Million Sites at Risk,THN,global,VULN,外掛漏洞風險公告
-H2003,"Urgent: Secret Backdoor Found in XZ Utils Library, Impacts Major Linux Distros",THN,global,VULN,開源函式庫後門（弱點）
-H2004,Ukraine Targeted in Cyberattack Exploiting 7-Year-Old Microsoft Office Flaw,THN,global,MALWARE,利用漏洞的攻擊事件
-H2005,U.S. Dismantles World's Largest 911 S5 Botnet with 19 Million Infected Devices,THN,global,MALWARE,殭屍網路被瓦解（攻擊基礎設施）
-H2006,The Secrets of Hidden AI Training on Your Data,THN,global,RESEARCH,資料訓練隱私分析
+H2002,WordPress LiteSpeed Plugin Vulnerability Puts 5 Million Sites at Risk,THN,global,VULN,relabel: 
+H2003,"Urgent: Secret Backdoor Found in XZ Utils Library, Impacts Major Linux Distros",THN,global,MALWARE,relabel: 
+H2004,Ukraine Targeted in Cyberattack Exploiting 7-Year-Old Microsoft Office Flaw,THN,global,VULN,relabel: 
+H2005,U.S. Dismantles World's Largest 911 S5 Botnet with 19 Million Infected Devices,THN,global,MALWARE,relabel: 
+H2006,The Secrets of Hidden AI Training on Your Data,THN,global,RESEARCH,relabel: 
 H2007,VMware ESXi Flaw Exploited by Ransomware Groups for Admin Access,THN,global,MALWARE,
-H2008,Vietnamese Human Rights Group Targeted in Multi-Year Cyberattack by APT32,THN,global,MALWARE,APT 攻擊行動
-H2009,U.S. Sanctions Two Crypto Exchanges for Facilitating Cybercrime and Money Laundering,THN,global,RESEARCH,制裁行動（治理）
-H2010,U.S. Government Issues New TLP Guidance for Cross-Sector Threat Intelligence Sharing,THN,global,RESEARCH,政府發布 TLP 指引（政策）
+H2008,Vietnamese Human Rights Group Targeted in Multi-Year Cyberattack by APT32,THN,global,MALWARE,relabel: 
+H2009,U.S. Sanctions Two Crypto Exchanges for Facilitating Cybercrime and Money Laundering,THN,global,OTHER,relabel: 
+H2010,U.S. Government Issues New TLP Guidance for Cross-Sector Threat Intelligence Sharing,THN,global,OTHER,relabel: 
 H2011,"XML-RPC npm Library Turns Malicious, Steals Data, Deploys Crypto Miner",THN,global,MALWARE,
-H2012,"⚡ THN Weekly Recap: Top Cybersecurity Threats, Tools and Tips [30 Dec]",THN,global,RESEARCH,週報彙整
-H2013,Unpatched PHP Voyager Flaws Leave Servers Open to One-Click RCE Exploits,THN,global,VULN,未修補漏洞可遠端執行
+H2012,"⚡ THN Weekly Recap: Top Cybersecurity Threats, Tools and Tips [30 Dec]",THN,global,OTHER,relabel: 
+H2013,Unpatched PHP Voyager Flaws Leave Servers Open to One-Click RCE Exploits,THN,global,VULN,relabel: 
 H2014,Sticky Werewolf Uses Undocumented Implant to Deploy Lumma Stealer in Russia and Belarus,THN,global,MALWARE,
-H2015,"⚡ Weekly Recap: Chrome 0-Day, IngressNightmare, Solar Bugs, DNS Tactics, and More",THN,global,RESEARCH,週報彙整
-H2016,[Free Webinar] Guide to Securing Your Entire Identity Lifecycle Against AI-Powered Threats,THN,global,RESEARCH,研討會指南
-H2017,U.S. Sanctions Funnull for $200M Romance Baiting Scams Tied to Crypto Fraud,THN,global,RESEARCH,制裁行動（治理）
+H2015,"⚡ Weekly Recap: Chrome 0-Day, IngressNightmare, Solar Bugs, DNS Tactics, and More",THN,global,OTHER,relabel: 
+H2016,[Free Webinar] Guide to Securing Your Entire Identity Lifecycle Against AI-Powered Threats,THN,global,RESEARCH,relabel: 研討會指南（判定表：Webinar → RESEARCH）
+H2017,U.S. Sanctions Funnull for $200M Romance Baiting Scams Tied to Crypto Fraud,THN,global,OTHER,relabel: 
 H2018,"⚡ Weekly Recap: Airline Hacks, Citrix 0-Day, Outlook Malware, Banking Trojans and more",THN,global,MALWARE,
 H2019,"UNC2891 Breaches ATM Network via 4G Raspberry Pi, Tries CAKETAP Rootkit for Fraud",THN,global,MALWARE,
 H2020,WhatsApp Patches Zero-Click Exploit Targeting iOS and macOS Devices,THN,global,VULN,
-H2021,"⚡ Weekly Recap: Cisco 0-Day, Record DDoS, LockBit 5.0, BMC Bugs, ShadowV2 Botnet & More",THN,global,RESEARCH,週報彙整
-H2022,"ThreatsDay Bulletin: DNS Poisoning Flaw, Supply-Chain Heist, Rust Malware Trick and New RATs Rising",THN,global,RESEARCH,ThreatsDay 彙整
-H2023,Why Organizations Are Turning to RPAM,THN,global,RESEARCH,技術分析
+H2021,"⚡ Weekly Recap: Cisco 0-Day, Record DDoS, LockBit 5.0, BMC Bugs, ShadowV2 Botnet & More",THN,global,RESEARCH,relabel: 週報彙整（判定表：Weekly Recap → RESEARCH）
+H2022,"ThreatsDay Bulletin: DNS Poisoning Flaw, Supply-Chain Heist, Rust Malware Trick and New RATs Rising",THN,global,RESEARCH,relabel: ThreatsDay 彙整（判定表：Bulletin → RESEARCH）
+H2023,Why Organizations Are Turning to RPAM,THN,global,RESEARCH,relabel: 
 H2024,"⚡ Weekly Recap: MongoDB Attacks, Wallet Breaches, Android Spyware, Insider Crime & More",THN,global,MALWARE,
 H2025,"Two Ivanti EPMM Zero-Day RCE Flaws Actively Exploited, Security Updates Released",THN,global,VULN,
 H2026,UAT-10027 Targets U.S. Education and Healthcare with Dohdoor Backdoor,THN,global,MALWARE,
-H2027,"⚡ Weekly Recap: Telecom Sleeper Cells, LLM Jailbreaks, Apple Forces U.K. Age Checks and More",THN,global,RESEARCH,週報彙整
-H2028,What to Look for in an Exposure Management Platform (And What Most of Them Get Wrong),THN,global,RESEARCH,採購指南分析
-H2029,"What 2,000 Exposed Vibe-Coded Apps Reveal About the Limits of Most Security Stacks",THN,global,RESEARCH,研究觀察
-H2030,WhatsApp is Finally Getting Usernames to Help Keep Phone Numbers Private,THN,global,OTHER,產品功能消息
+H2027,"⚡ Weekly Recap: Telecom Sleeper Cells, LLM Jailbreaks, Apple Forces U.K. Age Checks and More",THN,global,OTHER,relabel: 
+H2028,What to Look for in an Exposure Management Platform (And What Most of Them Get Wrong),THN,global,RESEARCH,relabel: 
+H2029,"What 2,000 Exposed Vibe-Coded Apps Reveal About the Limits of Most Security Stacks",THN,global,RESEARCH,relabel: 
+H2030,WhatsApp is Finally Getting Usernames to Help Keep Phone Numbers Private,THN,global,OTHER,relabel: 
 H2031,"Three Recent Chrome Releases Fix 1,442 Flaws, More Than Prior 23 Updates Combined",THN,global,VULN,
-H2032,"⚡ Weekly Recap: Chinese Spy Proxy, AI Agents Go Off-Task, Router Backdoors and More",THN,global,RESEARCH,週報彙整
+H2032,"⚡ Weekly Recap: Chinese Spy Proxy, AI Agents Go Off-Task, Router Backdoors and More",THN,global,RESEARCH,relabel: 週報彙整（判定表：Weekly Recap → RESEARCH）
 H2033,US-Focused CSuite Phishing Steals Microsoft 365 Sessions and Deploys RMM Tools for Remote Access,THN,global,MALWARE,
-H2034,"WordPress RCE Flaw Draws Nearly 63,000 Attack Attempts in Just 24 Hours",THN,global,VULN,漏洞遭大量攻擊嘗試
-H2035,Webinar: See How Identity Blind Spots Put Your SOC at Risk and How to Close Them,THN,global,RESEARCH,研討會指南
+H2034,"WordPress RCE Flaw Draws Nearly 63,000 Attack Attempts in Just 24 Hours",THN,global,VULN,relabel: 
+H2035,Webinar: See How Identity Blind Spots Put Your SOC at Risk and How to Close Them,THN,global,OTHER,relabel: 
 H2036,Top Security Posture Vulnerabilities Revealed,THN,global,VULN,
 H2037,TimbreStealer Malware Spreading via Tax-themed Phishing Scam Targets IT Users,THN,global,MALWARE,
 H2038,"TheMoon Botnet Resurfaces, Exploiting EoL Devices to Power Criminal Proxy",THN,global,MALWARE,
-H2039,U.S. Government Releases New AI Security Guidelines for Critical Infrastructure,THN,global,RESEARCH,政府 AI 資安指引
+H2039,U.S. Government Releases New AI Security Guidelines for Critical Infrastructure,THN,global,OTHER,relabel: 
 H2040,Russian Hackers Target Europe with HeadLace Malware and Credential Harvesting,THN,global,MALWARE,
-H2041,TeamViewer Detects Security Breach in Corporate IT Environment,THN,global,MALWARE,入侵事件
-H2042,The Power and Peril of RMM Tools,THN,global,RESEARCH,工具分析
+H2041,TeamViewer Detects Security Breach in Corporate IT Environment,THN,global,MALWARE,relabel: 
+H2042,The Power and Peril of RMM Tools,THN,global,RESEARCH,relabel: 
 H2043,Unpatched AVTECH IP Camera Flaw Exploited by Hackers for Botnet Attacks,THN,global,MALWARE,
-H2044,U.S. Charges Three Iranian Nationals for Election Interference and Cybercrimes,THN,global,RESEARCH,司法起訴（治理）
-H2045,Researchers Uncover Vulnerabilities in Open-Source AI and ML Models,THN,global,RESEARCH,研究發現
+H2044,U.S. Charges Three Iranian Nationals for Election Interference and Cybercrimes,THN,global,OTHER,relabel: 
+H2045,Researchers Uncover Vulnerabilities in Open-Source AI and ML Models,THN,global,RESEARCH,relabel: 
 H2046,Wanted Russian Hacker Linked to Hive and LockBit Ransomware Arrested,THN,global,MALWARE,
-H2047,When Good Extensions Go Bad: Takeaways from the Campaign Targeting Browser Extensions,THN,global,RESEARCH,攻擊活動分析
+H2047,When Good Extensions Go Bad: Takeaways from the Campaign Targeting Browser Extensions,THN,global,RESEARCH,relabel: 攻擊活動分析與要點（判定表：Takeaways → RESEARCH）
 H2048,Top 5 AI-Powered Social Engineering Attacks,THN,global,MALWARE,
 H2049,Space Pirates Targets Russian IT Firms With New LuckyStrike Agent Malware,THN,global,MALWARE,
-H2050,"⚡ Weekly Recap: Chrome 0-Day, IngressNightmare, Solar Bugs, DNS Tactics, and More",THN,global,RESEARCH,週報彙整
+H2050,"⚡ Weekly Recap: Chrome 0-Day, IngressNightmare, Solar Bugs, DNS Tactics, and More",THN,global,OTHER,relabel: 
 H2051,WhatsApp Launches Private Processing to Enable AI Features While Protecting Message Privacy,THN,global,OTHER,
-H2052,U.S. DoJ Seizes 4 Domains Supporting Cybercrime Crypting Services in Global Operation,THN,global,RESEARCH,司法扣押（治理）
+H2052,U.S. DoJ Seizes 4 Domains Supporting Cybercrime Crypting Services in Global Operation,THN,global,OTHER,relabel: 
 H2053,"U.S. Agencies Warn of Rising Iranian Cyber Attacks on Defense, OT Networks, and Critical Infrastructure",THN,global,MALWARE,
 H2054,Secret Blizzard Deploys Malware in ISP-Level AitM Attacks on Moscow Embassies,THN,global,MALWARE,
-H2055,"Webinar: Learn How to Unite Dev, Sec, and Ops Teams With One Shared Playbook",THN,global,RESEARCH,研討會指南
+H2055,"Webinar: Learn How to Unite Dev, Sec, and Ops Teams With One Shared Playbook",THN,global,OTHER,relabel: 
 H2056,Urgent: China-Linked Hackers Exploit New VMware Zero-Day Since October 2024,THN,global,MALWARE,
-H2057,The MSP Cybersecurity Readiness Guide: Turning Security into Growth,THN,global,RESEARCH,指南文件
-H2058,When Your $2M Security Detection Fails: Can your SOC Save You?,THN,global,RESEARCH,觀點分析
-H2059,U.S. Treasury Lifts Sanctions on Three Individuals Linked to Intellexa and Predator Spyware,THN,global,RESEARCH,制裁解除（治理）
-H2060,"ThreatsDay Bulletin: New RCEs, Darknet Busts, Kernel Bugs & 25+ More Stories",THN,global,RESEARCH,ThreatsDay 彙整
-H2061,Trojanized Gaming Tools Spread Java-Based RAT via Browser and Chat Platforms,THN,global,MALWARE,木馬化工具散布 RAT
+H2057,The MSP Cybersecurity Readiness Guide: Turning Security into Growth,THN,global,OTHER,relabel: 
+H2058,When Your $2M Security Detection Fails: Can your SOC Save You?,THN,global,RESEARCH,relabel: 
+H2059,U.S. Treasury Lifts Sanctions on Three Individuals Linked to Intellexa and Predator Spyware,THN,global,OTHER,relabel: 
+H2060,"ThreatsDay Bulletin: New RCEs, Darknet Busts, Kernel Bugs & 25+ More Stories",THN,global,RESEARCH,relabel: ThreatsDay 彙整（判定表：Bulletin → RESEARCH）
+H2061,Trojanized Gaming Tools Spread Java-Based RAT via Browser and Chat Platforms,THN,global,MALWARE,relabel: 
 H2062,Vertex AI Vulnerability Exposes Google Cloud Data and Private Artifacts,THN,global,VULN,
-H2063,Webinar: How to Automate Exposure Validation to Match the Speed of AI Attacks,THN,global,RESEARCH,研討會指南
-H2064,"ThreatsDay Bulletin: Claude Security Plugin, Azure Priv-Esc, Kali365 MFA Bypass, FIFA Scams +15 More",THN,global,RESEARCH,ThreatsDay 彙整
-H2065,What the Numbers Say About FIFA 2026 Cyber Risk,THN,global,RESEARCH,數據分析
+H2063,Webinar: How to Automate Exposure Validation to Match the Speed of AI Attacks,THN,global,OTHER,relabel: 
+H2064,"ThreatsDay Bulletin: Claude Security Plugin, Azure Priv-Esc, Kali365 MFA Bypass, FIFA Scams +15 More",THN,global,OTHER,relabel: 
+H2065,What the Numbers Say About FIFA 2026 Cyber Risk,THN,global,RESEARCH,relabel: 
 H2066,"ThreatsDay: AI-Powered Hacking, 370 Chrome Flaws, SonicWall Attacks, DNS Hijacking + 22 More Stories",THN,global,MALWARE,
 H2067,ownCloud Flaw Exploited to Steal Nuclear Records From Philippine Research Body,THN,global,MALWARE,
 H2068,Russia's Star Blizzard Targets 100+ Organizations With Fake Event Invites to Deliver Backdoor,THN,global,MALWARE,
 H2069,"Why Urgent Security Fixes Aren't Fixed. Observe, Prove, Act, Confirm Gets Them Moving",THN,global,VULN,
-H2070,"ThreatsDay: 59 Linux Kernel Bugs, Falcon Spyware, GSocket Backdoors + 17 More Stories",THN,global,RESEARCH,ThreatsDay 彙整
-H2071,The SEC Won't Let CISOs Be: Understanding New SaaS Cybersecurity Rules,THN,global,RESEARCH,法規解讀
-H2072,Superusers Need Super Protection: How to Bridge Privileged Access Management and Identity Management,THN,global,RESEARCH,技術指南
-H2073,The Golden Age of Automated Penetration Testing is Here,THN,global,RESEARCH,趨勢評論
+H2070,"ThreatsDay: 59 Linux Kernel Bugs, Falcon Spyware, GSocket Backdoors + 17 More Stories",THN,global,RESEARCH,relabel: ThreatsDay 彙整（判定表：Bulletin → RESEARCH）
+H2071,The SEC Won't Let CISOs Be: Understanding New SaaS Cybersecurity Rules,THN,global,OTHER,relabel: 
+H2072,Superusers Need Super Protection: How to Bridge Privileged Access Management and Identity Management,THN,global,RESEARCH,relabel: 
+H2073,The Golden Age of Automated Penetration Testing is Here,THN,global,RESEARCH,relabel: 
 H2074,Severe Flaws Disclosed in Brocade SANnav SAN Management Software,THN,global,VULN,
-H2075,Researchers Uncover Active Exploitation of WordPress Plugin Vulnerabilities,THN,global,VULN,漏洞遭積極利用
+H2075,Researchers Uncover Active Exploitation of WordPress Plugin Vulnerabilities,THN,global,VULN,relabel: 
 H2076,Rust-Based P2PInfect Botnet Evolves with Miner and Ransomware Payloads,THN,global,MALWARE,
 H2077,OneDrive Phishing Scam Tricks Users into Running Malicious PowerShell Script,THN,global,MALWARE,
-H2078,U.S. Agencies Warn of Iranian Hacking Group's Ongoing Ransomware Attacks,THN,global,MALWARE,勒索攻擊行動
-H2079,THN Cybersecurity Recap: Last Week's Top Threats and Trends (September 23-29),THN,global,RESEARCH,週報彙整
-H2080,Researchers Uncover Python Package Targeting Crypto Wallets with Malicious Code,THN,global,MALWARE,惡意套件攻擊
-H2081,U.S. Telecom Giant T-Mobile Detects Network Intrusion Attempts from Wireline Provider,THN,global,MALWARE,網路入侵事件
+H2078,U.S. Agencies Warn of Iranian Hacking Group's Ongoing Ransomware Attacks,THN,global,MALWARE,relabel: 
+H2079,THN Cybersecurity Recap: Last Week's Top Threats and Trends (September 23-29),THN,global,OTHER,relabel: 
+H2080,Researchers Uncover Python Package Targeting Crypto Wallets with Malicious Code,THN,global,MALWARE,relabel: 
+H2081,U.S. Telecom Giant T-Mobile Detects Network Intrusion Attempts from Wireline Provider,THN,global,MALWARE,relabel: 
 H2082,"Ruijie Networks' Cloud Platform Flaws Could've Exposed 50,000 Devices to Remote Attacks",THN,global,VULN,
-H2083,SOC Analysts - Reimagining Their Role Using AI,THN,global,RESEARCH,角色與 AI 分析
+H2083,SOC Analysts - Reimagining Their Role Using AI,THN,global,RESEARCH,relabel: 
 H2084,Silver Fox APT Uses Winos 4.0 Malware in Cyber Attacks Against Taiwanese Organizations,THN,global,MALWARE,
 H2085,Russian Hackers Exploit CVE-2025-26633 via MSC EvilTwin to Deploy SilentPrism and DarkWisp,THN,global,MALWARE,
-H2086,SentinelOne Uncovers Chinese Espionage Campaign Targeting Its Infrastructure and Clients,THN,global,MALWARE,間諜攻擊行動
-H2087,"Over 100,000 WordPress Sites at Risk from Critical CVSS 10.0 Vulnerability in Wishlist Plugin",THN,global,VULN,CVSS 10 漏洞風險公告
+H2086,SentinelOne Uncovers Chinese Espionage Campaign Targeting Its Infrastructure and Clients,THN,global,MALWARE,relabel: 
+H2087,"Over 100,000 WordPress Sites at Risk from Critical CVSS 10.0 Vulnerability in Wishlist Plugin",THN,global,VULN,relabel: 
 H2088,PUBLOAD and Pubshell Malware Used in Mustang Panda's Tibet-Specific Attack,THN,global,MALWARE,
 H2089,"Scattered Spider Hacker Arrests Halt Attacks, But Copycat Threats Sustain Security Pressure",THN,global,MALWARE,
 H2090,Kasseika 勒索軟體透過BYOVD技術在加密前先停用防毒軟體,TWCERT,taiwan,MALWARE,
 H2091,微軟Exchange伺服器出現高危險漏洞，數萬台伺服器受影響,TWCERT,taiwan,VULN,
 H2092,新型網路釣魚即服務平台利用RCS及iMessage進行攻擊,TWCERT,taiwan,MALWARE,
-H2093,快更新！Palo Alto Networks CVE-2024-3400已被利用,TWCERT,taiwan,VULN,漏洞已遭利用
+H2093,快更新！Palo Alto Networks CVE-2024-3400已被利用,TWCERT,taiwan,VULN,relabel: 
 H2094,駭客針對Openfind產品發動攻擊,TWCERT,taiwan,MALWARE,
 H2095,針對 AI 語音生成工具的新型惡意程式 Gipy,TWCERT,taiwan,MALWARE,
 H2096,新型態的工控攻擊逐漸成為主流：以 PLC 作為惡意中繼站,TWCERT,taiwan,MALWARE,
-H2097,美國宣布禁售卡巴斯基軟體產品,TWCERT,taiwan,RESEARCH,政府禁令（政策）
+H2097,美國宣布禁售卡巴斯基軟體產品,TWCERT,taiwan,OTHER,relabel: 
 H2098,駭客組織攻擊台灣網站，政府、財稅單位為首要目標,TWCERT,taiwan,MALWARE,
 H2099,首個透過聊天機器人生成的惡意程式在野外散播,TWCERT,taiwan,MALWARE,
 H2100,新型惡意軟體SteelFox偽裝破解工具竊取使用者敏感資料,TWCERT,taiwan,MALWARE,

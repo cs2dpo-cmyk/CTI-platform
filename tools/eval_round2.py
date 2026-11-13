@@ -46,5 +46,24 @@ out["agreement"] = {
     "adjudicated_with_a": sum(1 for k in disputes if adj[k] == a[k]),
     "adjudicated_with_b": sum(1 for k in disputes if adj[k] == b[k]),
 }
+# Re-labelling pass: did the clarified rules make the two annotators converge?
+relabel_a = DATA / "relabel2_labels_round1.csv"
+relabel_b = DATA / "relabel2_labels_b.csv"
+if relabel_a.exists() and relabel_b.exists():
+    ra = {r["id"]: r["label"].strip().upper() for r in rows(relabel_a)}
+    rb = {r["id"]: r["label"].strip().upper() for r in rows(relabel_b)}
+    shared = sorted(set(ra) & set(rb))
+    before = DATA / "holdout2_labels_pre_relabel.csv"
+    changed = None
+    if before.exists():
+        old = {r["id"]: r["label"].strip().upper() for r in rows(before)}
+        changed = sum(1 for key in shared if old.get(key) != adj.get(key))
+    out["relabel"] = {
+        "rows": len(shared),
+        "raw": round(sum(1 for key in shared if ra[key] == rb[key]) / len(shared), 3),
+        "kappa": round(agreement.cohen_kappa([ra[key] for key in shared], [rb[key] for key in shared]), 3),
+        "changed_vs_previous": changed,
+    }
+
 (DATA / "holdout2_combined.json").write_text(json.dumps(out, ensure_ascii=False, indent=2), encoding="utf-8")
 print(json.dumps(out, ensure_ascii=False, indent=2))
