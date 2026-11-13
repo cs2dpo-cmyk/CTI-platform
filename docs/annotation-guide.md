@@ -74,3 +74,44 @@
 100 列全部來自**沒有被 gold 標註**的那一半語料（THN 50、TWCERT 30、iThome 20），
 與訓練/調參用的 100 列完全不重疊。清單產生於 `tools/make_holdout.py`，
 manifest 在 `data/holdout_manifest.json`。
+
+## 邊界修正（2026-11-13，依實際標註結果）
+
+第一輪標註後，VULN 與 MALWARE 的邊界出現系統性偏移：A、B 兩位標註者一致地把
+**入侵／外洩事件**標成 VULN（16 列），而模型與原 gold 慣例標成 MALWARE。以下規則
+優先於前面的「判斷順序」。
+
+### 一句話規則
+
+> **有沒有「漏洞」不是重點；重點是這篇在講「一個漏洞」還是「一場已經發生的事」。**
+
+| 情況 | 標 | 判準 |
+|---|---|---|
+| 廠商發布更新／公告 CVE／說明修補 | **VULN** | 動作是「修補」，主體是產品 |
+| 已經有人被入侵、資料外洩、系統被加密 | **MALWARE** | 動作是「攻擊成功」，主體是受害者 |
+| 研究某種攻擊手法／回顧趨勢 | **RESEARCH** | 沒有特定受害者與即時行動 |
+| 公司被併購、產品上市、財報 | **OTHER** | 與攻擊、漏洞都無關 |
+
+### 實際案例（來自第一輪標註）
+
+| 標題 | 第一輪 | 正確 | 理由 |
+|---|---|---|---|
+| Chainalysis Breach Exposes All Users' Credentials | VULN | **MALWARE** | 是「已經發生」的外洩，不是漏洞公告 |
+| Fireworks AI Confirms Wider Breach Affecting Customer Datasets | VULN | **MALWARE** | 同上 |
+| France Blames Iran for Sabotage Attack on Refrigeration Controllers | VULN | **MALWARE** | 國家級攻擊事件 |
+| LNbits Urges All Operators to Shut Down Servers Amid Attack | VULN | **MALWARE** | 主動攻擊中 |
+| Installing the Fix for an Exploited WordPress Flaw… | MALWARE | **VULN** | 主體是修補程式 |
+| Microsoft Researchers Show AI Agents Can Be Backdoored… | VULN | **RESEARCH** | 研究方法，不是單一事件 |
+| Over 35,000 Grok-Built Apps Exposed Online | VULN | **MALWARE** | 曝險事件，不是漏洞本身 |
+
+### 三個問句（每列都問一次）
+
+1. 這篇有沒有**特定受害者**？有 → 幾乎就是 MALWARE。
+2. 這篇的動詞是「修補／發布」還是「入侵／竊取／加密」？前者 VULN，後者 MALWARE。
+3. 這篇是「某個方法的研究」還是「某個東西出事」？前者 RESEARCH。
+
+### 爭議處理
+
+- 先跑 `tools/make_disputes.py` 產生 `data/holdout_disputes.csv`
+- 只針對爭議列，用上面的案例表裁決，填 `final` 欄
+- 裁決後覆蓋 A 檔重跑 `tools/eval_holdout.py`
