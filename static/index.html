@@ -34,7 +34,7 @@
     rel="stylesheet"
   />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.6/dist/chart.umd.min.js" defer></script>
-  <link rel="stylesheet" href="/static/css/styles.css?v=20261113g" />
+  <link rel="stylesheet" href="/static/css/styles.css?v=20261113h" />
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23060a11'/%3E%3Cpath d='M16 5l9 4v7c0 5.5-3.8 10-9 11-5.2-1-9-5.5-9-11V9l9-4z' fill='none' stroke='%2322d3ee' stroke-width='2'/%3E%3C/svg%3E" />
 </head>
 
@@ -252,6 +252,10 @@
             <p class="kicker mt-1">Monthly Volume（每月分層取樣）· <span id="timelineRange">—</span></p>
           </div>
           <div class="flex items-center gap-3 text-[11px] text-[color:var(--faint)]">
+            <div class="flex items-center rounded-lg border border-[#1b2739] p-0.5" role="group" aria-label="時間軸檢視模式">
+              <button class="timeline-mode rounded px-2 py-0.5 text-[10px]" id="timelineRelative" type="button" aria-pressed="true">相對</button>
+              <button class="timeline-mode rounded px-2 py-0.5 text-[10px]" id="timelineAbsolute" type="button" aria-pressed="false">絕對</button>
+            </div>
             <span class="inline-flex items-center gap-1.5"><span class="legend-swatch bg-teal-400"></span>台灣</span>
             <span class="inline-flex items-center gap-1.5"><span class="legend-swatch bg-blue-400"></span>國際</span>
           </div>
@@ -261,8 +265,9 @@
             <canvas id="timelineChart" role="img" aria-label="每月情資發布量折線圖（每月分層取樣）"></canvas>
           </div>
           <p class="mt-2 text-[10.5px] leading-relaxed text-[color:var(--faint)]" id="timelineNote">
-            以「月」為統計單位：語料採每月分層取樣（國際 15 篇、台灣約 5 篇），
-            月內各週的分布並不均勻，若畫成週線會出現月初 0、月底尖峰的假象。
+            「相對」＝各區除以自身月平均（1.0 = 該區平均月量），用來比較<strong class="text-slate-300">時序</strong>：
+            兩條線同時起伏代表台／國情資同步。「絕對」＝實際篇數（國際約為台灣 4 倍）。
+            兩者皆以月為單位，避免每月分層取樣造成週線鋸齒。
           </p>
         </div>
       </article>
@@ -646,8 +651,8 @@
 
   <div class="toast-stack" id="toastStack" aria-live="polite" aria-atomic="false"></div>
 
-  <script src="/static/js/charts.js?v=20261113g" defer></script>
-  <script src="/static/js/app.js?v=20261113g" defer></script>
-  <script src="/static/js/rain.js?v=20261113g" defer></script>
+  <script src="/static/js/charts.js?v=20261113h" defer></script>
+  <script src="/static/js/app.js?v=20261113h" defer></script>
+  <script src="/static/js/rain.js?v=20261113h" defer></script>
 </body>
 </html>
