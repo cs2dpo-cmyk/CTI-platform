@@ -319,58 +319,43 @@ const CTICharts = (() => {
     const tw = points.map((p) => p.taiwan);
     const gl = points.map((p) => p.global);
     const share = points.map((p) => (p.total > 0 ? Math.round((p.taiwan / p.total) * 100) : null));
-    const glMax = Math.max(10, Math.ceil(Math.max(...gl, 0) / 10) * 10);
-    const twMax = Math.max(5, Math.ceil(Math.max(...tw, 0) / 5) * 5);
 
     destroyIfOrphan('timeline', el);
     if (instances.timeline) {
       const chart = instances.timeline;
       chart.data.labels = labels;
-      chart.data.datasets[0].data = gl;
-      chart.data.datasets[1].data = tw;
+      chart.data.datasets[0].data = tw;
+      chart.data.datasets[1].data = gl;
       chart.data.$share = share;
-      chart.options.scales.y.max = glMax;
-      chart.options.scales.y1.max = twMax;
       chart.update();
       return;
     }
 
     instances.timeline = new Chart(el, {
-      type: 'line',
+      type: 'bar',
       data: {
         labels,
-        // Two scales, one per series: the volumes differ fourfold, and a shared
-        // axis would flatten Taiwan against the floor.
+        // Stacked, not overlaid: one bar per month reads as "this much volume,
+        // this slice of it Taiwan", which a fourfold size difference hides in
+        // a line chart.
         datasets: [
-          {
-            label: '國際',
-            data: gl,
-            yAxisID: 'y',
-            borderColor: COLORS.global,
-            backgroundColor: 'rgba(96, 165, 250, 0.05)',
-            fill: true,
-            tension: 0.3,
-            borderWidth: 1.8,
-            pointRadius: 0,
-            pointHoverRadius: 4,
-            pointHoverBackgroundColor: COLORS.global,
-            pointHoverBorderColor: '#06121a',
-            pointHoverBorderWidth: 2,
-          },
           {
             label: '台灣',
             data: tw,
-            yAxisID: 'y1',
-            borderColor: COLORS.taiwan,
-            backgroundColor: 'rgba(45, 212, 191, 0.12)',
-            fill: true,
-            tension: 0.3,
-            borderWidth: 1.8,
-            pointRadius: 0,
-            pointHoverRadius: 4,
-            pointHoverBackgroundColor: COLORS.taiwan,
-            pointHoverBorderColor: '#06121a',
-            pointHoverBorderWidth: 2,
+            backgroundColor: 'rgba(45, 212, 191, 0.85)',
+            hoverBackgroundColor: COLORS.taiwan,
+            stack: 'volume',
+            borderRadius: 2,
+            maxBarThickness: 18,
+          },
+          {
+            label: '國際',
+            data: gl,
+            backgroundColor: 'rgba(96, 165, 250, 0.75)',
+            hoverBackgroundColor: COLORS.global,
+            stack: 'volume',
+            borderRadius: 2,
+            maxBarThickness: 18,
           },
         ],
         $share: share,
@@ -395,6 +380,7 @@ const CTICharts = (() => {
         },
         scales: {
           x: {
+            stacked: true,
             grid: { display: false },
             border: { color: COLORS.grid },
             ticks: {
@@ -406,20 +392,11 @@ const CTICharts = (() => {
             },
           },
           y: {
-            position: 'left',
+            stacked: true,
             beginAtZero: true,
-            max: glMax,
             grid: { color: COLORS.grid, drawTicks: false },
             border: { display: false },
-            ticks: { color: COLORS.global, padding: 6, font: { size: 10 } },
-          },
-          y1: {
-            position: 'right',
-            beginAtZero: true,
-            max: twMax,
-            grid: { display: false },
-            border: { display: false },
-            ticks: { color: COLORS.taiwan, padding: 6, font: { size: 10 } },
+            ticks: { color: COLORS.tick, padding: 6, font: { size: 10 } },
           },
         },
       },
