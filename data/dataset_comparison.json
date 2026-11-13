@@ -1,0 +1,148 @@
+{
+  "balanced_sample": {
+    "rows": 200,
+    "regions": {
+      "taiwan": 100,
+      "global": 100
+    },
+    "sources": {
+      "TWCERT": 50,
+      "iThome": 50,
+      "THN": 100
+    },
+    "meta": {
+      "MALWARE": {
+        "count": 94,
+        "share": 0.47
+      },
+      "VULN": {
+        "count": 46,
+        "share": 0.23
+      },
+      "RESEARCH": {
+        "count": 36,
+        "share": 0.18
+      },
+      "OTHER": {
+        "count": 24,
+        "share": 0.12
+      }
+    },
+    "avg_score": 68.5,
+    "priorities": {
+      "P1": {
+        "count": 39,
+        "share": 0.195
+      },
+      "P2": {
+        "count": 85,
+        "share": 0.425
+      },
+      "P3": {
+        "count": 52,
+        "share": 0.26
+      }
+    },
+    "months": 17,
+    "first_month": "2025-07",
+    "last_month": "2026-11",
+    "thin_months": 15
+  },
+  "natural_corpus": {
+    "rows": 588,
+    "regions": {
+      "taiwan": 64,
+      "global": 524
+    },
+    "sources": {
+      "TWCERT": 64,
+      "THN": 524
+    },
+    "meta": {
+      "MALWARE": {
+        "count": 278,
+        "share": 0.473
+      },
+      "VULN": {
+        "count": 104,
+        "share": 0.177
+      },
+      "RESEARCH": {
+        "count": 188,
+        "share": 0.32
+      },
+      "OTHER": {
+        "count": 18,
+        "share": 0.031
+      }
+    },
+    "avg_score": 58.8,
+    "priorities": {
+      "P1": {
+        "count": 15,
+        "share": 0.026
+      },
+      "P2": {
+        "count": 323,
+        "share": 0.549
+      },
+      "P3": {
+        "count": 232,
+        "share": 0.395
+      }
+    },
+    "months": 35,
+    "first_month": "2024-01",
+    "last_month": "2026-11",
+    "thin_months": 0
+  },
+  "combined": {
+    "rows": 788,
+    "regions": {
+      "taiwan": 164,
+      "global": 624
+    },
+    "sources": {
+      "TWCERT": 114,
+      "iThome": 50,
+      "THN": 624
+    },
+    "meta": {
+      "MALWARE": {
+        "count": 372,
+        "share": 0.472
+      },
+      "VULN": {
+        "count": 150,
+        "share": 0.19
+      },
+      "RESEARCH": {
+        "count": 224,
+        "share": 0.284
+      },
+      "OTHER": {
+        "count": 42,
+        "share": 0.053
+      }
+    },
+    "avg_score": 61.1,
+    "priorities": {
+      "P1": {
+        "count": 54,
+        "share": 0.069
+      },
+      "P2": {
+        "count": 408,
+        "share": 0.518
+      },
+      "P3": {
+        "count": 284,
+        "share": 0.36
+      }
+    },
+    "months": 35,
+    "first_month": "2024-01",
+    "last_month": "2026-11",
+    "thin_months": 0
+  }
+}

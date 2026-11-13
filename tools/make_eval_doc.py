@@ -18,6 +18,7 @@ ROOT = Path(__file__).resolve().parents[1]
 DATA = ROOT / "data"
 OUT = ROOT / "docs" / "evaluation.md"
 LABELS = ["VULN", "MALWARE", "RESEARCH", "OTHER"]
+CATEGORIES = ["MALWARE", "VULN", "RESEARCH", "OTHER"]
 
 
 def load(name: str) -> dict | None:
@@ -35,6 +36,7 @@ def main() -> int:
     splits = load("time_split_report.json")
     round2 = load("holdout2_combined.json")
     digest = load("digest_class_simulation.json")
+    comparison = load("dataset_comparison.json")
     snaps = load("snapshots.json") or {}
 
     connection = sqlite3.connect(f"file:{DATA / 'cti.db'}?mode=ro", uri=True)
@@ -245,7 +247,40 @@ def main() -> int:
         add("> 即可得到相同收益，且不必擴充分類體系。此為模擬結果，尚未套用到產品。")
         add()
 
-    add("## 7. 資料溯源")
+    if comparison:
+        add("## 7. 平衡樣本 vs 真實語料（抽樣偏差的量化）")
+        add()
+        add("同一套指標，套在三種資料集上：平衡 200 筆（刻意 50:50）、")
+        add("自然 588 筆（真實發布比例）、以及兩者合併的 788 筆。")
+        add()
+        add("| 指標 | 平衡 200 | 自然 588 | 合併 788 |")
+        add("|---|---|---|---|")
+        names = ("balanced_sample", "natural_corpus", "combined")
+        add("| 筆數 | " + " | ".join(str(comparison[n]["rows"]) for n in names) + " |")
+        add("| 涵蓋月數 | " + " | ".join(str(comparison[n]["months"]) for n in names) + " |")
+        add("| 台灣篇數 | " + " | ".join(str(comparison[n]["regions"]["taiwan"]) for n in names) + " |")
+        add("| 平均分數 | " + " | ".join(str(comparison[n]["avg_score"]) for n in names) + " |")
+        for key in CATEGORIES:
+            add(f"| {key} 占比 | " + " | ".join(f"{comparison[n]['meta'][key]['share']:.0%}" for n in names) + " |")
+        for key in ("P1", "P2", "P3"):
+            add(f"| {key} 占比 | " + " | ".join(f"{comparison[n]['priorities'][key]['share']:.0%}" for n in names) + " |")
+        add()
+        add("### 哪些結論會變、哪些不會")
+        add()
+        add("| 結論 | 平衡樣本 | 真實語料 | 判讀 |")
+        add("|---|---|---|---|")
+        add("| P1 佔比 | 20% | **3%** | **平衡樣本把急迫性放大約 6.7 倍** |")
+        add("| RESEARCH 佔比 | 18% | 32% | 真實語料研究／彙整類明顯更多 |")
+        add("| OTHER 佔比 | 12% | 3% | 平衡樣本過度代表產業動態 |")
+        add("| 平均風險分數 | 68.5 | 58.8 | 平衡樣本高約 10 分 |")
+        add("| **MALWARE 佔比** | 47% | 47% | **唯一穩健的結論** |")
+        add()
+        add("> 因此「P1 佔兩成、平均 68 分」這類敘述是**抽樣造成的**，不是語料的真實樣貌。")
+        add("> 對外報告應以真實語料為主，平衡樣本只作為「台／國對照」的受控樣本，")
+        add("> 並明確說明兩者用途不同。")
+        add()
+
+    add("## 8. 資料溯源")
     add()
     add("| 快照 | 擷取日期 | 來源 |")
     add("|---|---|---|")
