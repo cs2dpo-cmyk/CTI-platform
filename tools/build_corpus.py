@@ -34,11 +34,6 @@ UA = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.3
 SESSION = requests.Session()
 SESSION.headers.update(UA)
 
-import jieba  # noqa: E402
-from sklearn.cluster import KMeans  # noqa: E402
-from sklearn.feature_extraction.text import TfidfVectorizer  # noqa: E402
-from sklearn.metrics import silhouette_score  # noqa: E402
-
 from services import classify  # noqa: E402
 
 
@@ -184,6 +179,8 @@ def clean_text(text: str, lang: str) -> str:
     if not text:
         return ""
     if lang == "zh":
+        import jieba
+
         text = text.lower()
         text = re.sub(r"[^\w\u4e00-\u9fff]+", " ", text)
         tokens = [token.strip() for token in jieba.cut(text)]
@@ -243,6 +240,10 @@ def cluster_region(rows: list[dict], k: int = 3) -> tuple[list[int], int, dict]:
     as a diagnostic instead.
     """
     texts = [row["cleaned_text"] for row in rows]
+    from sklearn.cluster import KMeans
+    from sklearn.feature_extraction.text import TfidfVectorizer
+    from sklearn.metrics import silhouette_score
+
     vectorizer = TfidfVectorizer(max_features=1200, min_df=2, token_pattern=r"(?u)\S+")
     matrix = vectorizer.fit_transform(texts)
 

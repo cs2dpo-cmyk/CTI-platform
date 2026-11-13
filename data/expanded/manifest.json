@@ -1,0 +1,24 @@
+{
+  "generated": "2026-11-13",
+  "months": 35,
+  "historical_rows": 639,
+  "operational_rows": 92,
+  "operational_months": [
+    "2026-09",
+    "2026-10",
+    "2026-11"
+  ],
+  "sources": {
+    "THN": 5700,
+    "TWCERT": 800,
+    "iThome": 400,
+    "網管人": 0
+  },
+  "quotas": {
+    "historical_per_month": {
+      "THN": 15,
+      "TWCERT": 5
+    },
+    "operational_per_source": 17
+  }
+}
