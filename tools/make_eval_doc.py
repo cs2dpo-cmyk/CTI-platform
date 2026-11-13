@@ -33,6 +33,7 @@ def main() -> int:
     kev = load("kev_report.json") or {}
     splits = load("time_split_report.json")
     round2 = load("holdout2_combined.json")
+    digest = load("digest_class_simulation.json")
     snaps = load("snapshots.json") or {}
 
     connection = sqlite3.connect(f"file:{DATA / 'cti.db'}?mode=ro", uri=True)
@@ -194,7 +195,29 @@ def main() -> int:
         add("> 準確率與 kappa，不能只報裁決後的單一數字。")
         add()
 
-    add("## 6. 資料溯源")
+    if digest:
+        add("## 6. 週報類別的處置模擬（第五類 vs 歸入 OTHER）")
+        add()
+        add(f"第二輪 100 筆中有 {digest['digest_rows']} 筆屬週報／彙整型；"
+            f"18 列爭議中有 {digest['raw_disputes_on_digest_rows']} 列落在這些文章上。")
+        add()
+        add("| 方案 | kappa | A 準確率 | B 準確率 |")
+        add("|---|---|---|---|")
+        four = digest["four_class"]
+        add(f"| 現況（週報算 RESEARCH） | {four['kappa']:.3f} | "
+            f"{four['annotator_a']['accuracy']:.0%} | {four['annotator_b']['accuracy']:.0%} |")
+        five = digest["five_class"]
+        add(f"| 新增第五類 DIGEST | {five['kappa']:.3f} | "
+            f"{five['annotator_a']['accuracy']:.0%} | {five['annotator_b']['accuracy']:.0%} |")
+        other = digest["digest_as_other"]
+        add(f"| 週報歸入 OTHER | {other['kappa']:.3f} | "
+            f"{other['annotator_a']['accuracy']:.0%} | {other['annotator_b']['accuracy']:.0%} |")
+        add()
+        add("> 兩者效果相同，因此**不需要第五類**：只要把週報／彙整歸入 OTHER（不計分）")
+        add("> 即可得到相同收益，且不必擴充分類體系。此為模擬結果，尚未套用到產品。")
+        add()
+
+    add("## 7. 資料溯源")
     add()
     add("| 快照 | 擷取日期 | 來源 |")
     add("|---|---|---|")

@@ -1,0 +1,45 @@
+{
+  "rows": 100,
+  "digest_rows": 14,
+  "raw_disputes": 18,
+  "raw_disputes_on_digest_rows": 5,
+  "four_class": {
+    "kappa": 0.679,
+    "annotator_a": {
+      "accuracy": 0.51,
+      "correct": 51,
+      "rows": 100
+    },
+    "annotator_b": {
+      "accuracy": 0.52,
+      "correct": 52,
+      "rows": 100
+    }
+  },
+  "five_class": {
+    "kappa": 0.803,
+    "annotator_a": {
+      "accuracy": 0.6,
+      "correct": 60,
+      "rows": 100
+    },
+    "annotator_b": {
+      "accuracy": 0.63,
+      "correct": 63,
+      "rows": 100
+    }
+  },
+  "digest_as_other": {
+    "kappa": 0.8,
+    "annotator_a": {
+      "accuracy": 0.6,
+      "correct": 60,
+      "rows": 100
+    },
+    "annotator_b": {
+      "accuracy": 0.63,
+      "correct": 63,
+      "rows": 100
+    }
+  }
+}
