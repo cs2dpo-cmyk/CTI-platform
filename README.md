@@ -418,3 +418,11 @@ python tools/enrich_dates.py --report   # 只看比對結果
 - K-Means 分群結果目前以類別對應 Meta-Category 呈現，未在執行期重新訓練；
   `TF-IDF + K-Means` 屬研究階段的離線分析。
 - 無身分驗證與速率限制，公開部署前應加上 API key 或 OAuth2。
+
+
+## 評估與標註
+
+- 訓練期（100 筆 gold，in-sample）：`tools/eval_classifier.py`
+- held-out（另 100 筆、未參與調參）：先依 [docs/annotation-guide.md](docs/annotation-guide.md) 標註
+  `data/holdout_labels.csv`，兩人成果用 `tools/label_agreement.py` 算 Cohen's kappa，
+  最後用 `tools/eval_holdout.py` 產出準確率、baseline 與各類別 P/R/F1。

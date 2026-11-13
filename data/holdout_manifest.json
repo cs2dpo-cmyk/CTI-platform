@@ -1,0 +1,18 @@
+{
+  "generated": "2026-11-13",
+  "sheet": "holdout_labels.csv",
+  "rows": 100,
+  "pool": 100,
+  "gold_rows_reserved": 100,
+  "categories": [
+    "VULN",
+    "MALWARE",
+    "RESEARCH",
+    "OTHER"
+  ],
+  "by_source": {
+    "THN": 50,
+    "TWCERT": 30,
+    "iThome": 20
+  }
+}
