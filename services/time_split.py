@@ -53,21 +53,38 @@ def monthly_counts(records: Sequence) -> dict[str, int]:
 
 
 def suggest_cutoff(
-    records: Sequence, *, min_test: int = 60, min_train: int = 40
+    records: Sequence,
+    *,
+    min_test: int = 60,
+    min_train: int = 40,
+    labelled: dict[str, str] | None = None,
+    min_train_labelled: int = 30,
+    min_test_labelled: int = 30,
 ) -> date | None:
-    """The earliest cutoff that still leaves min_test rows in the test window.
+    """Earliest cutoff that leaves enough rows - and labels - on both sides.
 
-    Choosing the latest possible cutoff would shrink the test window to a
-    handful of rows and make every number noise; this walks forward until the
-    test window is large enough, and returns None when no cutoff can satisfy
-    both minimums.
+    A cutoff that grows the test window but empties the development window is
+    useless: the accuracy column would read "n/a". When a label map is supplied,
+    both windows must also carry enough labelled rows to be measured.
     """
     dates = sorted({row.published_at for row in records})
+
+    def labelled_count(rows: list) -> int:
+        if not labelled:
+            return len(rows)
+        return sum(1 for row in rows if labelled.get(getattr(row, "title", "")))
+
     for cutoff in dates:
-        test = sum(1 for row in records if row.published_at >= cutoff)
-        train = len(records) - test
-        if test >= min_test and train >= min_train:
-            return cutoff
+        train = [row for row in records if row.published_at < cutoff]
+        test = [row for row in records if row.published_at >= cutoff]
+        if len(test) < min_test or len(train) < min_train:
+            continue
+        if labelled and (
+            labelled_count(train) < min_train_labelled
+            or labelled_count(test) < min_test_labelled
+        ):
+            continue
+        return cutoff
     return None
 
 

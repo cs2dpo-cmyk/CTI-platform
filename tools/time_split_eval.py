@@ -105,7 +105,9 @@ def main() -> int:
     if args.cutoff:
         cutoff = date.fromisoformat(args.cutoff)
     else:
-        cutoff = time_split.suggest_cutoff(records, min_test=args.min_test)
+        cutoff = time_split.suggest_cutoff(
+            records, min_test=args.min_test, labelled=load_labels()
+        )
         if cutoff is None:
             print("沒有可用的切點（訓練或測試窗口會太小）")
             return 2

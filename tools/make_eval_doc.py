@@ -40,6 +40,13 @@ def main() -> int:
         duplicates = connection.execute(
             "select count(*) from threats where duplicate_of is not null"
         ).fetchone()[0]
+        first_day, last_day = connection.execute(
+            "select min(published_at), max(published_at) from threats"
+        ).fetchone()
+        monthly = connection.execute(
+            "select substr(published_at,1,7) m, count(*) c from threats group by m"
+        ).fetchall()
+        thin_months = sum(1 for _, count in monthly if count < 5)
     finally:
         connection.close()
 
@@ -60,7 +67,10 @@ def main() -> int:
     add(f"| 文章數（原始語料） | {articles} |")
     add(f"| 重複事件 | {duplicates} |")
     add(f"| 去重後事件 | {articles - duplicates} |")
-    add("| 期間 | 2025-07 ～ 2026-11（17 個月，其中 15 個月不到 5 筆） |")
+    add(
+        f"| 期間 | {str(first_day)[:7]} ～ {str(last_day)[:7]}"
+        f"（{len(monthly)} 個月，其中 {thin_months} 個月不到 5 筆） |"
+    )
     add()
 
     add("## 2. 分類器表現")
@@ -149,9 +159,9 @@ def main() -> int:
                 f"{stats['cve_rows']} | {stats['kev_rows']} | {p10} | {auc_value} |"
             )
         add()
-        add("> 重要限制：目前語料的時間軸與來源高度重疊（早期幾乎全是 TWCERT，")
-        add("> 後期以 THN/iThome 為主），因此兩個窗口的差異主要反映**來源**，不是時間。")
-        add("> EPSS/KEV 亦為 2026-11 快照，無法還原「當時」的利用機率。")
+        add("> 重要限制一：已標註的 200 筆集中在 2025-07 之後，因此發展窗口只有")
+        add("> 31 筆可評估（AUC 0.51，等同隨機，樣本太小）；測試窗口有 169 筆。")
+        add("> 限制二：EPSS/KEV 為 2026-11 快照，無法還原「當時」的利用機率。")
         add()
 
     add("## 5. 資料溯源")

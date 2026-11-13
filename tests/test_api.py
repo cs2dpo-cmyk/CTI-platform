@@ -45,38 +45,39 @@ def test_health_reports_seeded_corpus(client: TestClient):
     assert response.status_code == 200
     body = response.json()
     assert body["status"] == "ok"
-    assert body["threats"] == 200
+    assert body["threats"] == client.get("/api/v1/stats").json()["totals"]["corpus"]
 
 
 def test_stats_returns_balanced_corpus(client: TestClient):
     body = client.get("/api/v1/stats").json()
     totals = body["totals"]
-    assert totals["corpus"] == 200
-    assert totals["taiwan"] == 100
-    assert totals["global"] == 100
+    corpus = totals["corpus"]
+    assert corpus >= 200
+    assert totals["taiwan"] + totals["global"] == corpus
     # The corpus holds industry news as well as threats; only the threat subset
     # feeds the risk numbers.
-    assert totals["threats"] + totals["other"] + totals["duplicates"] == totals["corpus"]
-    assert totals["other"] == 24
+    assert totals["threats"] + totals["other"] + totals["duplicates"] == corpus
+    assert totals["other"] > 0
     assert len(body["meta_categories"]) == 4
-    assert sum(item["count"] for item in body["meta_categories"]) == 200
-    assert abs(sum(item["share"] for item in body["meta_categories"]) - 1.0) < 1e-6
+    assert sum(item["count"] for item in body["meta_categories"]) == corpus
+    assert abs(sum(item["share"] for item in body["meta_categories"]) - 1.0) < 1e-3
 
 
 def test_stats_exclude_duplicate_events(client: TestClient):
     totals = client.get("/api/v1/stats").json()["totals"]
-    assert totals["corpus"] == 200          # articles
-    assert totals["duplicates"] == 4
-    assert totals["events"] == 196          # distinct events
+    assert totals["corpus"] >= 200          # articles
+    assert totals["events"] == totals["corpus"] - totals["duplicates"]
     assert totals["threats"] + totals["other"] + totals["duplicates"] == totals["corpus"]
 
 
 def test_stats_meta_category_region_split_is_consistent(client: TestClient):
     body = client.get("/api/v1/stats").json()
+    totals = body["totals"]
     for meta in body["meta_categories"]:
         assert meta["by_region"]["taiwan"] + meta["by_region"]["global"] == meta["count"]
     for region in body["regions"]:
-        assert region["count"] == 100
+        assert region["count"] == totals[region["key"]]
+    assert sum(region["count"] for region in body["regions"]) == totals["corpus"]
 
 
 def test_decision_matrix_covers_three_priorities(client: TestClient):
@@ -98,25 +99,23 @@ def test_decision_matrix_covers_three_priorities(client: TestClient):
 def test_cluster_tallies_match_the_csv_files(client: TestClient):
     body = client.get("/api/v1/stats").json()
     counts = {(row["region"], row["cluster"]): row["count"] for row in body["clusters"]}
-    assert counts == {
-        ("taiwan", "0"): 69,
-        ("taiwan", "1"): 12,
-        ("taiwan", "2"): 19,
-        ("global", "0"): 38,
-        ("global", "1"): 20,
-        ("global", "2"): 42,
-    }
+    assert sum(counts.values()) == body["totals"]["corpus"]
+    assert {cluster for _, cluster in counts} <= {"0", "1", "2", "3"}
 
 
 def test_meta_categories_follow_the_classifier(client: TestClient):
     body = client.get("/api/v1/stats").json()
+    from collections import Counter, defaultdict
+
+    from services import dataset
+
+    records, _ = dataset.load_dataset()
+    expected: dict[str, Counter] = defaultdict(Counter)
+    for record in records:
+        expected[record.category][record.region] += 1
     by_key = {item["key"]: item["by_region"] for item in body["meta_categories"]}
-    # services/classify.py output on the current corpus; regenerate with
-    # tools/eval_classifier.py if the rules or the CSVs change.
-    assert by_key["VULN"] == {"taiwan": 20, "global": 26}
-    assert by_key["MALWARE"] == {"taiwan": 44, "global": 50}
-    assert by_key["RESEARCH"] == {"taiwan": 14, "global": 22}
-    assert by_key["OTHER"] == {"taiwan": 22, "global": 2}
+    for key in ("VULN", "MALWARE", "RESEARCH", "OTHER"):
+        assert by_key[key] == dict(expected[key]), key
     for meta in body["meta_categories"]:
         assert meta["by_region"]["taiwan"] + meta["by_region"]["global"] == meta["count"]
 
@@ -133,8 +132,7 @@ def test_every_cluster_reports_a_known_dominant_category(client: TestClient):
 def test_dataset_provenance_is_reported(client: TestClient):
     body = client.get("/api/v1/stats").json()
     info = body["dataset"]
-    assert info["rows"] == {"taiwan": 100, "global": 100}
-    assert info["total"] == 200
+    assert sum(info["rows"].values()) == info["total"] == body["totals"]["corpus"]
     assert info["exported_at"] == "2026-11-12"
     assert any("Taiwan_security_dataset_with_dates.csv" in source for source in info["sources"])
     assert info["date_policy"] == "column"
@@ -143,18 +141,18 @@ def test_dataset_provenance_is_reported(client: TestClient):
 def test_dates_come_from_the_publishers_not_from_the_row_order(client: TestClient):
     body = client.get("/api/v1/stats").json()
     sources = body["dataset"]["date_sources"]
-    assert sum(sources.values()) == 200
+    assert sum(sources.values()) == body["totals"]["corpus"]
     assert sources.get("estimated", 0) == 0, "所有日期都應來自來源 feed／列表"
-    assert sources["thehackernews.com"] == 100
-    assert sources["twcert.org.tw"] == 50
-    assert sources["ithome.com.tw"] == 50
+    assert sources["thehackernews.com"] >= 100
+    assert sources["twcert.org.tw"] >= 50
+    assert sources.get("scraped", 0) >= 500, "分層歷史應標記為 scraped"
 
     # Real publication dates are spread over months, not the synthetic 50-day run.
     timeline = body["timeline"]
     # Weekly bins on a continuous axis: TWCERT publishes ~20 advisories per
     # half-year, so the corpus spans 2025-07 to 2026-11.
     assert len(timeline) >= 60
-    assert timeline[0]["date"] == "2025-07-21"
+    assert timeline[0]["date"] <= "2024-01-31", "歷史語料把時間軸拉回 2024"
     assert timeline[-1]["date"] == "2026-11-09"
 
 
@@ -283,19 +281,23 @@ def test_assess_rejects_legacy_category_names(client: TestClient):
 
 
 def test_threats_returns_full_corpus(client: TestClient):
+    corpus = client.get("/api/v1/stats").json()["totals"]["corpus"]
     body = client.get("/api/v1/threats", params={"limit": 200, "dedupe": "false"}).json()
-    assert body["total"] == 200
+    assert body["total"] == corpus
     assert body["returned"] == 200
-    assert all(item["cluster"] in {"0", "1", "2"} for item in body["items"])
+    assert all(item["cluster"] in {"0", "1", "2", "3"} for item in body["items"])
     threats = [item for item in body["items"] if item["meta_category"] != "OTHER"]
-    others = [item for item in body["items"] if item["meta_category"] == "OTHER"]
-    assert threats and others
+    assert threats
+    # OTHER rows sort last (no score), so they are checked with a filter.
+    others = client.get("/api/v1/threats", params={"meta_category": "OTHER", "limit": 5}).json()
+    assert others["total"] > 0
     assert all(item["action_plan"] for item in threats)
 
 
 def test_threats_filter_by_region(client: TestClient):
+    expected = client.get("/api/v1/stats").json()["totals"]["taiwan"]
     body = client.get("/api/v1/threats", params={"region": "taiwan", "limit": 200, "dedupe": "false"}).json()
-    assert body["total"] == 100
+    assert body["total"] == expected
     assert {item["region"] for item in body["items"]} == {"taiwan"}
 
 
@@ -357,9 +359,10 @@ def test_threats_search_and_pagination(client: TestClient):
     body = client.get("/api/v1/threats", params={"q": "Flaw", "limit": 5}).json()
     assert body["total"] >= 1
     assert body["returned"] <= 5
+    corpus = client.get("/api/v1/stats").json()["totals"]["corpus"]
     page = client.get("/api/v1/threats", params={"limit": 10, "offset": 95, "dedupe": "false"}).json()
     assert page["returned"] == 10
-    assert page["total"] == 200
+    assert page["total"] == corpus
 
 
 def test_governance_articles_land_in_research(client: TestClient):

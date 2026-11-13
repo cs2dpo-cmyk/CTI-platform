@@ -27,6 +27,13 @@ DEFAULT_DATASET_DIR = BASE_DIR / "data"
 
 DEFAULT_DATE_COLUMN = "published_at"
 
+# Month-stratified history imported by tools/import_expanded.py. They are optional:
+# the deployment still works with the two canonical files alone.
+EXTRA_SOURCES = (
+    ("taiwan", "Taiwan_expanded_dataset_with_dates.csv"),
+    ("global", "Global_expanded_dataset_with_dates.csv"),
+)
+
 
 @dataclass(frozen=True)
 class DatasetRecord:
@@ -90,6 +97,16 @@ def _resolve_csv(directory: Path, value: str, default_name: str) -> Path:
     return directory / path
 
 
+def _sources(directory: Path, meta: dict[str, Any]) -> list[tuple[str, Path]]:
+    taiwan, global_ = _csv_paths(directory, meta)
+    sources = [("taiwan", taiwan), ("global", global_)]
+    for region, name in EXTRA_SOURCES:
+        path = directory / name
+        if path.exists():
+            sources.append((region, path))
+    return sources
+
+
 def _csv_paths(directory: Path, meta: dict[str, Any]) -> tuple[Path, Path]:
     provenance = meta.get("provenance", {})
     taiwan = _resolve_csv(
@@ -109,8 +126,8 @@ def corpus_signature() -> tuple:
     """mtime fingerprint of the files the corpus is parsed from."""
     directory = dataset_dir()
     meta = _read_meta(directory)
-    taiwan_path, global_path = _csv_paths(directory, meta)
-    return _signature([taiwan_path, global_path, directory / "dataset_meta.json"])
+    sources = _sources(directory, meta)
+    return _signature([path for _, path in sources] + [directory / "dataset_meta.json"])
 
 
 def _signature(paths: Iterable[Path]) -> tuple:
@@ -149,9 +166,9 @@ def load_dataset(*, refresh: bool = False) -> tuple[list[DatasetRecord], dict[st
     """Parse both CSVs into records plus provenance metadata (cached by mtime)."""
     directory = dataset_dir()
     meta = _read_meta(directory)
-    taiwan_path, global_path = _csv_paths(directory, meta)
+    sources = _sources(directory, meta)
 
-    signature = _signature([taiwan_path, global_path, directory / "dataset_meta.json"])
+    signature = _signature([path for _, path in sources] + [directory / "dataset_meta.json"])
     if not refresh and _cache["signature"] == signature and _cache["records"]:
         return _cache["records"], _cache["info"]
 
@@ -159,7 +176,7 @@ def load_dataset(*, refresh: bool = False) -> tuple[list[DatasetRecord], dict[st
     date_column = (meta.get("date_column") or DEFAULT_DATE_COLUMN).strip()
     export_date = _parse_date(provenance.get("exported_at", "")) or date(2026, 10, 30)
 
-    missing = [str(path) for path in (taiwan_path, global_path) if not path.exists()]
+    missing = [str(path) for _, path in sources if not path.exists()]
     if missing:
         raise FileNotFoundError(
             "找不到語料 CSV：" + "、".join(missing)
@@ -173,7 +190,7 @@ def load_dataset(*, refresh: bool = False) -> tuple[list[DatasetRecord], dict[st
     date_sources: dict[str, int] = {}
     unknown_dates: list[str] = []
 
-    for region, path in (("taiwan", taiwan_path), ("global", global_path)):
+    for region, path in sources:
         rows = _rows_from_csv(path)
 
         for row in rows:
@@ -221,7 +238,7 @@ def load_dataset(*, refresh: bool = False) -> tuple[list[DatasetRecord], dict[st
         classification[record.category] = classification.get(record.category, 0) + 1
 
     info = {
-        "sources": [str(taiwan_path), str(global_path)],
+        "sources": [str(path) for _, path in sources],
         "source_directory": provenance.get("source_directory", str(directory)),
         "exported_at": export_date.isoformat(),
         "note": provenance.get("note", ""),
