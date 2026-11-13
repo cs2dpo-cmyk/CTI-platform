@@ -1177,32 +1177,8 @@
     }
   }
 
-  function bindTimelineMode() {
-    const buttons = {
-      relative: $('#timelineRelative'),
-      absolute: $('#timelineAbsolute'),
-    };
-    const apply = (mode) => {
-      Object.entries(buttons).forEach(([key, node]) => {
-        if (!node) return;
-        const active = key === mode;
-        node.setAttribute('aria-pressed', String(active));
-        node.classList.toggle('bg-cyan-400/15', active);
-        node.classList.toggle('text-cyan-200', active);
-        node.classList.toggle('text-[color:var(--faint)]', !active);
-      });
-      if (typeof CTICharts !== 'undefined' && CTICharts.setTimelineMode) {
-        CTICharts.setTimelineMode(mode);
-      }
-    };
-    if (buttons.relative) buttons.relative.addEventListener('click', () => apply('relative'));
-    if (buttons.absolute) buttons.absolute.addEventListener('click', () => apply('absolute'));
-    apply('relative');
-  }
-
   async function init() {
     stampBuild();
-    bindTimelineMode();
     bindFilters();
     bindFeed();
     bindForm();

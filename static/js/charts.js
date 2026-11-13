@@ -30,24 +30,6 @@ const CTICharts = (() => {
   };
 
   const instances = { pie: null, comparison: null, timeline: null, priority: null };
-  // The corpus is 79% international, so an absolute line chart hides Taiwan.
-  // "relative" divides each region by its own mean, which compares timing
-  // rather than volume; "absolute" shows the real counts.
-  let timelineMode = 'relative';
-  let lastTimeline = [];
-
-  function timelineSeries(points, mode) {
-    const tw = points.map((p) => p.taiwan);
-    const gl = points.map((p) => p.global);
-    if (mode === 'absolute') return { tw, gl };
-    const mean = (values) => {
-      const total = values.reduce((sum, value) => sum + value, 0);
-      return total > 0 ? total / values.length : 1;
-    };
-    const twMean = mean(tw) || 1;
-    const glMean = mean(gl) || 1;
-    return { tw: tw.map((v) => v / twMean), gl: gl.map((v) => v / glMean) };
-  }
   let defaultsApplied = false;
 
   const hasChart = () => typeof window.Chart !== 'undefined';
@@ -334,10 +316,8 @@ const CTICharts = (() => {
       ? stats.timeline_monthly
       : (stats.timeline || []);
     const labels = points.map((p) => p.date.replace('-', '/'));
-    lastTimeline = points;
-    const series = timelineSeries(points, timelineMode);
-    const tw = series.tw;
-    const gl = series.gl;
+    const tw = points.map((p) => p.taiwan);
+    const gl = points.map((p) => p.global);
 
     const ctx = el.getContext('2d');
     const fillTw = ctx.createLinearGradient(0, 0, 0, 210);
@@ -401,14 +381,7 @@ const CTICharts = (() => {
           tooltip: {
             callbacks: {
               title: (items) => items[0].label,
-              label: (ctx) => {
-                const point = lastTimeline[ctx.dataIndex] || {};
-                const count = ctx.dataset.label === '台灣' ? point.taiwan : point.global;
-                if (timelineMode === 'relative') {
-                  return ` ${ctx.dataset.label}：${count} 篇（${ctx.raw.toFixed(2)}× 自身平均）`;
-                }
-                return ` ${ctx.dataset.label}：${count} 篇`;
-              },
+              label: (ctx) => ` ${ctx.dataset.label}：${ctx.raw} 篇`,
             },
           },
         },
@@ -533,16 +506,6 @@ const CTICharts = (() => {
     renderPriority(stats);
   }
 
-  function setTimelineMode(mode) {
-    timelineMode = mode === 'absolute' ? 'absolute' : 'relative';
-    if (instances.timeline) instances.timeline.destroy();
-    instances.timeline = null;
-    if (lastTimeline.length) renderTimeline({ timeline_monthly: lastTimeline });
-  }
-
-  return { renderStats, setTimelineMode, COLORS, META_KEY_COLOR };
+  return { renderStats, COLORS, META_KEY_COLOR };
 })();
 
-// A top-level const is not a property of window, so expose it explicitly for
-// event handlers and for debugging from the console.
-window.CTICharts = CTICharts;
