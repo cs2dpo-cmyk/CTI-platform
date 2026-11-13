@@ -192,3 +192,57 @@ manifest 在 `data/holdout_manifest.json`。
 兩個標註者與 gold 慣例三方各不相同。
 
 任何後續報告都必須同時揭露 51%／52%／90% 與 kappa，只報 90% 會誤導。
+
+## 爭議類型判定表（2026-11-13 第二輪後新增）
+
+第二輪標註顯示，54 列爭議幾乎全部集中在五種文章類型。以下規則**優先於**前面的判斷順序，
+目的是讓「同一個類型永遠得到同一個答案」。
+
+### 核心原則
+
+> **一篇文章只講「一個具體的漏洞或事件」→ VULN／MALWARE。
+> 一篇文章講「一堆事情、一種方法、一項政策」→ RESEARCH。**
+
+| 類型 | 特徵 | 判定 | 理由 |
+|---|---|---|---|
+| **週報／彙整** | 標題含 `Weekly Recap`、`ThreatsDay`、`Bulletin`、`Top Threats`、`本週` | **RESEARCH** | 沒有單一主體，是趨勢彙整 |
+| **研討會／白皮書／指南** | `Webinar`、`Guide`、`Readiness`、`What to Look for`、`如何`、`指南` | **RESEARCH** | 教學或行銷內容，不是事件 |
+| **制裁／起訴／扣押／禁令** | `Sanctions`、`Charges`、`Seizes`、`Dismantles`、`禁售`、`制裁` | **RESEARCH** | 政府治理行動，不是技術事件 |
+| **法規／政策解讀** | `Rules`、`Regulation`、`Policy`、`Guidance`、`法規`、`指引` | **RESEARCH** | 政策分析 |
+| **修補／更新指南** | `Patch Guide`、`How to Patch`、`更新步驟` | **VULN** | 主體仍是漏洞與修補 |
+
+### 反例（不要套用上面的規則）
+
+| 標題 | 判定 | 為什麼不是 RESEARCH |
+|---|---|---|
+| `U.S. Agencies Warn of Iranian Hacking Group's Ongoing Ransomware Attacks` | **MALWARE** | 具體攻擊行動，有受害者 |
+| `Researchers Uncover Python Package Targeting Crypto Wallets` | **MALWARE** | 具體惡意套件 |
+| `TeamViewer Detects Security Breach` | **MALWARE** | 具體入侵事件 |
+| `WordPress Plugin Vulnerability Puts 5 Million Sites at Risk` | **VULN** | 單一具體漏洞 |
+
+### 一句話檢查
+
+填完每一列後問自己：**「這篇有沒有『一個』可以指出來的漏洞編號或受害組織？」**
+有 → VULN／MALWARE；沒有（或有很多個）→ RESEARCH。
+
+### 重新標註流程（54 列）
+
+```bash
+# 1. 兩人分別填 label（不含舊標籤與模型答案，避免錨定）
+#    data/relabel2_labels.csv      ← A
+#    data/relabel2_labels_b.csv    ← B
+
+# 2. 檢查新規則是否讓一致性上升
+./.venv/Scripts/python.exe tools/label_agreement.py \
+  --a data/relabel2_labels.csv --b data/relabel2_labels_b.csv
+
+# 3. 合併回主標註表（會先備份，未填完會拒絕執行）
+./.venv/Scripts/python.exe tools/apply_relabel.py --round 2
+
+# 4. 重新評估
+./.venv/Scripts/python.exe tools/eval_round2.py
+./.venv/Scripts/python.exe tools/make_eval_doc.py
+```
+
+判準：若重新標註後 kappa **明顯上升**（例如 0.68 → 0.85），代表新增的判定表
+真的消除了歧義；若沒上升，代表問題不在規則，而在類別本身需要合併或拆分。
