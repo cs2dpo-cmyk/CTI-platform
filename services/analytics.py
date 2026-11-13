@@ -21,7 +21,7 @@ PRIORITY_ORDER = ["P1", "P2", "P3"]
 # never materialises the free-text columns it does not use.
 STATS_COLUMNS = (
     "title", "source", "region", "category", "cluster",
-    "risk_score", "risk_level", "priority", "published_at",
+    "risk_score", "risk_level", "priority", "published_at", "duplicate_of",
 )
 
 
@@ -46,6 +46,7 @@ def _as_dict(threat: ThreatLike) -> dict[str, Any]:
         "cluster": threat.cluster or "",
         "risk_score": float(threat.risk_score or 0.0),
         "risk_level": threat.risk_level or "",
+        "duplicate_of": getattr(threat, "duplicate_of", None),
         "priority": threat.priority or "",
         "published_at": threat.published_at,
     }
@@ -99,7 +100,14 @@ def build_stats(threats: list[ThreatLike], dataset_info: dict[str, Any] | None =
     """
     rows = [_as_dict(threat) for threat in threats]
     corpus = len(rows)
-    scored = [row for row in rows if row["category"] != "OTHER"]
+    # Duplicate coverage (the same event reported by two sources) inflates every
+    # rate, so the risk numbers are computed on distinct events only. The corpus
+    # size still counts articles.
+    duplicates = sum(1 for row in rows if row.get("duplicate_of"))
+    scored = [
+        row for row in rows
+        if row["category"] != "OTHER" and not row.get("duplicate_of")
+    ]
     total = len(scored)
 
     region_counts = Counter(row["region"] for row in rows)
@@ -210,7 +218,9 @@ def build_stats(threats: list[ThreatLike], dataset_info: dict[str, Any] | None =
     matrix = risk_engine.build_decision_matrix(scored)
 
     p1 = priority_counts.get("P1", 0)
-    other = corpus - total
+    other = sum(
+        1 for row in rows if row["category"] == "OTHER" and not row.get("duplicate_of")
+    )
 
     def dominant_meta(region: str) -> tuple[str, int]:
         best = max(meta_categories, key=lambda item: item["by_region"].get(region, 0))
@@ -251,10 +261,12 @@ def build_stats(threats: list[ThreatLike], dataset_info: dict[str, Any] | None =
             "classification_accuracy": accuracy,
             "corpus": "TWCERT / iThome / The Hacker News",
             "balance": "50 台灣 : 50 國際 平衡對照組（含 12–15 篇產業動態，已排除於風險統計）",
-            "scoring": "嚴重度 0.55 / 利用成熟度 0.25 / 暴露程度 0.12 / CVE 具名 0.08；無隨機項",
+            "scoring": "嚴重度 0.50 / 利用成熟度 0.30（EPSS 實測）/ 暴露程度 0.12 / CVE 具名 0.08；無隨機項",
         },
         "totals": {
             "corpus": corpus,
+            "events": corpus - duplicates,
+            "duplicates": duplicates,
             "threats": total,
             "other": other,
             "taiwan": region_counts.get("taiwan", 0),

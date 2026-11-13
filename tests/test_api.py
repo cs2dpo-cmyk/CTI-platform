@@ -56,11 +56,19 @@ def test_stats_returns_balanced_corpus(client: TestClient):
     assert totals["global"] == 100
     # The corpus holds industry news as well as threats; only the threat subset
     # feeds the risk numbers.
-    assert totals["threats"] + totals["other"] == totals["corpus"]
+    assert totals["threats"] + totals["other"] + totals["duplicates"] == totals["corpus"]
     assert totals["other"] == 18
     assert len(body["meta_categories"]) == 4
     assert sum(item["count"] for item in body["meta_categories"]) == 200
     assert abs(sum(item["share"] for item in body["meta_categories"]) - 1.0) < 1e-6
+
+
+def test_stats_exclude_duplicate_events(client: TestClient):
+    totals = client.get("/api/v1/stats").json()["totals"]
+    assert totals["corpus"] == 200          # articles
+    assert totals["duplicates"] == 4
+    assert totals["events"] == 196          # distinct events
+    assert totals["threats"] + totals["other"] + totals["duplicates"] == totals["corpus"]
 
 
 def test_stats_meta_category_region_split_is_consistent(client: TestClient):
@@ -275,7 +283,7 @@ def test_assess_rejects_legacy_category_names(client: TestClient):
 
 
 def test_threats_returns_full_corpus(client: TestClient):
-    body = client.get("/api/v1/threats", params={"limit": 200}).json()
+    body = client.get("/api/v1/threats", params={"limit": 200, "dedupe": "false"}).json()
     assert body["total"] == 200
     assert body["returned"] == 200
     assert all(item["cluster"] in {"0", "1", "2"} for item in body["items"])
@@ -286,7 +294,7 @@ def test_threats_returns_full_corpus(client: TestClient):
 
 
 def test_threats_filter_by_region(client: TestClient):
-    body = client.get("/api/v1/threats", params={"region": "taiwan", "limit": 200}).json()
+    body = client.get("/api/v1/threats", params={"region": "taiwan", "limit": 200, "dedupe": "false"}).json()
     assert body["total"] == 100
     assert {item["region"] for item in body["items"]} == {"taiwan"}
 
@@ -318,9 +326,9 @@ def test_patch_priority_filter(client: TestClient):
 
 
 def test_threats_dedupe_filter(client: TestClient):
-    plain = client.get("/api/v1/threats?limit=200").json()
-    deduped = client.get("/api/v1/threats?limit=200&dedupe=true").json()
-    assert deduped["total"] <= plain["total"]
+    all_rows = client.get("/api/v1/threats?limit=200&dedupe=false").json()
+    deduped = client.get("/api/v1/threats?limit=200").json()  # dedupe defaults on
+    assert deduped["total"] < all_rows["total"]
     assert all(item["duplicate_of"] is None for item in deduped["items"])
 
 
@@ -333,7 +341,7 @@ def test_threats_filter_by_priority(client: TestClient):
 def test_threats_filters_combine(client: TestClient):
     body = client.get(
         "/api/v1/threats",
-        params={"region": "global", "category": "MALWARE", "limit": 200},
+        params={"region": "global", "category": "MALWARE", "limit": 200, "dedupe": "false"},
     ).json()
     stats = client.get("/api/v1/stats").json()
     expected = next(
@@ -349,7 +357,7 @@ def test_threats_search_and_pagination(client: TestClient):
     body = client.get("/api/v1/threats", params={"q": "Flaw", "limit": 5}).json()
     assert body["total"] >= 1
     assert body["returned"] <= 5
-    page = client.get("/api/v1/threats", params={"limit": 10, "offset": 95}).json()
+    page = client.get("/api/v1/threats", params={"limit": 10, "offset": 95, "dedupe": "false"}).json()
     assert page["returned"] == 10
     assert page["total"] == 200
 

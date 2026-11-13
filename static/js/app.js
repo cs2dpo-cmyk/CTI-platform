@@ -155,6 +155,14 @@
     // threat subset.
     const corpus = totals.corpus ?? totals.threats ?? 0;
     $('#kpiTotal').textContent = num(corpus);
+    const kpiFoot = $('#kpiTotal') && $('#kpiTotal').closest('.kpi') && $('#kpiTotal').closest('.kpi').querySelector('.kpi-foot');
+    if (kpiFoot && totals.duplicates && !kpiFoot.querySelector('[data-dup]')) {
+      const note = document.createElement('span');
+      note.dataset.dup = '1';
+      note.className = 'mono text-[10px] text-[color:var(--faint)]';
+      note.textContent = '重複 ' + totals.duplicates + ' 已合併';
+      kpiFoot.appendChild(note);
+    }
     $('#kpiTw').textContent = num(totals.taiwan);
     $('#kpiGlobal').textContent = num(totals.global);
     $('#heroCorpus').innerHTML = `${num(corpus)}<span class="ml-1 text-[11px] text-[color:var(--faint)]">篇</span>`;

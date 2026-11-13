@@ -141,7 +141,7 @@ assert($$('#matrixGrid .matrix-card').length === 3, `matrix lanes (got ${$$('#ma
 assert($$('#matrixGrid .step').length > 0, 'matrix playbooks rendered');
 
 assert($$('#feedBody .feed-row').length === 25, `feed first page rows (got ${$$('#feedBody .feed-row').length})`);
-assert($('#feedTotal').textContent.trim() === '200', 'feed total rendered');
+assert($('#feedTotal').textContent.trim() === '196', 'feed total rendered (dedupe default)');
 assert($('#pageLabel').textContent.includes('1 / 8'), `pagination label (got "${$('#pageLabel').textContent}")`);
 
 assert($$('#insightGrid article').length === 4, `insight cards (got ${$$('#insightGrid article').length})`);

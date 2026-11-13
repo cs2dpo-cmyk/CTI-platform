@@ -253,6 +253,7 @@ def patch_priority_list(
     priority: Literal["P1", "P2", "P3"] | None = Query(None, description="只看某個優先級"),
     exposure: bool = Query(True, description="是否依曝險上下調整一級"),
     limit: int = Query(20, ge=1, le=300),
+    db: Session = Depends(database.get_db),
 ) -> schemas.PatchPriorityResponse:
     """CVEs ordered by exploitation likelihood, with an SLA band per CVE.
 
@@ -260,6 +261,11 @@ def patch_priority_list(
     CVSS >= 9.0, P3 is everything else. See services/patch_priority.py.
     """
     records, _ = dataset.load_dataset()
+    duplicate_ids = set(
+        db.scalars(
+            select(database.Threat.id).where(database.Threat.duplicate_of.is_not(None))
+        ).all()
+    )
     rows = [
         {
             "cves": record.evidence.get("cves") or [],
@@ -270,6 +276,7 @@ def patch_priority_list(
             "public_facing": record.evidence.get("exposure") == "public",
         }
         for record in records
+        if record.id not in duplicate_ids
     ]
     items = patch_priority.build(rows, epss.all_scores(), use_exposure=exposure)
     summary = patch_priority.summarize(items)
@@ -301,7 +308,7 @@ def list_threats(
     q: str | None = Query(None, max_length=120, description="標題關鍵字"),
     min_score: float | None = Query(None, ge=0, le=100),
     sort: Literal["risk", "date"] = Query("risk", description="排序依據"),
-    dedupe: bool = Query(False, description="隱藏重複事件（日報／轉載）"),
+    dedupe: bool = Query(True, description="排除重複事件（預設開，設 false 可看全部文章）"),
     limit: int = Query(50, ge=1, le=200),
     offset: int = Query(0, ge=0),
     db: Session = Depends(database.get_db),
