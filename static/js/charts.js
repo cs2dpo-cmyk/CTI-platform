@@ -318,6 +318,14 @@ const CTICharts = (() => {
     const labels = points.map((p) => p.date.replace('-', '/'));
     const tw = points.map((p) => p.taiwan);
     const gl = points.map((p) => p.global);
+    // A ratio is comparable even when one side has four times the volume.
+    const share = points.map((p) => (p.total > 0 ? (p.taiwan / p.total) * 100 : null));
+    // Keep the right axis tight: a 0-100 axis flattens a 10-25% series into a
+    // line glued to the bottom.
+    const shareMax = Math.min(
+      100,
+      Math.max(20, Math.ceil(Math.max(...share.filter((v) => v != null), 0) / 10) * 10)
+    );
 
     const ctx = el.getContext('2d');
     const fillTw = ctx.createLinearGradient(0, 0, 0, 210);
@@ -333,6 +341,8 @@ const CTICharts = (() => {
       chart.data.labels = labels;
       chart.data.datasets[0].data = tw;
       chart.data.datasets[1].data = gl;
+      if (chart.data.datasets[2]) chart.data.datasets[2].data = share;
+      chart.options.scales.y1.max = shareMax;
       chart.update();
       return;
     }
@@ -370,6 +380,22 @@ const CTICharts = (() => {
             pointHoverBorderColor: '#06121a',
             pointHoverBorderWidth: 2,
           },
+          {
+            label: '台灣佔比',
+            data: share,
+            yAxisID: 'y1',
+            borderColor: '#f472b6',
+            borderDash: [4, 3],
+            borderWidth: 1.6,
+            fill: false,
+            tension: 0.3,
+            pointRadius: 0,
+            pointHoverRadius: 4,
+            pointHoverBackgroundColor: '#f472b6',
+            pointHoverBorderColor: '#06121a',
+            pointHoverBorderWidth: 2,
+            spanGaps: true,
+          },
         ],
       },
       options: {
@@ -381,7 +407,9 @@ const CTICharts = (() => {
           tooltip: {
             callbacks: {
               title: (items) => items[0].label,
-              label: (ctx) => ` ${ctx.dataset.label}：${ctx.raw} 篇`,
+              label: (ctx) => (ctx.dataset.yAxisID === 'y1'
+                ? ` ${ctx.dataset.label}：${ctx.raw == null ? '—' : ctx.raw.toFixed(0) + '%'}`
+                : ` ${ctx.dataset.label}：${ctx.raw} 篇`),
             },
           },
         },
@@ -403,6 +431,20 @@ const CTICharts = (() => {
             grid: { color: COLORS.grid, drawTicks: false },
             border: { display: false },
             ticks: { color: COLORS.tick, stepSize: 1, padding: 6, font: { size: 10 } },
+          },
+          y1: {
+            position: 'right',
+            min: 0,
+            max: shareMax,
+            grid: { display: false },
+            border: { display: false },
+            ticks: {
+              color: COLORS.tick,
+              maxTicksLimit: 4,
+              font: { size: 9 },
+              stepSize: Math.max(5, Math.round(shareMax / 4 / 5) * 5),
+              callback: (value) => value + '%',
+            },
           },
         },
       },
