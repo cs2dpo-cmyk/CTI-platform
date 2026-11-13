@@ -30,6 +30,11 @@ def _scores() -> dict[str, float]:
         return {}
 
 
+def all_scores() -> dict[str, float]:
+    """The whole snapshot, upper-cased, for batch callers."""
+    return dict(_scores())
+
+
 def score_for(cves: list[str] | tuple[str, ...] | None) -> float | None:
     """Highest EPSS among the given CVEs, or None when none is scored.
 

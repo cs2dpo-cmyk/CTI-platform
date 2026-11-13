@@ -34,7 +34,7 @@
     rel="stylesheet"
   />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.6/dist/chart.umd.min.js" defer></script>
-  <link rel="stylesheet" href="/static/css/styles.css?v=20261112h" />
+  <link rel="stylesheet" href="/static/css/styles.css?v=20261113a" />
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23060a11'/%3E%3Cpath d='M16 5l9 4v7c0 5.5-3.8 10-9 11-5.2-1-9-5.5-9-11V9l9-4z' fill='none' stroke='%2322d3ee' stroke-width='2'/%3E%3C/svg%3E" />
 </head>
 
@@ -577,6 +577,36 @@
       </div>
     </section>
 
+    <!-- ===================== Patch priority (EPSS) ===================== -->
+    <section class="panel" id="patchSection" aria-labelledby="patchTitle">
+      <div class="panel-head flex-col gap-3 md:flex-row md:items-center">
+        <div>
+          <h3 id="patchTitle" class="panel-title"><svg class="ico ico-sm text-cyan-400"><use href="#i-shield" /></svg>修補優先級（EPSS + KEV）</h3>
+          <p class="kicker mt-1">GET /api/v1/patch-priority</p>
+          <p class="mt-1 text-[11px] text-[color:var(--faint)]">以 FIRST EPSS 利用機率與 CISA KEV 排序，附修補 SLA 與判斷依據</p>
+        </div>
+        <div class="flex flex-wrap items-center gap-2" id="patchSummary"></div>
+      </div>
+      <div class="overflow-x-auto">
+        <table class="w-full text-left text-[12.5px]">
+          <thead>
+            <tr class="text-[10.5px] uppercase tracking-wider text-[color:var(--faint)]">
+              <th class="px-4 py-2">CVE</th>
+              <th class="w-[150px] px-2 py-2">EPSS</th>
+              <th class="px-2 py-2">CVSS</th>
+              <th class="px-2 py-2">情資數</th>
+              <th class="px-2 py-2">優先級</th>
+              <th class="px-2 py-2">SLA</th>
+              <th class="px-4 py-2">判斷依據</th>
+            </tr>
+          </thead>
+          <tbody id="patchBody">
+            <tr><td colspan="7" class="py-8"><div class="skeleton mx-auto h-4 w-2/3"></div></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
     <!-- ===================== Insights ===================== -->
     <section class="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-4 stagger" id="insightGrid" aria-label="AI 洞察"></section>
 
@@ -589,7 +619,7 @@
           嶺東 SmartTech AI 創新應用挑戰賽 · 基於機器學習之跨平台 CTI 分析與決策支援平台
         </p>
         <p class="mono text-[10.5px] text-[color:var(--faint)]">
-          FastAPI · SQLite · Chart.js — build 2026-11-12h
+          FastAPI · SQLite · Chart.js — build 2026-11-13a
         </p>
       </div>
       <div class="flex items-center gap-2">
@@ -605,8 +635,8 @@
 
   <div class="toast-stack" id="toastStack" aria-live="polite" aria-atomic="false"></div>
 
-  <script src="/static/js/charts.js?v=20261112h" defer></script>
-  <script src="/static/js/app.js?v=20261112h" defer></script>
-  <script src="/static/js/rain.js?v=20261112h" defer></script>
+  <script src="/static/js/charts.js?v=20261113a" defer></script>
+  <script src="/static/js/app.js?v=20261113a" defer></script>
+  <script src="/static/js/rain.js?v=20261113a" defer></script>
 </body>
 </html>

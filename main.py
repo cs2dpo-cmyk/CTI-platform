@@ -23,7 +23,7 @@ from sqlalchemy.orm import Session, load_only
 
 import database
 import schemas
-from services import analytics, dataset, risk_engine
+from services import analytics, dataset, epss, patch_priority, risk_engine
 
 logging.basicConfig(level=os.getenv("LOG_LEVEL", "INFO"),
                     format="%(asctime)s %(levelname)s %(name)s %(message)s")
@@ -223,6 +223,44 @@ def _summarise(payload: schemas.AssessRequest, score: float, priority: str,
         parts.append(f"，其中 {matched['cve_hits']} 筆直接提及 {payload.cve_id}")
     parts.append(f"；在地關聯採計{region} {matched.get('region_hits', 0)} 筆語料。")
     return "".join(parts)
+
+
+# --------------------------------------------------------------------------- #
+# EPSS-driven patch priority
+# --------------------------------------------------------------------------- #
+
+
+@api.get("/patch-priority", response_model=schemas.PatchPriorityResponse,
+         summary="修補優先級（EPSS + KEV）")
+def patch_priority_list(
+    priority: Literal["P1", "P2", "P3"] | None = Query(None, description="只看某個優先級"),
+    limit: int = Query(20, ge=1, le=300),
+) -> schemas.PatchPriorityResponse:
+    """CVEs ordered by exploitation likelihood, with an SLA band per CVE.
+
+    P1 is KEV membership (exploitation confirmed), P2 is EPSS >= 0.10 or
+    CVSS >= 9.0, P3 is everything else. See services/patch_priority.py.
+    """
+    records, _ = dataset.load_dataset()
+    rows = [
+        {
+            "cves": record.evidence.get("cves") or [],
+            "source": record.source,
+            "published_at": record.published_at,
+            "cvss": record.evidence.get("cvss"),
+        }
+        for record in records
+    ]
+    items = patch_priority.build(rows, epss.all_scores())
+    summary = patch_priority.summarize(items)
+    if priority:
+        items = [item for item in items if item.priority == priority]
+    return schemas.PatchPriorityResponse(
+        total=summary["cves"],
+        returned=min(len(items), limit),
+        items=[schemas.PatchItemOut(**item.as_dict()) for item in items[:limit]],
+        summary=summary,
+    )
 
 
 # --------------------------------------------------------------------------- #

@@ -132,6 +132,22 @@ body::after {
   .rain { display: none; }
 }
 
+/* EPSS meter: static width per render, no animation. */
+.epss-bar {
+  position: relative;
+  height: 6px;
+  width: 100%;
+  border-radius: 999px;
+  background: rgba(148, 163, 184, 0.14);
+  overflow: hidden;
+}
+.epss-fill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #22d3ee, #2dd4bf);
+}
+
 ::selection {
   background: rgba(34, 211, 238, 0.28);
   color: #fff;

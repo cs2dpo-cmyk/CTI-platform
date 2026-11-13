@@ -1019,6 +1019,96 @@
 
   /* --------------------------------------------------------------------- boot */
 
+  /* -------------------------------------------------------- patch priority */
+  function patchBadge(priority) {
+    const span = document.createElement('span');
+    span.className = 'badge badge-' + priority.toLowerCase();
+    span.textContent = priority;
+    return span;
+  }
+
+  function patchCell(text, className) {
+    const td = document.createElement('td');
+    if (className) td.className = className;
+    td.textContent = text;
+    return td;
+  }
+
+  // Values from the API are untrusted: every cell goes through textContent.
+  function renderPatchPriority(data) {
+    const body = $('#patchBody');
+    const summary = $('#patchSummary');
+    if (!body) return;
+    body.textContent = '';
+    if (summary) {
+      summary.textContent = '';
+      const counts = (data.summary && data.summary.by_priority) || {};
+      ['P1', 'P2', 'P3'].forEach((key) => {
+        const chip = patchBadge(key);
+        chip.textContent = key + ' ' + (counts[key] || 0);
+        summary.appendChild(chip);
+      });
+    }
+    const fragment = document.createDocumentFragment();
+    (data.items || []).forEach((item) => {
+      const tr = document.createElement('tr');
+      tr.className = 'border-t border-[#1b2739]/70';
+
+      const cve = document.createElement('td');
+      cve.className = 'px-4 py-2.5 mono text-[11.5px] text-cyan-200';
+      cve.textContent = item.cve;
+      tr.appendChild(cve);
+
+      const epssCell = document.createElement('td');
+      epssCell.className = 'px-2 py-2.5';
+      const bar = document.createElement('div');
+      bar.className = 'epss-bar';
+      const fill = document.createElement('span');
+      fill.className = 'epss-fill';
+      const ratio = Math.max(0, Math.min(1, Number(item.epss) || 0));
+      fill.style.width = Math.round(ratio * 100) + '%';
+      bar.appendChild(fill);
+      epssCell.appendChild(bar);
+      const label = document.createElement('span');
+      label.className = 'mono mt-1 block text-[10px] text-[color:var(--faint)]';
+      label.textContent = item.epss == null ? '—' : Math.round(ratio * 100) + '%';
+      epssCell.appendChild(label);
+      tr.appendChild(epssCell);
+
+      tr.appendChild(patchCell(item.cvss == null ? '—' : Number(item.cvss).toFixed(1),
+        'px-2 py-2.5 mono text-[11.5px] text-slate-300'));
+      tr.appendChild(patchCell(String(item.articles || 0), 'px-2 py-2.5 mono text-[11.5px] text-slate-400'));
+
+      const badgeCell = document.createElement('td');
+      badgeCell.className = 'px-2 py-2.5';
+      badgeCell.appendChild(patchBadge(item.priority));
+      tr.appendChild(badgeCell);
+
+      tr.appendChild(patchCell(item.sla, 'px-2 py-2.5 text-[11.5px] text-slate-300'));
+      tr.appendChild(patchCell(item.reason, 'px-4 py-2.5 text-[11.5px] text-[color:var(--muted)]'));
+      fragment.appendChild(tr);
+    });
+    body.appendChild(fragment);
+  }
+
+  async function loadPatchPriority() {
+    const body = $('#patchBody');
+    if (!body) return;
+    try {
+      const data = await api('/patch-priority?limit=8');
+      renderPatchPriority(data);
+    } catch (error) {
+      body.textContent = '';
+      const tr = document.createElement('tr');
+      const td = document.createElement('td');
+      td.colSpan = 7;
+      td.className = 'px-4 py-8 text-center text-[12px] text-[color:var(--faint)]';
+      td.textContent = '修補優先級載入失敗：' + error.message;
+      tr.appendChild(td);
+      body.appendChild(tr);
+    }
+  }
+
   async function init() {
     bindFilters();
     bindFeed();
@@ -1032,6 +1122,7 @@
       /* the error toast already fired */
     }
     loadThreats();
+    loadPatchPriority();
   }
 
   if (document.readyState === 'loading') {

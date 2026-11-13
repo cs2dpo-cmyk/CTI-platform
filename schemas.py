@@ -52,6 +52,26 @@ class ThreatOut(BaseModel):
     created_at: datetime | None = None
 
 
+class PatchItemOut(BaseModel):
+    cve: str
+    priority: Priority
+    sla: str
+    epss: float | None = None
+    cvss: float | None = None
+    exploited: bool = False
+    articles: int = 0
+    sources: list[str] = Field(default_factory=list)
+    first_seen: str | None = None
+    reason: str = ""
+
+
+class PatchPriorityResponse(BaseModel):
+    total: int
+    returned: int
+    items: list[PatchItemOut] = Field(default_factory=list)
+    summary: dict = Field(default_factory=dict)
+
+
 class ThreatListResponse(BaseModel):
     total: int
     limit: int

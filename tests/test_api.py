@@ -249,6 +249,24 @@ def test_threats_filter_by_region(client: TestClient):
     assert {item["region"] for item in body["items"]} == {"taiwan"}
 
 
+def test_patch_priority_endpoint(client: TestClient):
+    body = client.get("/api/v1/patch-priority", params={"limit": 10}).json()
+    assert body["total"] > 0
+    assert len(body["items"]) == 10
+    # Sorted by band, and every P1 is a KEV entry.
+    order = {"P1": 0, "P2": 1, "P3": 2}
+    assert [order[i["priority"]] for i in body["items"]] == sorted(
+        order[i["priority"]] for i in body["items"]
+    )
+    assert all(i["exploited"] for i in body["items"] if i["priority"] == "P1")
+    assert sum(body["summary"]["by_priority"].values()) == body["total"]
+
+
+def test_patch_priority_filter(client: TestClient):
+    body = client.get("/api/v1/patch-priority", params={"priority": "P1", "limit": 5}).json()
+    assert all(item["priority"] == "P1" for item in body["items"])
+
+
 def test_threats_dedupe_filter(client: TestClient):
     plain = client.get("/api/v1/threats?limit=200").json()
     deduped = client.get("/api/v1/threats?limit=200&dedupe=true").json()
