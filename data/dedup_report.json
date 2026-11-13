@@ -1,0 +1,38 @@
+{
+  "threshold": 0.82,
+  "totals": {
+    "items": 200,
+    "distinct_events": 199,
+    "duplicate_groups": 1,
+    "redundant_items": 1,
+    "reduction_pct": 0.5,
+    "largest_group": 2
+  },
+  "redundant_by_source": {
+    "iThome": 1
+  },
+  "cross_source_groups": 0,
+  "cross_source_examples": [],
+  "biggest_groups": [
+    {
+      "size": 2,
+      "reasons": [
+        "digest"
+      ],
+      "sources": [
+        "iThome"
+      ],
+      "titles": [
+        "【資安日報】11月11日，駭客利用大數據平臺Qubole被竊憑證，入侵數十家企業AWS環境竊取資料",
+        "駭客利用大數據平臺Qubole被竊憑證，入侵數十家企業AWS環境竊取資料"
+      ]
+    }
+  ],
+  "sensitivity": {
+    "0.7": 199,
+    "0.75": 199,
+    "0.8": 199,
+    "0.85": 199,
+    "0.9": 199
+  }
+}
