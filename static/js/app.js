@@ -1095,6 +1095,13 @@
       const exposureCell = document.createElement('td');
       exposureCell.className = 'px-2 py-2.5';
       exposureCell.appendChild(exposureBadge(item));
+      if (item.assets && item.assets.length) {
+        const assetsLine = document.createElement('span');
+        assetsLine.className = 'mono mt-1 block text-[9.5px] text-[color:var(--faint)]';
+        assetsLine.textContent = item.assets.slice(0, 2).join(', ') + (item.assets.length > 2 ? ' +' + (item.assets.length - 2) : '');
+        assetsLine.title = item.assets.join(', ');
+        exposureCell.appendChild(assetsLine);
+      }
       tr.appendChild(exposureCell);
 
       tr.appendChild(patchCell(String(item.articles || 0), 'px-2 py-2.5 mono text-[11.5px] text-slate-400'));

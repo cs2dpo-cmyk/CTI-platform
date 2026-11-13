@@ -41,6 +41,7 @@ class PatchItem:
     exploited: bool
     exposure: str = exposure_ctx.UNKNOWN
     exposure_source: str = "none"
+    assets: list[str] = field(default_factory=list)
     articles: int = 0
     sources: set[str] = field(default_factory=set)
     first_seen: date | None = None
@@ -85,6 +86,7 @@ class PatchItem:
             "exploited": self.exploited,
             "exposure": self.exposure,
             "exposure_label": exposure_ctx.SOURCE_LABELS[self.exposure_source],
+            "assets": self.assets,
             "articles": self.articles,
             "sources": sorted(self.sources),
             "first_seen": self.first_seen.isoformat() if self.first_seen else None,
@@ -151,9 +153,10 @@ def build(rows: list[dict], epss: dict[str, float], use_exposure: bool = True) -
                 public[key] = True
 
     for key, item in table.items():
-        item.exposure, item.exposure_source = exposure_ctx.resolve(
+        item.exposure, item.exposure_source, matched = exposure_ctx.resolve_detail(
             key, public[key], titles[key]
         )
+        item.assets = [asset.asset_id for asset in matched]
         item.priority = _band(item, use_exposure)
 
     order = {"P1": 0, "P2": 1, "P3": 2}
@@ -174,6 +177,6 @@ def summarize(items: list[PatchItem]) -> dict:
         "exposed": sum(1 for item in items if item.exposed),
         "exposure_sources": {
             source: sum(1 for item in items if item.exposure_source == source)
-            for source in ("manual", "reported", "inferred", "none")
+            for source in ("manual", "inventory", "reported", "inferred", "none")
         },
     }

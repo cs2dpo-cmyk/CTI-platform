@@ -1,0 +1,15 @@
+asset_id,name,exposure,products
+web-01,官方網站,public,nginx|wordpress|php|apache
+web-02,對外 API 服務,public,node.js|react|next.js|express
+vpn-01,遠端存取 VPN,public,citrix netscaler|fortinet|fortigate|sonicwall|palo alto|pan-os|vpn
+mail-01,郵件伺服器,public,exchange|outlook|exchange server
+wsus-01,內部更新伺服器,internal,wsus|windows server update
+ad-01,網域控制站,internal,windows server|active directory|kerberos
+db-01,會員資料庫,internal,postgresql|mysql|mariadb|redis
+erp-01,ERP 主機,internal,oracle|e-business|weblogic|java
+nas-01,備份儲存,internal,synology|nas|qnap|backup
+dev-01,開發工作站,internal,git|github|jenkins|docker
+edge-01,邊界防火牆,public,cisco|ios xe|firewall|gateway
+linux-fleet,Linux 主機群,internal,linux|kernel|ubuntu|debian
+vm-farm,虛擬化平台,internal,vmware|esxi|esx|vcenter|hyper-v
+chrome-fleet,使用者端瀏覽器,internal,chrome|firefox|edge browser

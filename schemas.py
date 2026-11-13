@@ -61,6 +61,7 @@ class PatchItemOut(BaseModel):
     exploited: bool = False
     exposure: str = "unknown"
     exposure_label: str = ""
+    assets: list[str] = Field(default_factory=list)
     articles: int = 0
     sources: list[str] = Field(default_factory=list)
     first_seen: str | None = None
