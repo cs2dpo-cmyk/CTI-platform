@@ -215,6 +215,30 @@ def build_stats(threats: list[ThreatLike], dataset_info: dict[str, Any] | None =
             })
             cursor += timedelta(days=7)
 
+    # Monthly view: the stratified corpus samples a fixed number per month, so a
+    # weekly axis turns every month into a sawtooth (peak at month end, zero in
+    # the middle). Months are the unit the sampling actually guarantees.
+    def next_month(day: date) -> date:
+        return (day.replace(day=1) + timedelta(days=32)).replace(day=1)
+
+    month_map: dict[date, dict[str, int]] = defaultdict(lambda: {"taiwan": 0, "global": 0})
+    for row in scored:
+        month_map[row["published_at"].replace(day=1)][row["region"]] += 1
+
+    timeline_monthly = []
+    if month_map:
+        cursor = min(month_map)
+        last = max(month_map)
+        while cursor <= last:
+            counts = month_map.get(cursor, {"taiwan": 0, "global": 0})
+            timeline_monthly.append({
+                "date": cursor.strftime("%Y-%m"),
+                "taiwan": counts["taiwan"],
+                "global": counts["global"],
+                "total": counts["taiwan"] + counts["global"],
+            })
+            cursor = next_month(cursor)
+
     matrix = risk_engine.build_decision_matrix(scored)
 
     p1 = priority_counts.get("P1", 0)
@@ -284,6 +308,7 @@ def build_stats(threats: list[ThreatLike], dataset_info: dict[str, Any] | None =
         "priorities": priorities,
         "sources": sources,
         "timeline": timeline,
+        "timeline_monthly": timeline_monthly,
         "matrix": matrix,
         "insights": insights[:4],
     }

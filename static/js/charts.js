@@ -310,8 +310,12 @@ const CTICharts = (() => {
     const el = canvas('timelineChart');
     if (!el || !hasChart()) return;
 
-    const points = stats.timeline || [];
-    const labels = points.map((p) => p.date.slice(5).replace('-', '/'));
+    // Monthly bins: the corpus samples a fixed count per month, so weekly bins
+    // draw a sawtooth that reflects sampling, not publishing.
+    const points = (stats.timeline_monthly && stats.timeline_monthly.length)
+      ? stats.timeline_monthly
+      : (stats.timeline || []);
+    const labels = points.map((p) => p.date.replace('-', '/'));
     const tw = points.map((p) => p.taiwan);
     const gl = points.map((p) => p.global);
 

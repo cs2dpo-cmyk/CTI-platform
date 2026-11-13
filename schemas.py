@@ -304,6 +304,7 @@ class StatsResponse(DataProvenance):
     priorities: list[BucketStat]
     sources: list[BucketStat]
     timeline: list[TimelinePoint]
+    timeline_monthly: list[TimelinePoint] = Field(default_factory=list)
     matrix: list[PriorityBucket]
     insights: list[str]
 

@@ -220,8 +220,13 @@ assert($('#apiStatus').textContent.includes('已連線'), 'API status pill updat
 
   // The panel subtitle is derived from the loaded rows, so it can never drift
   // from the CSV snapshot the way the old hard-coded window did.
-  const first = statsNow.timeline[0].date;
-  const last = statsNow.timeline[statsNow.timeline.length - 1].date;
+  // The chart prefers the monthly series; the assertion must follow the same
+  // choice or it checks a window the chart never drew.
+  const timelineSeries = (statsNow.timeline_monthly && statsNow.timeline_monthly.length)
+    ? statsNow.timeline_monthly
+    : statsNow.timeline;
+  const first = timelineSeries[0].date;
+  const last = timelineSeries[timelineSeries.length - 1].date;
   assert(
     $('#timelineRange').textContent.trim().startsWith(`${first} → ${last}`),
     `timeline subtitle follows the data (got "${$('#timelineRange').textContent}")`

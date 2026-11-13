@@ -342,7 +342,10 @@
   function renderTimelineRange(stats) {
     const node = $('#timelineRange');
     if (!node) return;
-    const points = stats.timeline || [];
+    const monthly = stats.timeline_monthly && stats.timeline_monthly.length
+      ? stats.timeline_monthly
+      : null;
+    const points = monthly || stats.timeline || [];
     if (!points.length) {
       node.textContent = '—';
       return;
@@ -351,7 +354,9 @@
     // hard-coded window that can drift away from the CSV snapshot.
     const first = points[0].date;
     const last = points[points.length - 1].date;
-    node.textContent = `${first} → ${last}（${points.length} 個日期）`;
+    node.textContent = monthly
+      ? `${first} → ${last}（${points.length} 個月）`
+      : `${first} → ${last}（${points.length} 個日期）`;
   }
 
   function renderChipCounts(priorities) {

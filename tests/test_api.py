@@ -70,6 +70,14 @@ def test_stats_exclude_duplicate_events(client: TestClient):
     assert totals["threats"] + totals["other"] + totals["duplicates"] == totals["corpus"]
 
 
+def test_stats_expose_a_monthly_timeline(client: TestClient):
+    body = client.get("/api/v1/stats").json()
+    monthly = body["timeline_monthly"]
+    assert len(monthly) >= 30, "語料應涵蓋 35 個月"
+    assert all(len(point["date"]) == 7 for point in monthly), "月份格式 YYYY-MM"
+    assert sum(point["total"] for point in monthly) == body["totals"]["threats"]
+
+
 def test_stats_meta_category_region_split_is_consistent(client: TestClient):
     body = client.get("/api/v1/stats").json()
     totals = body["totals"]
