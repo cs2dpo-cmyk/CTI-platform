@@ -57,7 +57,7 @@ def test_stats_returns_balanced_corpus(client: TestClient):
     # The corpus holds industry news as well as threats; only the threat subset
     # feeds the risk numbers.
     assert totals["threats"] + totals["other"] + totals["duplicates"] == totals["corpus"]
-    assert totals["other"] == 18
+    assert totals["other"] == 24
     assert len(body["meta_categories"]) == 4
     assert sum(item["count"] for item in body["meta_categories"]) == 200
     assert abs(sum(item["share"] for item in body["meta_categories"]) - 1.0) < 1e-6
@@ -115,8 +115,8 @@ def test_meta_categories_follow_the_classifier(client: TestClient):
     # tools/eval_classifier.py if the rules or the CSVs change.
     assert by_key["VULN"] == {"taiwan": 20, "global": 26}
     assert by_key["MALWARE"] == {"taiwan": 44, "global": 50}
-    assert by_key["RESEARCH"] == {"taiwan": 20, "global": 22}
-    assert by_key["OTHER"] == {"taiwan": 16, "global": 2}
+    assert by_key["RESEARCH"] == {"taiwan": 14, "global": 22}
+    assert by_key["OTHER"] == {"taiwan": 22, "global": 2}
     for meta in body["meta_categories"]:
         assert meta["by_region"]["taiwan"] + meta["by_region"]["global"] == meta["count"]
 

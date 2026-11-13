@@ -145,6 +145,17 @@ def extract_evidence(title: str, text: str = "") -> dict[str, Any]:
     }
 
 
+# Product-launch wording that is not already covered by _PRODUCT. Kept separate
+# so the "no security vocabulary" branch can tell a launch apart from a study:
+# "Gemini 全面上線" is industry news, "針對 3,000 台主機的調查" is research.
+_LAUNCH = re.compile(
+    r"公布|上線|加入|新增|擴充|升級|導入|募資|投資人|說明會|試算表|白板|"
+    r"\bunveil\w*\b|\blaunch(?:es|ed)?\b|\brais(?:es|ed)\b|\bIPO\b|"
+    r"\bpricing\b|\brollout\b|\bfeatures?\b|\badds?\b|\bnow available\b",
+    re.IGNORECASE,
+)
+
+
 def classify(title: str, text: str = "") -> tuple[str, str]:
     """Return (category, reason). Ordered rules; first match wins."""
     body = f"{title} {text}"
@@ -159,9 +170,13 @@ def classify(title: str, text: str = "") -> tuple[str, str]:
     incident = bool(_INCIDENT.search(body))
 
     # 1. Nothing that reads like security work: keep it out of the threat funnel.
+    #    A launch verb is an industry signal even when the headline never says
+    #    "revenue" - "Gemini 4 Carbon 全面上線" belongs to OTHER, not RESEARCH.
+    launch = bool(_LAUNCH.search(body))
     if not (vuln or attack or actor or patch or breach or incident):
-        return ("OTHER", "no security vocabulary; product/industry signal") if product \
-            else ("RESEARCH", "governance note without a concrete event")
+        if product or launch:
+            return "OTHER", "no security vocabulary; product/industry signal"
+        return "RESEARCH", "governance note without a concrete event"
 
     # 2. "Already exploited" describes an incident, not an advisory.
     if incident:

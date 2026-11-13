@@ -1,7 +1,7 @@
 {
   "rows": 100,
-  "accuracy": 0.72,
-  "correct": 72,
+  "accuracy": 0.77,
+  "correct": 77,
   "majority_baseline": {
     "label": "MALWARE",
     "accuracy": 0.44
@@ -20,15 +20,15 @@
       "support": 44
     },
     "RESEARCH": {
-      "precision": 0.4,
+      "precision": 0.526,
       "recall": 0.667,
-      "f1": 0.5,
+      "f1": 0.588,
       "support": 15
     },
     "OTHER": {
-      "precision": 0.667,
-      "recall": 0.222,
-      "f1": 0.333,
+      "precision": 0.778,
+      "recall": 0.778,
+      "f1": 0.778,
       "support": 9
     }
   },
@@ -42,8 +42,8 @@
     "MALWARE": {
       "VULN": 0,
       "MALWARE": 38,
-      "RESEARCH": 6,
-      "OTHER": 0
+      "RESEARCH": 5,
+      "OTHER": 1
     },
     "RESEARCH": {
       "VULN": 1,
@@ -54,8 +54,8 @@
     "OTHER": {
       "VULN": 1,
       "MALWARE": 0,
-      "RESEARCH": 6,
-      "OTHER": 2
+      "RESEARCH": 1,
+      "OTHER": 7
     }
   }
 }
