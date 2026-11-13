@@ -1,6 +1,6 @@
 id,title,source,region,label,notes
-H001,Anthropic's Claude Fable 5.2 Beats GPT-6 Cyber in Multi-Stage Cyberattack Benchmark,THN,global,RESEARCH,
-H002,AntiFox AI Pentesting Platform Linked to Attacks That Accessed AWS Production Secrets,THN,global,VULN,
+H001,Anthropic's Claude Fable 5.2 Beats GPT-6 Cyber in Multi-Stage Cyberattack Benchmark,THN,global,RESEARCH,能力評測比較，非商業或事件
+H002,AntiFox AI Pentesting Platform Linked to Attacks That Accessed AWS Production Secrets,THN,global,MALWARE,入侵取得雲端機密
 H003,Apple Patches iMessage Group Chat Privacy Flaws and Bluetooth Pairing Vulnerabilities,THN,global,VULN,
 H004,Attackers Exploit AhsayCBS Flaws to Deploy Sandbox-Evading Python Backdoor,THN,global,MALWARE,
 H005,Beyond the Alert: The Case for Rich Network Data,THN,global,RESEARCH,
@@ -9,15 +9,15 @@ H007,Bitter Hackers Deploy New PapRAT Backdoor in Cyberespionage Campaign Target
 H008,Blind Eagle Uses Fake Court Notices to Deliver Remote Access Trojan Across Latin America,THN,global,MALWARE,
 H009,CISA Flags SonicWall SonicOS MFA Bypass Flaw Amid Reports of Possible Exploitation,THN,global,VULN,
 H010,"CISA Warns of Active Exploitation of OpenSSH, GPUStack, FreeSWITCH, and IBM Flaws",THN,global,VULN,
-H011,"Chainalysis Breach Exposes All Users' Credentials, Forces Shutdown of Key Services",THN,global,VULN,
-H012,Cisco BroadWorks and Openwave Flaws Actively Exploited Despite Available Patches,THN,global,MALWARE,
-H013,"Claude Code's “Don't Ask Again” File Exposes Passwords and Keys in 1,122 Public Copies on GitHub",THN,global,VULN,
+H011,"Chainalysis Breach Exposes All Users' Credentials, Forces Shutdown of Key Services",THN,global,MALWARE,憑證外洩事件
+H012,Cisco BroadWorks and Openwave Flaws Actively Exploited Despite Available Patches,THN,global,VULN,漏洞已遭利用且有修補
+H013,"Claude Code's “Don't Ask Again” File Exposes Passwords and Keys in 1,122 Public Copies on GitHub",THN,global,VULN,產品設計缺陷導致曝險
 H014,Critical Zoom Workplace Flaw Could Allow Unauthenticated Remote Privilege Escalation,THN,global,VULN,
-H015,"Default 'admin:admin' Server Password Helps Researchers Hack Two Automakers, Unlock and Start Cars",THN,global,VULN,
-H016,Experts Demonstrate Barracuda Email Security Gateway Chain Enabling Root Access Without Login,THN,global,VULN,
-H017,"Fireworks AI Confirms Wider Breach Affecting Customer Datasets, Model Weights and Notion AI Chats",THN,global,VULN,
-H018,Former OpenAI Engineer Pleads Not Guilty to Planting Covert Device in Executive Meeting Room,THN,global,OTHER,
-H019,France Blames Iran for Sabotage Attack on Refrigeration Controllers at About 700 Retail Sites,THN,global,VULN,
+H015,"Default 'admin:admin' Server Password Helps Researchers Hack Two Automakers, Unlock and Start Cars",THN,global,RESEARCH,研究者示範攻擊
+H016,Experts Demonstrate Barracuda Email Security Gateway Chain Enabling Root Access Without Login,THN,global,VULN,漏洞鏈示範
+H017,"Fireworks AI Confirms Wider Breach Affecting Customer Datasets, Model Weights and Notion AI Chats",THN,global,MALWARE,資料外洩事件
+H018,Former OpenAI Engineer Pleads Not Guilty to Planting Covert Device in Executive Meeting Room,THN,global,OTHER,司法／人事消息
+H019,France Blames Iran for Sabotage Attack on Refrigeration Controllers at About 700 Retail Sites,THN,global,MALWARE,國家級攻擊事件
 H020,Git Patches Flaw That Lets Malicious Repositories Execute Code During Recursive Clones,THN,global,VULN,
 H021,Google Issues Chrome Security Update for Eighth Actively Exploited Zero-Day of 2026,THN,global,VULN,
 H022,Hackers Compromise Ethersphere's bee-js and Swarm Desktop to Deliver Wallet-Stealing Malware,THN,global,MALWARE,
@@ -26,76 +26,76 @@ H024,Hackers Exploit Qubole's Trusted AWS Access to Breach Customer Accounts and
 H025,Hackers Hide Linux Backdoor in Control Web Panel Server to Execute Commands Without Logs,THN,global,MALWARE,
 H026,"Hackers Target OpenSSH SSHole Flaw Within Hours of Disclosure, Gain Root on Honeypot",THN,global,MALWARE,
 H027,"Hackers Target Qlik Sense Servers With Reverse Shells, Stage ActiveMQ and Veeam Exploits",THN,global,MALWARE,
-H028,Installing the Fix for an Exploited WordPress Flaw Can Expose Some Sites One Last Time,THN,global,MALWARE,
-H029,LNbits Urges All Operators to Shut Down Their Bitcoin Lightning Wallet Servers Amid Attacks,THN,global,VULN,
-H030,Malicious Browser Extensions Could Use Claude Dispatch to Run Code on Users' Computers,THN,global,MALWARE,
+H028,Installing the Fix for an Exploited WordPress Flaw Can Expose Some Sites One Last Time,THN,global,VULN,主體是安裝修補程式
+H029,LNbits Urges All Operators to Shut Down Their Bitcoin Lightning Wallet Servers Amid Attacks,THN,global,MALWARE,攻擊進行中
+H030,Malicious Browser Extensions Could Use Claude Dispatch to Run Code on Users' Computers,THN,global,MALWARE,惡意擴充套件手法
 H031,"Microsoft Paint RCE Fix Now Available, but Windows Update Won't Deliver It",THN,global,VULN,
 H032,"Microsoft Patches 1,259 Flaws, Including Exploited Outlook Bug That May Expose NTLMv2 Hashes",THN,global,VULN,
-H033,Microsoft Researchers Show AI Agents Can Be Backdoored by Editing Fewer Than 10 Neurons,THN,global,VULN,
-H034,N-able Takes N-central Cloud Offline After Researcher Discloses 33 Zero-Days with PoC Exploits,THN,global,VULN,
-H035,"OpenAI Launches GPT-6 Cyber After AI Helps Find 81 Firefox Flaws, 948 Linux Exploits",THN,global,RESEARCH,
+H033,Microsoft Researchers Show AI Agents Can Be Backdoored by Editing Fewer Than 10 Neurons,THN,global,RESEARCH,研究示範後門
+H034,N-able Takes N-central Cloud Offline After Researcher Discloses 33 Zero-Days with PoC Exploits,THN,global,VULN,零時差漏洞揭露
+H035,"OpenAI Launches GPT-6 Cyber After AI Helps Find 81 Firefox Flaws, 948 Linux Exploits",THN,global,OTHER,產品發布為主
 H036,OpenSSH Issues Emergency Fix for Flaw Letting Long Passwords Bypass SSH Auth on Alpine Linux,THN,global,VULN,
-H037,"Over 35,000 Grok-Built Apps Exposed Online, Some Leaking Confidential Data and Passwords",THN,global,MALWARE,
-H038,"Railway Says Stolen Customer AI Keys Led to $740,000 in Estimated Unauthorized Usage Charges",THN,global,RESEARCH,
-H039,Researchers Bypass ChatGPT Lockdown Mode to Exfiltrate Chats Without User Interaction,THN,global,RESEARCH,
+H037,"Over 35,000 Grok-Built Apps Exposed Online, Some Leaking Confidential Data and Passwords",THN,global,MALWARE,已發生的曝險事件
+H038,"Railway Says Stolen Customer AI Keys Led to $740,000 in Estimated Unauthorized Usage Charges",THN,global,MALWARE,金鑰遭竊造成損失
+H039,Researchers Bypass ChatGPT Lockdown Mode to Exfiltrate Chats Without User Interaction,THN,global,RESEARCH,研究示範繞過機制
 H040,Russian Turla Hackers Use New Cereal Malware to Steal Emails From Government Exchange Servers,THN,global,MALWARE,
 H041,"SAP Patches Four CVSS 10.0 Flaws, Including Two Enabling Remote Code Execution",THN,global,VULN,
 H042,"SGLang RCE Exploit Breaches NEAR AI, Steals Data From 18 Agents and About 100 Users",THN,global,MALWARE,
 H043,Taiwan-Based Hacker Used BOSSAI AI Agents to Steal Taipei Emergency Dispatch Records,THN,global,MALWARE,
 H044,The Flood is Coming And The Pipes Were Already Full,THN,global,RESEARCH,
-H045,Three China-Nexus Espionage Campaigns Linked Through Sparrow Malware Ecosystem,THN,global,OTHER,
-H046,U.S. Agencies Warn Refrigeration Controller Attacks Could Cause Fires and Inventory Losses,THN,global,MALWARE,
-H047,We Built An Agent That Broke All of Our Security Rules. Here's What We Learned.,THN,global,RESEARCH,
+H045,Three China-Nexus Espionage Campaigns Linked Through Sparrow Malware Ecosystem,THN,global,MALWARE,間諜攻擊行動
+H046,U.S. Agencies Warn Refrigeration Controller Attacks Could Cause Fires and Inventory Losses,THN,global,MALWARE,攻擊事件與主管機關警告
+H047,We Built An Agent That Broke All of Our Security Rules. Here's What We Learned.,THN,global,RESEARCH,實測與心得
 H048,"Web3Auth Flaw Exploited to Steal Keplr Crypto, Provider Empties Other Wallets for Safety",THN,global,MALWARE,
-H049,eMudhra Revokes 8 More CAs It Previously Declared Unaffected by Key Compromise,THN,global,VULN,
+H049,eMudhra Revokes 8 More CAs It Previously Declared Unaffected by Key Compromise,THN,global,VULN,憑證金鑰外洩處置
 H050,"⚡ Weekly Recap: SSHole Exploited, APT Root RCE, Robot Takeovers, 15K Hacked Sites, and More",THN,global,MALWARE,
-H051,CISA發布警告：間諜軟體向即時通訊應用程式用戶發動攻擊,TWCERT,taiwan,VULN,
-H052,CitrixBleed2漏洞可能引發記憶體資料外洩風險,TWCERT,taiwan,VULN,
-H053,ETSI發布EN 304 223標準，強化人工智慧模型與系統資安防護,TWCERT,taiwan,RESEARCH,
-H054,Interlock 勒索軟體組織利用 Cisco FMC 零日漏洞發動攻擊，呼籲用戶儘速修補,TWCERT,taiwan,VULN,
+H051,CISA發布警告：間諜軟體向即時通訊應用程式用戶發動攻擊,TWCERT,taiwan,MALWARE,間諜軟體攻擊
+H052,CitrixBleed2漏洞可能引發記憶體資料外洩風險,TWCERT,taiwan,VULN,漏洞風險公告
+H053,ETSI發布EN 304 223標準，強化人工智慧模型與系統資安防護,TWCERT,taiwan,RESEARCH,標準發布／治理
+H054,Interlock 勒索軟體組織利用 Cisco FMC 零日漏洞發動攻擊，呼籲用戶儘速修補,TWCERT,taiwan,MALWARE,勒索組織攻擊事件
 H055,KrCERT/CC發布「Operation SearchStrike」報告：駭客以SEO毒化Github散布惡意軟體,TWCERT,taiwan,MALWARE,
-H056,LLM防線全面失守？資安研究員用ChatGPT模擬攻擊竟生成數千惡意樣本,TWCERT,taiwan,RESEARCH,
-H057,LockBit 5.0 勒索軟體再度活躍，展現更高技術複雜度與跨平台攻擊能力,TWCERT,taiwan,VULN,
-H058,MongoDB伺服器面臨MongoBleed記憶體資料外洩風險,TWCERT,taiwan,VULN,
+H056,LLM防線全面失守？資安研究員用ChatGPT模擬攻擊竟生成數千惡意樣本,TWCERT,taiwan,RESEARCH,研究示範生成樣本
+H057,LockBit 5.0 勒索軟體再度活躍，展現更高技術複雜度與跨平台攻擊能力,TWCERT,taiwan,MALWARE,勒索軟體活動
+H058,MongoDB伺服器面臨MongoBleed記憶體資料外洩風險,TWCERT,taiwan,VULN,漏洞風險公告
 H059,Notepad++自動更新機制遭攻陷，請儘速手動更新,TWCERT,taiwan,VULN,
-H060,OWASP 2025年Web應用安全十大威脅揭曉，存取控制漏洞位居榜首,TWCERT,taiwan,RESEARCH,
-H061,Oracle E-Business Suite曝嚴重漏洞CVE-2025-61882，恐遭駭客利用入侵,TWCERT,taiwan,MALWARE,
-H062,Outlook「一鍵後門」一年後仍未封堵！Specula 框架持續威脅企業資安,TWCERT,taiwan,MALWARE,
+H060,OWASP 2025年Web應用安全十大威脅揭曉，存取控制漏洞位居榜首,TWCERT,taiwan,RESEARCH,OWASP 十大（治理／研究）
+H061,Oracle E-Business Suite曝嚴重漏洞CVE-2025-61882，恐遭駭客利用入侵,TWCERT,taiwan,VULN,漏洞編號公告
+H062,Outlook「一鍵後門」一年後仍未封堵！Specula 框架持續威脅企業資安,TWCERT,taiwan,VULN,未修補漏洞與攻擊框架
 H063,TWCERT/CC 2025台灣資安通報應變年會：打造安全產品 串聯信任防線,TWCERT,taiwan,RESEARCH,
-H064,WSUS 高嚴重性漏洞 CVE-2025-59287 已遭利用，呼籲用戶儘速更新,TWCERT,taiwan,VULN,
+H064,WSUS 高嚴重性漏洞 CVE-2025-59287 已遭利用，呼籲用戶儘速更新,TWCERT,taiwan,VULN,漏洞已遭利用，籲更新
 H065,n8n自動化平台存在多項嚴重漏洞，呼籲用戶立即更新版本,TWCERT,taiwan,VULN,
-H066,「Contagious Interview」攻擊手法再進化：濫用 VS Code Tasks 建立持久化機制,TWCERT,taiwan,VULN,
+H066,「Contagious Interview」攻擊手法再進化：濫用 VS Code Tasks 建立持久化機制,TWCERT,taiwan,MALWARE,攻擊手法演進
 H067,全球網路威脅活動「Operation WrtHug」鎖定華碩 (ASUS) 路由器，呼籲用戶立即更新韌體,TWCERT,taiwan,VULN,
 H068,半導體戰略背後的網路戰–資安攻擊鎖定設計、生產與財經分析師,TWCERT,taiwan,RESEARCH,
-H069,從Windows到Linux勒索軟體BERT的演化與擴散,TWCERT,taiwan,RESEARCH,
-H070,提高社交工程警覺！偽冒主管要求建群組與提供個資,TWCERT,taiwan,MALWARE,
+H069,從Windows到Linux勒索軟體BERT的演化與擴散,TWCERT,taiwan,RESEARCH,勒索軟體演化分析
+H070,提高社交工程警覺！偽冒主管要求建群組與提供個資,TWCERT,taiwan,MALWARE,社交工程攻擊案例
 H071,新型惡意軟體 KadNap 鎖定家用路由器,TWCERT,taiwan,MALWARE,
-H072,新興區塊鏈 C2 威脅浮現，「EtherHide」成駭客新寵,TWCERT,taiwan,VULN,
-H073,機密早已外洩！GitHub Actions 成內鬼溫床，寫入權限竟等同全權存取！,TWCERT,taiwan,VULN,
-H074,歐洲超市冷凍設備遭駭，凸顯連網設備對外暴露與預設密碼風險,TWCERT,taiwan,VULN,
-H075,社交工程手法再升級：結合雲端服務與短期憑證規避防禦,TWCERT,taiwan,VULN,
-H076,解密「長線佈局」與跨領域攻擊：CrowdStrike 深入解析 2025 駭客戰術演進,TWCERT,taiwan,RESEARCH,
-H077,開源漏洞掃描工具 Trivy 遭 TeamPCP 供應鏈攻擊，恐導致CI/CD 機敏資料外洩,TWCERT,taiwan,VULN,
-H078,關鍵 RCE 漏洞「React2Shell」遭大規模積極利用,TWCERT,taiwan,RESEARCH,
+H072,新興區塊鏈 C2 威脅浮現，「EtherHide」成駭客新寵,TWCERT,taiwan,MALWARE,新興 C2 威脅
+H073,機密早已外洩！GitHub Actions 成內鬼溫床，寫入權限竟等同全權存取！,TWCERT,taiwan,MALWARE,機密外洩事件
+H074,歐洲超市冷凍設備遭駭，凸顯連網設備對外暴露與預設密碼風險,TWCERT,taiwan,MALWARE,設備遭駭事件
+H075,社交工程手法再升級：結合雲端服務與短期憑證規避防禦,TWCERT,taiwan,MALWARE,攻擊手法升級
+H076,解密「長線佈局」與跨領域攻擊：CrowdStrike 深入解析 2025 駭客戰術演進,TWCERT,taiwan,RESEARCH,戰術演進分析
+H077,開源漏洞掃描工具 Trivy 遭 TeamPCP 供應鏈攻擊，恐導致CI/CD 機敏資料外洩,TWCERT,taiwan,MALWARE,供應鏈攻擊事件
+H078,關鍵 RCE 漏洞「React2Shell」遭大規模積極利用,TWCERT,taiwan,VULN,漏洞已遭大規模利用
 H079,駭客利用SonicWall裝置植入「隱形後門」，恐長期竊取組織機密,TWCERT,taiwan,MALWARE,
 H080,駭客組織疑似聯手，資安威脅再升級,TWCERT,taiwan,MALWARE,
 H081,AMD正式推出第6代EPYC伺服器處理器，首波上市產品為SP7平台，主打AI資料中心與企業運算市場,iThome,taiwan,OTHER,
 H082,Adobe發布11月上半例行更新，修補110個資安漏洞,iThome,taiwan,VULN,
-H083,Amazon ElastiCache Serverless加入向量與全文搜尋，可混合查詢即時資料,iThome,taiwan,OTHER,
-H084,Anthropic公布Claude Fable、Mythos 5.2，輸出速度最高提升30%、價格降20%,iThome,taiwan,OTHER,
-H085,Anthropic啟動IPO投資人說明會，最多募資625億美元,iThome,taiwan,OTHER,
+H083,Amazon ElastiCache Serverless加入向量與全文搜尋，可混合查詢即時資料,iThome,taiwan,OTHER,產品功能
+H084,Anthropic公布Claude Fable、Mythos 5.2，輸出速度最高提升30%、價格降20%,iThome,taiwan,OTHER,產品發布
+H085,Anthropic啟動IPO投資人說明會，最多募資625億美元,iThome,taiwan,OTHER,商業活動（IPO）
 H086,Apple發布iOS、iPadOS 27.2.1與18.7.12版，緊急修補10個資安漏洞,iThome,taiwan,VULN,
-H087,CISA警告6個弱點遭積極利用，其中包含Outlook、Chrome零時差漏洞,iThome,taiwan,MALWARE,
-H088,Claude新增試算表與協作白板，還能直接操作第三方App,iThome,taiwan,OTHER,
-H089,Fireworks AI遭駭波及Notion，部分AI對話紀錄遭未授權存取,iThome,taiwan,VULN,
-H090,Google Gemini 4 Carbon全面上線，以較低價對打Anthropic Fable/Mythos 5.2,iThome,taiwan,OTHER,
+H087,CISA警告6個弱點遭積極利用，其中包含Outlook、Chrome零時差漏洞,iThome,taiwan,VULN,漏洞通報
+H088,Claude新增試算表與協作白板，還能直接操作第三方App,iThome,taiwan,OTHER,產品功能
+H089,Fireworks AI遭駭波及Notion，部分AI對話紀錄遭未授權存取,iThome,taiwan,MALWARE,資料外洩事件
+H090,Google Gemini 4 Carbon全面上線，以較低價對打Anthropic Fable/Mythos 5.2,iThome,taiwan,OTHER,產品上線
 H091,SAP發布11月例行更新，修補4個滿分漏洞,iThome,taiwan,VULN,
 H092,【資安日報】11月11日，駭客利用大數據平臺Qubole被竊憑證，入侵數十家企業AWS環境竊取資料,iThome,taiwan,MALWARE,
-H093,主動管理AI價值與風險，Gartner建議企業可採取三項措施,iThome,taiwan,VULN,
+H093,主動管理AI價值與風險，Gartner建議企業可採取三項措施,iThome,taiwan,RESEARCH,治理建議
 H094,國網中心布局主權AI，TAIWAN AI RAP擴充模型微調能力，加速AI應用落地,iThome,taiwan,OTHER,
 H095,"微軟發布11月例行更新，修補1,094個資安漏洞",iThome,taiwan,VULN,
-H096,微軟警告Outlook零時差漏洞已遭到利用,iThome,taiwan,VULN,
+H096,微軟警告Outlook零時差漏洞已遭到利用,iThome,taiwan,VULN,零時差漏洞通報
 H097,"日本宜得利系統遭非法存取，外洩企業會員、客戶個資近3,800萬筆",iThome,taiwan,MALWARE,
-H098,漢來美食委外購物商城發生資安事件，部分消費者訂單資料遭異常存取,iThome,taiwan,MALWARE,
+H098,漢來美食委外購物商城發生資安事件，部分消費者訂單資料遭異常存取,iThome,taiwan,MALWARE,資料異常存取事件
 H099,駭客利用大數據平臺Qubole被竊憑證，入侵數十家企業AWS環境竊取資料,iThome,taiwan,MALWARE,
-H100,黑松線上商店委外廠商資料庫遭異常存取，訂單資料恐受影響,iThome,taiwan,MALWARE,
+H100,黑松線上商店委外廠商資料庫遭異常存取，訂單資料恐受影響,iThome,taiwan,MALWARE,資料庫遭異常存取

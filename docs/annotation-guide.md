@@ -115,3 +115,34 @@ manifest 在 `data/holdout_manifest.json`。
 - 先跑 `tools/make_disputes.py` 產生 `data/holdout_disputes.csv`
 - 只針對爭議列，用上面的案例表裁決，填 `final` 欄
 - 裁決後覆蓋 A 檔重跑 `tools/eval_holdout.py`
+
+## 裁決結果（2026-11-13）
+
+55 列爭議由第三人依本指南裁決，理由記錄在 `data/holdout_disputes.csv` 的 `notes` 欄。
+
+| 項目 | 數值 |
+|---|---|
+| 裁決與 A 相同 | 28 / 55 |
+| 裁決與 B 相同 | 30 / 55 |
+| 裁決與模型相同 | 27 / 55（49%，未偏向模型） |
+| κ（裁決 vs B，全 100 列） | 0.631 |
+
+裁決後的最終成績（`tools/eval_holdout.py`）：
+
+| 指標 | 值 |
+|---|---|
+| held-out 準確率 | **72%**（91% 為 in-sample） |
+| 多數類別 baseline | 44% |
+| 提升 | +28 個百分點 |
+
+| 類別 | Precision | Recall | F1 | n |
+|---|---|---|---|---|
+| VULN | 0.92 | 0.69 | 0.79 | 32 |
+| MALWARE | 0.79 | 0.86 | 0.83 | 44 |
+| RESEARCH | 0.40 | 0.67 | 0.50 | 15 |
+| OTHER | 0.67 | 0.22 | 0.33 | 9 |
+
+最大誤差來源：**OTHER → RESEARCH 共 6 例**（9 例中 6 例）。分類器的 RESEARCH 規則
+被 AI 產品消息的關鍵詞觸發，把「新產品／上線／募資」誤判為研究。
+
+原始第一輪標註保留在 `data/holdout_labels_round1.csv`。

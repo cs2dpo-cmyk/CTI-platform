@@ -1,28 +1,28 @@
 {
   "rows": 100,
-  "accuracy": 0.51,
-  "correct": 51,
+  "accuracy": 0.72,
+  "correct": 72,
   "majority_baseline": {
-    "label": "VULN",
+    "label": "MALWARE",
     "accuracy": 0.44
   },
   "per_class": {
     "VULN": {
-      "precision": 0.75,
-      "recall": 0.409,
-      "f1": 0.529,
-      "support": 44
-    },
-    "MALWARE": {
-      "precision": 0.5,
-      "recall": 0.75,
-      "f1": 0.6,
+      "precision": 0.917,
+      "recall": 0.688,
+      "f1": 0.786,
       "support": 32
     },
+    "MALWARE": {
+      "precision": 0.792,
+      "recall": 0.864,
+      "f1": 0.826,
+      "support": 44
+    },
     "RESEARCH": {
-      "precision": 0.28,
-      "recall": 0.467,
-      "f1": 0.35,
+      "precision": 0.4,
+      "recall": 0.667,
+      "f1": 0.5,
       "support": 15
     },
     "OTHER": {
@@ -34,26 +34,26 @@
   },
   "confusion": {
     "VULN": {
-      "VULN": 18,
-      "MALWARE": 19,
-      "RESEARCH": 7,
+      "VULN": 22,
+      "MALWARE": 7,
+      "RESEARCH": 3,
       "OTHER": 0
     },
     "MALWARE": {
-      "VULN": 3,
-      "MALWARE": 24,
-      "RESEARCH": 5,
+      "VULN": 0,
+      "MALWARE": 38,
+      "RESEARCH": 6,
       "OTHER": 0
     },
     "RESEARCH": {
-      "VULN": 3,
-      "MALWARE": 4,
-      "RESEARCH": 7,
+      "VULN": 1,
+      "MALWARE": 3,
+      "RESEARCH": 10,
       "OTHER": 1
     },
     "OTHER": {
-      "VULN": 0,
-      "MALWARE": 1,
+      "VULN": 1,
+      "MALWARE": 0,
       "RESEARCH": 6,
       "OTHER": 2
     }
