@@ -20,6 +20,7 @@ from pathlib import Path
 from typing import Any, Iterable
 
 from services import classify
+from services.epss import score_for
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 DEFAULT_DATASET_DIR = BASE_DIR / "data"
@@ -185,6 +186,7 @@ def load_dataset(*, refresh: bool = False) -> tuple[list[DatasetRecord], dict[st
             # and full article bodies push almost everything into MALWARE.
             category, _reason = classify.classify(title)
             evidence = classify.extract_evidence(title, text)
+            evidence["epss"] = score_for(evidence.get("cves"))
 
             source = row.get("platform") or ("THN" if region == "global" else "UNKNOWN")
             published = _parse_date(row.get(date_column, ""))

@@ -1,0 +1,55 @@
+{
+  "rows": 77,
+  "positives": 55,
+  "base_rate": 0.714,
+  "cv": {
+    "baseline": {
+      "mean": 0.884,
+      "std": 0.09,
+      "n": 50
+    },
+    "cvss": {
+      "mean": 0.489,
+      "std": 0.137,
+      "n": 50
+    },
+    "epss_only": {
+      "mean": 0.964,
+      "std": 0.052,
+      "n": 50
+    },
+    "logistic": {
+      "mean": 0.913,
+      "std": 0.074,
+      "n": 50
+    },
+    "logistic_epss": {
+      "mean": 0.921,
+      "std": 0.069,
+      "n": 50
+    },
+    "weights": {
+      "mean": 0.941,
+      "std": 0.063,
+      "n": 50
+    },
+    "weights_epss": {
+      "mean": 0.94,
+      "std": 0.064,
+      "n": 50
+    }
+  },
+  "proposed_weights": {
+    "severity": 0.003,
+    "exploit": 0.939,
+    "exposure": 0.001,
+    "corroboration": 0.057
+  },
+  "proposed_weights_with_epss": {
+    "severity": 0.007,
+    "exploit": 0.004,
+    "exposure": 0.026,
+    "corroboration": 0.173,
+    "epss": 0.789
+  }
+}

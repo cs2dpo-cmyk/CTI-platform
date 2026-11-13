@@ -74,6 +74,22 @@ def load_cvss() -> dict[str, float]:
     return result
 
 
+def auc(scored: list[dict], key: str) -> float:
+    """Probability that a KEV row outranks a non-KEV row (ties count 0.5)."""
+    positives = [row[key] for row in scored if row["kev"]]
+    negatives = [row[key] for row in scored if not row["kev"]]
+    if not positives or not negatives:
+        return float("nan")
+    wins = 0.0
+    for high in positives:
+        for low in negatives:
+            if high > low:
+                wins += 1
+            elif high == low:
+                wins += 0.5
+    return round(wins / (len(positives) * len(negatives)), 3)
+
+
 def precision_at(ranked: list[dict], k: int) -> float:
     if not ranked:
         return 0.0
@@ -130,6 +146,10 @@ def main() -> int:
             "kev": sum(1 for row in labelled if row["priority"] == "P1" and row["kev"]),
         },
     }
+    report["auc"] = {
+        "model": auc(labelled, "score"),
+        "cvss": auc(labelled, "cvss"),
+    }
     for name, ranked in rankings.items():
         report["precision"][name] = {str(k): round(precision_at(ranked, k), 3) for k in KS}
 
@@ -157,6 +177,7 @@ def main() -> int:
             f"{report['precision']['cvss'][str(k)]:>7.2f} {report['random'][str(k)]:>7.2f}"
         )
     print()
+    print(f"AUC model {report['auc']['model']:.3f}  cvss {report['auc']['cvss']:.3f}")
     print(f"P1 rows {report['p1']['count']}  of which KEV {report['p1']['kev']}")
     print(f"recall  P1 {report['recall']['p1']:.2f}  P1+P2 {report['recall']['p1_p2']:.2f}")
     print(f"\nreport -> {REPORT_PATH.relative_to(ROOT)}")
