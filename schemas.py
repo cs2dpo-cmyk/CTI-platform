@@ -59,6 +59,8 @@ class PatchItemOut(BaseModel):
     epss: float | None = None
     cvss: float | None = None
     exploited: bool = False
+    exposure: str = "unknown"
+    exposure_label: str = ""
     articles: int = 0
     sources: list[str] = Field(default_factory=list)
     first_seen: str | None = None

@@ -34,7 +34,7 @@
     rel="stylesheet"
   />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.6/dist/chart.umd.min.js" defer></script>
-  <link rel="stylesheet" href="/static/css/styles.css?v=20261113a" />
+  <link rel="stylesheet" href="/static/css/styles.css?v=20261113b" />
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23060a11'/%3E%3Cpath d='M16 5l9 4v7c0 5.5-3.8 10-9 11-5.2-1-9-5.5-9-11V9l9-4z' fill='none' stroke='%2322d3ee' stroke-width='2'/%3E%3C/svg%3E" />
 </head>
 
@@ -585,7 +585,10 @@
           <p class="kicker mt-1">GET /api/v1/patch-priority</p>
           <p class="mt-1 text-[11px] text-[color:var(--faint)]">以 FIRST EPSS 利用機率與 CISA KEV 排序，附修補 SLA 與判斷依據</p>
         </div>
-        <div class="flex flex-wrap items-center gap-2" id="patchSummary"></div>
+        <div class="flex flex-wrap items-center gap-2">
+          <button class="btn btn-ghost" id="patchExposureToggle" type="button" aria-pressed="true">曝險：開</button>
+          <div class="flex flex-wrap items-center gap-2" id="patchSummary"></div>
+        </div>
       </div>
       <div class="overflow-x-auto">
         <table class="w-full text-left text-[12.5px]">
@@ -594,6 +597,7 @@
               <th class="px-4 py-2">CVE</th>
               <th class="w-[150px] px-2 py-2">EPSS</th>
               <th class="px-2 py-2">CVSS</th>
+              <th class="px-2 py-2">曝險</th>
               <th class="px-2 py-2">情資數</th>
               <th class="px-2 py-2">優先級</th>
               <th class="px-2 py-2">SLA</th>
@@ -601,7 +605,7 @@
             </tr>
           </thead>
           <tbody id="patchBody">
-            <tr><td colspan="7" class="py-8"><div class="skeleton mx-auto h-4 w-2/3"></div></td></tr>
+            <tr><td colspan="8" class="py-8"><div class="skeleton mx-auto h-4 w-2/3"></div></td></tr>
           </tbody>
         </table>
       </div>
@@ -635,8 +639,8 @@
 
   <div class="toast-stack" id="toastStack" aria-live="polite" aria-atomic="false"></div>
 
-  <script src="/static/js/charts.js?v=20261113a" defer></script>
-  <script src="/static/js/app.js?v=20261113a" defer></script>
-  <script src="/static/js/rain.js?v=20261113a" defer></script>
+  <script src="/static/js/charts.js?v=20261113b" defer></script>
+  <script src="/static/js/app.js?v=20261113b" defer></script>
+  <script src="/static/js/rain.js?v=20261113b" defer></script>
 </body>
 </html>

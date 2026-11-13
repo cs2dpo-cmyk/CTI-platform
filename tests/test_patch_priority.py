@@ -46,3 +46,41 @@ def test_aggregation_keeps_max_cvss_earliest_date_and_sources(monkeypatch):
     assert items[0].cvss == 9.5
     assert items[0].first_seen == date(2026, 1, 5)
     assert items[0].sources == {"TWCERT", "THN"}
+
+
+def test_exposed_escalates_one_level(monkeypatch):
+    monkeypatch.setattr(patch_priority, "is_exploited", lambda cve: False)
+    monkeypatch.setattr(patch_priority.exposure_ctx, "resolve", lambda cve, public, titles: ("public", "reported"))
+    items = patch_priority.build([_item(cvss=3.0)], {"CVE-2026-1": 0.2})
+    assert items[0].priority == "P1"   # base P2 -> P1
+    assert "升一級" in items[0].reason
+
+
+def test_internal_demotes_one_level(monkeypatch):
+    monkeypatch.setattr(patch_priority, "is_exploited", lambda cve: False)
+    monkeypatch.setattr(patch_priority.exposure_ctx, "resolve", lambda cve, public, titles: ("internal", "manual"))
+    items = patch_priority.build([_item(cvss=3.0)], {"CVE-2026-1": 0.2})
+    assert items[0].priority == "P3"   # base P2 -> P3
+    assert "降一級" in items[0].reason
+
+
+def test_unknown_exposure_keeps_base_band(monkeypatch):
+    monkeypatch.setattr(patch_priority, "is_exploited", lambda cve: False)
+    monkeypatch.setattr(patch_priority.exposure_ctx, "resolve", lambda cve, public, titles: ("unknown", "none"))
+    items = patch_priority.build([_item(cvss=3.0)], {"CVE-2026-1": 0.2})
+    assert items[0].priority == "P2"
+
+
+def test_exposure_can_be_switched_off(monkeypatch):
+    monkeypatch.setattr(patch_priority, "is_exploited", lambda cve: False)
+    monkeypatch.setattr(patch_priority.exposure_ctx, "resolve", lambda cve, public, titles: ("public", "reported"))
+    items = patch_priority.build([_item(cvss=3.0)], {"CVE-2026-1": 0.2}, use_exposure=False)
+    assert items[0].priority == "P2"
+
+
+def test_kev_never_demotes(monkeypatch):
+    monkeypatch.setattr(patch_priority, "is_exploited", lambda cve: True)
+    monkeypatch.setattr(patch_priority.exposure_ctx, "resolve", lambda cve, public, titles: ("internal", "manual"))
+    items = patch_priority.build([_item(cvss=3.0)], {})
+    assert items[0].priority == "P1"
+    assert "內部資產" in items[0].reason

@@ -234,6 +234,7 @@ def _summarise(payload: schemas.AssessRequest, score: float, priority: str,
          summary="修補優先級（EPSS + KEV）")
 def patch_priority_list(
     priority: Literal["P1", "P2", "P3"] | None = Query(None, description="只看某個優先級"),
+    exposure: bool = Query(True, description="是否依曝險上下調整一級"),
     limit: int = Query(20, ge=1, le=300),
 ) -> schemas.PatchPriorityResponse:
     """CVEs ordered by exploitation likelihood, with an SLA band per CVE.
@@ -248,10 +249,12 @@ def patch_priority_list(
             "source": record.source,
             "published_at": record.published_at,
             "cvss": record.evidence.get("cvss"),
+            "title": record.title,
+            "public_facing": record.evidence.get("exposure") == "public",
         }
         for record in records
     ]
-    items = patch_priority.build(rows, epss.all_scores())
+    items = patch_priority.build(rows, epss.all_scores(), use_exposure=exposure)
     summary = patch_priority.summarize(items)
     if priority:
         items = [item for item in items if item.priority == priority]

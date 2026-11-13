@@ -1020,6 +1020,21 @@
   /* --------------------------------------------------------------------- boot */
 
   /* -------------------------------------------------------- patch priority */
+  let patchExposure = true;
+
+  function exposureBadge(item) {
+    const span = document.createElement('span');
+    const tone = item.exposure === 'public'
+      ? 'border-cyan-400/40 bg-cyan-400/10 text-cyan-300'
+      : item.exposure === 'internal'
+        ? 'border-amber-400/40 bg-amber-400/10 text-amber-300'
+        : 'border-slate-600/50 bg-slate-700/20 text-slate-400';
+    span.className = 'inline-flex items-center rounded-full border px-2 py-0.5 text-[10.5px] ' + tone;
+    span.textContent = item.exposure === 'public' ? '對外' : item.exposure === 'internal' ? '內網' : '未知';
+    span.title = item.exposure_label || '';
+    return span;
+  }
+
   function patchBadge(priority) {
     const span = document.createElement('span');
     span.className = 'badge badge-' + priority.toLowerCase();
@@ -1077,6 +1092,11 @@
 
       tr.appendChild(patchCell(item.cvss == null ? '—' : Number(item.cvss).toFixed(1),
         'px-2 py-2.5 mono text-[11.5px] text-slate-300'));
+      const exposureCell = document.createElement('td');
+      exposureCell.className = 'px-2 py-2.5';
+      exposureCell.appendChild(exposureBadge(item));
+      tr.appendChild(exposureCell);
+
       tr.appendChild(patchCell(String(item.articles || 0), 'px-2 py-2.5 mono text-[11.5px] text-slate-400'));
 
       const badgeCell = document.createElement('td');
@@ -1095,13 +1115,14 @@
     const body = $('#patchBody');
     if (!body) return;
     try {
-      const data = await api('/patch-priority?limit=8');
+      const suffix = patchExposure ? '' : '&exposure=false';
+      const data = await api('/patch-priority?limit=8' + suffix);
       renderPatchPriority(data);
     } catch (error) {
       body.textContent = '';
       const tr = document.createElement('tr');
       const td = document.createElement('td');
-      td.colSpan = 7;
+      td.colSpan = 8;
       td.className = 'px-4 py-8 text-center text-[12px] text-[color:var(--faint)]';
       td.textContent = '修補優先級載入失敗：' + error.message;
       tr.appendChild(td);
@@ -1123,6 +1144,16 @@
     }
     loadThreats();
     loadPatchPriority();
+
+    const exposureToggle = $('#patchExposureToggle');
+    if (exposureToggle) {
+      exposureToggle.addEventListener('click', () => {
+        patchExposure = !patchExposure;
+        exposureToggle.textContent = patchExposure ? '曝險：開' : '曝險：關';
+        exposureToggle.setAttribute('aria-pressed', String(patchExposure));
+        loadPatchPriority();
+      });
+    }
   }
 
   if (document.readyState === 'loading') {
