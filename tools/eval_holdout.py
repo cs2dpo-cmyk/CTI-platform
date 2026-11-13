@@ -58,9 +58,10 @@ def main() -> int:
     if hasattr(sys.stdout, "reconfigure"):
         sys.stdout.reconfigure(encoding="utf-8")
 
-    rows = read_labels(args.sheet)
+    sheet = args.sheet.resolve()
+    rows = read_labels(sheet)
     if not rows:
-        print(f"{args.sheet.relative_to(ROOT)} 還沒有任何標註。")
+        print(f"{sheet.relative_to(ROOT)} 還沒有任何標註。")
         print("請依 docs/annotation-guide.md 填入 label 欄（VULN / MALWARE / RESEARCH / OTHER）後再執行。")
         return 0
 
@@ -83,7 +84,7 @@ def main() -> int:
             for g in LABELS
         },
     }
-    report_path = args.sheet.with_name(args.sheet.stem + "_report.json")
+    report_path = sheet.with_name(sheet.stem + "_report.json")
     report_path.write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8")
 
     print(f"held-out rows {len(rows)}")

@@ -32,6 +32,7 @@ def main() -> int:
     tuning = load("tuning_report.json") or {}
     kev = load("kev_report.json") or {}
     splits = load("time_split_report.json")
+    round2 = load("holdout2_combined.json")
     snaps = load("snapshots.json") or {}
 
     connection = sqlite3.connect(f"file:{DATA / 'cti.db'}?mode=ro", uri=True)
@@ -164,7 +165,28 @@ def main() -> int:
         add("> 限制二：EPSS/KEV 為 2026-11 快照，無法還原「當時」的利用機率。")
         add()
 
-    add("## 5. 資料溯源")
+    if round2:
+        add("## 5. 擴充語料上的第二輪 held-out（100 筆）")
+        add()
+        add("| 標籤來源 | 準確率 | 多數類別 baseline |")
+        add("|---|---|---|")
+        labels = {"annotator_a": "標註者 A（原始）", "annotator_b": "標註者 B（原始）", "adjudicated": "第三人裁決後"}
+        for key, label in labels.items():
+            stats = round2[key]
+            add(f"| {label} | {stats['accuracy']:.0%} | {stats['majority_accuracy']:.0%} |")
+        agreement = round2["agreement"]
+        add()
+        add(f"兩位標註者：同意率 {agreement['raw']:.0%}，Cohen's kappa {agreement['kappa']:.3f}，"
+            f"不一致 {agreement['disputes']} 列。")
+        add()
+        add("> 這三個數字（51% / 52% / 90%）的差距就是本專題最重要的限制：")
+        add("> 分類正確率高度取決於**類別慣例**，尤其是週報、研討會、政策類該算")
+        add("> RESEARCH 還是 VULN／MALWARE。裁決者在 36 列「兩位標註者一致但模型")
+        add("> 不同」的爭議中，有 27 列（75%）判給模型慣例，因此 90% 不能當成")
+        add("> 獨立驗證；報告時應同時揭露 51%／52% 與 kappa。")
+        add()
+
+    add("## 6. 資料溯源")
     add()
     add("| 快照 | 擷取日期 | 來源 |")
     add("|---|---|---|")

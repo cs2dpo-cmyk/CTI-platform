@@ -1,0 +1,28 @@
+{
+  "annotator_a": {
+    "rows": 100,
+    "accuracy": 0.51,
+    "majority_label": "MALWARE",
+    "majority_accuracy": 0.51
+  },
+  "annotator_b": {
+    "rows": 100,
+    "accuracy": 0.52,
+    "majority_label": "MALWARE",
+    "majority_accuracy": 0.56
+  },
+  "adjudicated": {
+    "rows": 100,
+    "accuracy": 0.9,
+    "majority_label": "MALWARE",
+    "majority_accuracy": 0.44
+  },
+  "agreement": {
+    "raw": 0.82,
+    "kappa": 0.679,
+    "disputes": 18,
+    "adjudicated_with_model": 17,
+    "adjudicated_with_a": 6,
+    "adjudicated_with_b": 5
+  }
+}

@@ -1,0 +1,55 @@
+id,title,A,B,model,A_eq_B,final,notes
+H2002,WordPress LiteSpeed Plugin Vulnerability Puts 5 Million Sites at Risk,MALWARE,VULN,VULN,no,VULN,外掛漏洞風險公告
+H2005,U.S. Dismantles World's Largest 911 S5 Botnet with 19 Million Infected Devices,VULN,MALWARE,MALWARE,no,MALWARE,殭屍網路被瓦解（攻擊基礎設施）
+H2006,The Secrets of Hidden AI Training on Your Data,RESEARCH,VULN,RESEARCH,no,RESEARCH,資料訓練隱私分析
+H2009,U.S. Sanctions Two Crypto Exchanges for Facilitating Cybercrime and Money Laundering,OTHER,VULN,RESEARCH,no,RESEARCH,制裁行動（治理）
+H2010,U.S. Government Issues New TLP Guidance for Cross-Sector Threat Intelligence Sharing,OTHER,RESEARCH,RESEARCH,no,RESEARCH,政府發布 TLP 指引（政策）
+H2012,"⚡ THN Weekly Recap: Top Cybersecurity Threats, Tools and Tips [30 Dec]",RESEARCH,MALWARE,RESEARCH,no,RESEARCH,週報彙整
+H2015,"⚡ Weekly Recap: Chrome 0-Day, IngressNightmare, Solar Bugs, DNS Tactics, and More",RESEARCH,MALWARE,RESEARCH,no,RESEARCH,週報彙整
+H2016,[Free Webinar] Guide to Securing Your Entire Identity Lifecycle Against AI-Powered Threats,RESEARCH,VULN,RESEARCH,no,RESEARCH,研討會指南
+H2017,U.S. Sanctions Funnull for $200M Romance Baiting Scams Tied to Crypto Fraud,OTHER,MALWARE,RESEARCH,no,RESEARCH,制裁行動（治理）
+H2022,"ThreatsDay Bulletin: DNS Poisoning Flaw, Supply-Chain Heist, Rust Malware Trick and New RATs Rising",VULN,MALWARE,RESEARCH,no,RESEARCH,ThreatsDay 彙整
+H2032,"⚡ Weekly Recap: Chinese Spy Proxy, AI Agents Go Off-Task, Router Backdoors and More",MALWARE,VULN,RESEARCH,no,RESEARCH,週報彙整
+H2039,U.S. Government Releases New AI Security Guidelines for Critical Infrastructure,RESEARCH,VULN,RESEARCH,no,RESEARCH,政府 AI 資安指引
+H2044,U.S. Charges Three Iranian Nationals for Election Interference and Cybercrimes,OTHER,MALWARE,RESEARCH,no,RESEARCH,司法起訴（治理）
+H2060,"ThreatsDay Bulletin: New RCEs, Darknet Busts, Kernel Bugs & 25+ More Stories",VULN,MALWARE,RESEARCH,no,RESEARCH,ThreatsDay 彙整
+H2073,The Golden Age of Automated Penetration Testing is Here,VULN,MALWARE,RESEARCH,no,RESEARCH,趨勢評論
+H2078,U.S. Agencies Warn of Iranian Hacking Group's Ongoing Ransomware Attacks,VULN,MALWARE,MALWARE,no,MALWARE,勒索攻擊行動
+H2080,Researchers Uncover Python Package Targeting Crypto Wallets with Malicious Code,MALWARE,RESEARCH,RESEARCH,no,MALWARE,惡意套件攻擊
+H2087,"Over 100,000 WordPress Sites at Risk from Critical CVSS 10.0 Vulnerability in Wishlist Plugin",MALWARE,VULN,VULN,no,VULN,CVSS 10 漏洞風險公告
+H2003,"Urgent: Secret Backdoor Found in XZ Utils Library, Impacts Major Linux Distros",VULN,VULN,MALWARE,yes,VULN,開源函式庫後門（弱點）
+H2004,Ukraine Targeted in Cyberattack Exploiting 7-Year-Old Microsoft Office Flaw,MALWARE,MALWARE,VULN,yes,MALWARE,利用漏洞的攻擊事件
+H2008,Vietnamese Human Rights Group Targeted in Multi-Year Cyberattack by APT32,MALWARE,MALWARE,OTHER,yes,MALWARE,APT 攻擊行動
+H2013,Unpatched PHP Voyager Flaws Leave Servers Open to One-Click RCE Exploits,MALWARE,MALWARE,VULN,yes,VULN,未修補漏洞可遠端執行
+H2021,"⚡ Weekly Recap: Cisco 0-Day, Record DDoS, LockBit 5.0, BMC Bugs, ShadowV2 Botnet & More",MALWARE,MALWARE,RESEARCH,yes,RESEARCH,週報彙整
+H2023,Why Organizations Are Turning to RPAM,VULN,VULN,RESEARCH,yes,RESEARCH,技術分析
+H2027,"⚡ Weekly Recap: Telecom Sleeper Cells, LLM Jailbreaks, Apple Forces U.K. Age Checks and More",VULN,VULN,RESEARCH,yes,RESEARCH,週報彙整
+H2028,What to Look for in an Exposure Management Platform (And What Most of Them Get Wrong),VULN,VULN,RESEARCH,yes,RESEARCH,採購指南分析
+H2029,"What 2,000 Exposed Vibe-Coded Apps Reveal About the Limits of Most Security Stacks",VULN,VULN,RESEARCH,yes,RESEARCH,研究觀察
+H2030,WhatsApp is Finally Getting Usernames to Help Keep Phone Numbers Private,OTHER,OTHER,RESEARCH,yes,OTHER,產品功能消息
+H2034,"WordPress RCE Flaw Draws Nearly 63,000 Attack Attempts in Just 24 Hours",MALWARE,MALWARE,VULN,yes,VULN,漏洞遭大量攻擊嘗試
+H2035,Webinar: See How Identity Blind Spots Put Your SOC at Risk and How to Close Them,VULN,VULN,RESEARCH,yes,RESEARCH,研討會指南
+H2041,TeamViewer Detects Security Breach in Corporate IT Environment,VULN,VULN,MALWARE,yes,MALWARE,入侵事件
+H2042,The Power and Peril of RMM Tools,VULN,VULN,RESEARCH,yes,RESEARCH,工具分析
+H2045,Researchers Uncover Vulnerabilities in Open-Source AI and ML Models,VULN,VULN,RESEARCH,yes,RESEARCH,研究發現
+H2047,When Good Extensions Go Bad: Takeaways from the Campaign Targeting Browser Extensions,VULN,VULN,RESEARCH,yes,RESEARCH,攻擊活動分析
+H2050,"⚡ Weekly Recap: Chrome 0-Day, IngressNightmare, Solar Bugs, DNS Tactics, and More",MALWARE,MALWARE,RESEARCH,yes,RESEARCH,週報彙整
+H2052,U.S. DoJ Seizes 4 Domains Supporting Cybercrime Crypting Services in Global Operation,VULN,VULN,RESEARCH,yes,RESEARCH,司法扣押（治理）
+H2055,"Webinar: Learn How to Unite Dev, Sec, and Ops Teams With One Shared Playbook",VULN,VULN,RESEARCH,yes,RESEARCH,研討會指南
+H2057,The MSP Cybersecurity Readiness Guide: Turning Security into Growth,VULN,VULN,RESEARCH,yes,RESEARCH,指南文件
+H2058,When Your $2M Security Detection Fails: Can your SOC Save You?,VULN,VULN,RESEARCH,yes,RESEARCH,觀點分析
+H2059,U.S. Treasury Lifts Sanctions on Three Individuals Linked to Intellexa and Predator Spyware,MALWARE,MALWARE,RESEARCH,yes,RESEARCH,制裁解除（治理）
+H2061,Trojanized Gaming Tools Spread Java-Based RAT via Browser and Chat Platforms,MALWARE,MALWARE,RESEARCH,yes,MALWARE,木馬化工具散布 RAT
+H2063,Webinar: How to Automate Exposure Validation to Match the Speed of AI Attacks,VULN,VULN,RESEARCH,yes,RESEARCH,研討會指南
+H2064,"ThreatsDay Bulletin: Claude Security Plugin, Azure Priv-Esc, Kali365 MFA Bypass, FIFA Scams +15 More",MALWARE,MALWARE,RESEARCH,yes,RESEARCH,ThreatsDay 彙整
+H2065,What the Numbers Say About FIFA 2026 Cyber Risk,VULN,VULN,RESEARCH,yes,RESEARCH,數據分析
+H2070,"ThreatsDay: 59 Linux Kernel Bugs, Falcon Spyware, GSocket Backdoors + 17 More Stories",MALWARE,MALWARE,RESEARCH,yes,RESEARCH,ThreatsDay 彙整
+H2071,The SEC Won't Let CISOs Be: Understanding New SaaS Cybersecurity Rules,VULN,VULN,RESEARCH,yes,RESEARCH,法規解讀
+H2072,Superusers Need Super Protection: How to Bridge Privileged Access Management and Identity Management,VULN,VULN,RESEARCH,yes,RESEARCH,技術指南
+H2075,Researchers Uncover Active Exploitation of WordPress Plugin Vulnerabilities,VULN,VULN,RESEARCH,yes,VULN,漏洞遭積極利用
+H2079,THN Cybersecurity Recap: Last Week's Top Threats and Trends (September 23-29),MALWARE,MALWARE,RESEARCH,yes,RESEARCH,週報彙整
+H2081,U.S. Telecom Giant T-Mobile Detects Network Intrusion Attempts from Wireline Provider,MALWARE,MALWARE,RESEARCH,yes,MALWARE,網路入侵事件
+H2083,SOC Analysts - Reimagining Their Role Using AI,VULN,VULN,RESEARCH,yes,RESEARCH,角色與 AI 分析
+H2086,SentinelOne Uncovers Chinese Espionage Campaign Targeting Its Infrastructure and Clients,VULN,VULN,RESEARCH,yes,MALWARE,間諜攻擊行動
+H2093,快更新！Palo Alto Networks CVE-2024-3400已被利用,VULN,VULN,MALWARE,yes,VULN,漏洞已遭利用
+H2097,美國宣布禁售卡巴斯基軟體產品,VULN,VULN,RESEARCH,yes,RESEARCH,政府禁令（政策）
