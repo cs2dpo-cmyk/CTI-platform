@@ -19,6 +19,8 @@ from __future__ import annotations
 import re
 from typing import Any
 
+from services.cve import extract_cves
+
 CATEGORIES = ("VULN", "MALWARE", "RESEARCH", "OTHER")
 LABELS = {
     "VULN": "系統漏洞與修補對策",
@@ -27,7 +29,6 @@ LABELS = {
     "OTHER": "產業與產品動態",
 }
 
-_CVE = re.compile(r"CVE-\d{4}-\d{4,7}", re.IGNORECASE)
 _CVSS = re.compile(r"CVSS[^0-9]{0,12}(\d{1,2}(?:\.\d)?)", re.IGNORECASE)
 
 # --- vocabulary groups ------------------------------------------------------
@@ -114,7 +115,7 @@ def _hits(pattern: re.Pattern[str], text: str) -> int:
 def extract_evidence(title: str, text: str = "") -> dict[str, Any]:
     """Pull the machine-checkable facts a risk score is allowed to depend on."""
     body = f"{title} {text}"
-    cves = sorted({match.group(0).upper() for match in _CVE.finditer(body)})
+    cves = sorted(extract_cves(body))
     cvss_match = _CVSS.search(body)
     cvss = float(cvss_match.group(1)) if cvss_match else None
     if cvss is not None and not 0.0 <= cvss <= 10.0:

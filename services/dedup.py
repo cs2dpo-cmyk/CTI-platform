@@ -18,10 +18,10 @@ from __future__ import annotations
 
 import re
 import unicodedata
+
+from services.cve import extract_cves
 from dataclasses import dataclass
 from typing import Iterable, Sequence
-
-CVE_PATTERN = re.compile(r"CVE-\d{4}-\d{4,7}", re.IGNORECASE)
 
 DEFAULT_TITLE_THRESHOLD = 0.82
 # A digest post ("daily roundup") contains another headline verbatim: Jaccard
@@ -45,15 +45,14 @@ class Item:
     def cves(self) -> frozenset[str]:
         return extract_cves(self.title, self.cve_text)
 
+    @property
+    def title_cves(self) -> frozenset[str]:
+        """Only the ids the headline itself names.
 
-def extract_cves(*texts: str | None) -> frozenset[str]:
-    """Return the normalised (upper-case) CVE ids found in the given texts."""
-    found: set[str] = set()
-    for text in texts:
-        if not text:
-            continue
-        found.update(match.upper() for match in CVE_PATTERN.findall(text))
-    return frozenset(found)
+        A widely-referenced CVE (Brotli, Log4Shell) shows up in the body of many
+        unrelated stories, so a body match alone must not merge two articles.
+        """
+        return extract_cves(self.title)
 
 
 def normalize_title(title: str) -> str:
@@ -103,21 +102,6 @@ def title_containment(left: str, right: str) -> float:
     return containment(shingles(left), shingles(right))
 
 
-def _find(parent: dict[int, int], key: int) -> int:
-    root = key
-    while parent[root] != root:
-        root = parent[root]
-    while parent[key] != root:
-        parent[key], key = root, parent[key]
-    return root
-
-
-def _union(parent: dict[int, int], left: int, right: int) -> None:
-    left_root, right_root = _find(parent, left), _find(parent, right)
-    if left_root != right_root:
-        parent[right_root] = left_root
-
-
 @dataclass
 class DuplicateGroup:
     keys: list[int]
@@ -133,43 +117,58 @@ def group_duplicates(
     title_threshold: float = DEFAULT_TITLE_THRESHOLD,
     containment_threshold: float = DEFAULT_CONTAINMENT,
 ) -> list[DuplicateGroup]:
-    """Cluster items that describe the same event. O(n^2), fine up to ~10k."""
-    parent = {item.key: item.key for item in items}
-    reasons: dict[int, set[str]] = {item.key: set() for item in items}
-    shingle_cache = {item.key: shingles(item.title) for item in items}
+    """Cluster items that describe the same event.
 
-    for i, left in enumerate(items):
-        for right in items[i + 1 :]:
-            reason = None
-            if left.url and left.url == right.url:
-                reason = "url"
-            elif left.cves and left.cves == right.cves:
-                reason = "cve"
-            else:
-                left_grams = shingle_cache[left.key]
-                right_grams = shingle_cache[right.key]
-                if jaccard(left_grams, right_grams) >= title_threshold:
-                    reason = "title"
-                elif (
-                    min(len(left_grams), len(right_grams)) >= MIN_SHINGLES_FOR_CONTAINMENT
-                    and containment(left_grams, right_grams) >= containment_threshold
-                ):
-                    reason = "digest"
+    Clusters are **stars**: a member joins only when it is directly similar to
+    the cluster's representative. Plain union-find would merge transitively
+    (A~B, B~C implies A,C in one group even when A and C are unrelated), which
+    on real data fused "Apple patch notes" with "PHP update" through a shared
+    link. Star clustering keeps every merged pair defensible.
+    """
+    keys = [item.key for item in items]
+    by_key = {item.key: item for item in items}
+    grams = {item.key: shingles(item.title) for item in items}
+
+    def link(left: Item, right: Item) -> str | None:
+        if left.url and left.url == right.url:
+            return "url"
+        if left.cves and left.cves == right.cves and len(left.cves) >= 2:
+            return "cve"
+        if left.title_cves and right.title_cves and (left.title_cves & right.title_cves):
+            return "cve"
+        left_grams, right_grams = grams[left.key], grams[right.key]
+        if jaccard(left_grams, right_grams) >= title_threshold:
+            return "title"
+        if (
+            min(len(left_grams), len(right_grams)) >= MIN_SHINGLES_FOR_CONTAINMENT
+            and containment(left_grams, right_grams) >= containment_threshold
+        ):
+            return "digest"
+        return None
+
+    neighbours: dict[int, set[int]] = {key: set() for key in keys}
+    reasons: dict[tuple[int, int], str] = {}
+    for index, left_key in enumerate(keys):
+        for right_key in keys[index + 1 :]:
+            reason = link(by_key[left_key], by_key[right_key])
             if reason:
-                _union(parent, left.key, right.key)
-                reasons[left.key].add(reason)
-                reasons[right.key].add(reason)
+                neighbours[left_key].add(right_key)
+                neighbours[right_key].add(left_key)
+                reasons[(left_key, right_key)] = reason
 
-    buckets: dict[int, list[int]] = {}
-    for item in items:
-        buckets.setdefault(_find(parent, item.key), []).append(item.key)
-
+    assigned: set[int] = set()
     groups: list[DuplicateGroup] = []
-    for keys in buckets.values():
-        merged_reasons: set[str] = set()
-        for key in keys:
-            merged_reasons |= reasons[key]
-        groups.append(DuplicateGroup(keys=sorted(keys), reasons=merged_reasons))
+    for key in keys:  # keys are ascending, so the representative is the oldest id
+        if key in assigned:
+            continue
+        members = sorted(node for node in neighbours[key] if node not in assigned)
+        assigned.add(key)
+        assigned.update(members)
+        group_reasons = {
+            reasons.get((min(key, member), max(key, member)), "title") for member in members
+        }
+        groups.append(DuplicateGroup(keys=[key] + members, reasons=group_reasons))
+
     groups.sort(key=lambda group: (-group.size, group.keys[0]))
     return groups
 

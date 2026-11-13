@@ -18,7 +18,7 @@ from fastapi import APIRouter, Depends, FastAPI, HTTPException, Query, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, Response
 from fastapi.staticfiles import StaticFiles
-from sqlalchemy import false, func, select
+from sqlalchemy import false, func, or_, select
 from sqlalchemy.orm import Session, load_only
 
 import database
@@ -203,7 +203,9 @@ def _match_corpus(db: Session, *, cve_id: str | None, category: str,
     cve_hits = 0
     if cve_id:
         cve_hits = db.scalar(
-            select(func.count()).select_from(threat).where(threat.cve_id == cve_id)
+            select(func.count()).select_from(threat).where(
+                or_(threat.cve_id == cve_id, threat.cve_ids.like(f'%"{cve_id}"%'))
+            )
         ) or 0
     return {"category_hits": category_hits, "cve_hits": cve_hits, "region_hits": region_hits}
 
@@ -238,12 +240,15 @@ def list_threats(
     q: str | None = Query(None, max_length=120, description="標題關鍵字"),
     min_score: float | None = Query(None, ge=0, le=100),
     sort: Literal["risk", "date"] = Query("risk", description="排序依據"),
+    dedupe: bool = Query(False, description="隱藏重複事件（日報／轉載）"),
     limit: int = Query(50, ge=1, le=200),
     offset: int = Query(0, ge=0),
     db: Session = Depends(database.get_db),
 ) -> schemas.ThreatListResponse:
     stmt = select(database.Threat)
     conditions = []
+    if dedupe:
+        conditions.append(database.Threat.duplicate_of.is_(None))
     if priority:
         conditions.append(database.Threat.priority == priority)
     if region:

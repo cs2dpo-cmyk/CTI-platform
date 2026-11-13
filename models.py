@@ -36,6 +36,12 @@ class Threat(Base):
     source_url: Mapped[str | None] = mapped_column(String(512), nullable=True)
     action_plan: Mapped[str] = mapped_column(Text, nullable=False, default="[]")
     cve_id: Mapped[str | None] = mapped_column(String(24), nullable=True, index=True)
+    # Every id the article names, as a JSON array. cve_id stays as the primary
+    # (first) one so existing lookups and the assessment form keep working.
+    cve_ids: Mapped[str | None] = mapped_column(Text, nullable=True, default=None)
+    # Points at the canonical row when this article is a copy (digest post or a
+    # re-publication). Nothing is deleted: the API can hide duplicates on demand.
+    duplicate_of: Mapped[int | None] = mapped_column(Integer, nullable=True, index=True)
     published_at: Mapped[date] = mapped_column(Date, nullable=False, index=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
 

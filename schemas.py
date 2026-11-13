@@ -45,6 +45,9 @@ class ThreatOut(BaseModel):
     risk_level: RiskLevel | None = None
     priority: Priority | None = None
     action_plan: list[ActionStep] = Field(default_factory=list)
+    cve_id: str | None = None
+    cve_ids: list[str] = Field(default_factory=list)
+    duplicate_of: int | None = None
     published_at: date
     created_at: datetime | None = None
 
@@ -295,6 +298,15 @@ def threat_to_schema(threat_row: Any) -> ThreatOut:
     meta = get("meta_category", "VULN")
     from services import risk_engine
 
+    raw_ids = get("cve_ids")
+    try:
+        cve_ids = json.loads(raw_ids) if isinstance(raw_ids, str) and raw_ids else []
+    except json.JSONDecodeError:
+        cve_ids = []
+    primary_cve = get("cve_id")
+    if not cve_ids and primary_cve:
+        cve_ids = [primary_cve]
+
     raw_plan = get("action_plan", "[]")
     try:
         plan = json.loads(raw_plan) if isinstance(raw_plan, str) else (raw_plan or [])
@@ -321,6 +333,9 @@ def threat_to_schema(threat_row: Any) -> ThreatOut:
         risk_level=get("risk_level"),
         priority=get("priority"),
         action_plan=[ActionStep(**step) for step in plan if isinstance(step, dict)],
+        cve_id=primary_cve or (cve_ids[0] if cve_ids else None),
+        cve_ids=cve_ids,
+        duplicate_of=get("duplicate_of"),
         published_at=get("published_at"),
         created_at=get("created_at"),
     )

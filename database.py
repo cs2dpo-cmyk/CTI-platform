@@ -15,6 +15,7 @@ from sqlalchemy.orm import Session, sessionmaker
 
 from models import Base, Threat
 from services import dataset, risk_engine
+from services.dedup import Item, group_duplicates
 
 logger = logging.getLogger("cti.database")
 
@@ -119,6 +120,18 @@ def _seed_corpus() -> int:
             return 0
 
         records, info = dataset.load_dataset(refresh=True)
+        duplicate_map = _duplicate_map(
+            [
+                (
+                    record.id,
+                    record.title,
+                    record.source,
+                    record.source_url or "",
+                    " ".join(record.evidence.get("cves") or []),
+                )
+                for record in records
+            ]
+        )
         for record in records:
             result = risk_engine.score_seed_record(record.as_seed())
             cves = record.evidence.get("cves") or []
@@ -140,6 +153,8 @@ def _seed_corpus() -> int:
                     # The playbook is derived from (meta_category, priority) at
                     # read time; storing it per row duplicated ~35 KB in 100 rows.
                     cve_id=cves[0] if cves else extract_cve(record.title),
+                    cve_ids=json.dumps(cves) if cves else None,
+                    duplicate_of=duplicate_map.get(record.id),
                     published_at=record.published_at,
                 )
             )
@@ -148,6 +163,25 @@ def _seed_corpus() -> int:
             "Seeded %s threats from %s", len(records), ", ".join(info.get("sources", []))
         )
         return len(records)
+
+
+def _duplicate_map(
+    rows: list[tuple[int, str, str, str, str]]
+) -> dict[int, int]:
+    """Map duplicated ids to the canonical (lowest) id in their group."""
+    items = [
+        Item(key=key, title=title, source=source, url=url, cve_text=cve_text)
+        for key, title, source, url, cve_text in rows
+    ]
+    mapping: dict[int, int] = {}
+    for group in group_duplicates(items):
+        if group.size < 2:
+            continue
+        canonical = min(group.keys)
+        for key in group.keys:
+            if key != canonical:
+                mapping[key] = canonical
+    return mapping
 
 
 def _ensure_indexes() -> None:
@@ -169,6 +203,25 @@ def _upgrade_rows(db: Session) -> int:
         cve = extract_cve(row.title)
         if cve:
             db.execute(update(Threat).where(Threat.id == row.id).values(cve_id=cve))
+            changed += 1
+
+    # Multi-CVE lists for rows seeded before the column existed.
+    for row in db.execute(select(Threat.id, Threat.cve_id).where(Threat.cve_ids.is_(None))).all():
+        if row.cve_id:
+            db.execute(
+                update(Threat).where(Threat.id == row.id).values(cve_ids=json.dumps([row.cve_id]))
+            )
+            changed += 1
+
+    unmarked = db.scalar(select(func.count()).select_from(Threat).where(Threat.duplicate_of.is_(None)))
+    total = db.scalar(select(func.count()).select_from(Threat))
+    if total and unmarked == total:
+        rows = db.execute(select(Threat.id, Threat.title, Threat.source, Threat.source_url, Threat.cve_ids)).all()
+        duplicate_map = _duplicate_map(
+            [(r.id, r.title, r.source, r.source_url or "", r.cve_ids or "") for r in rows]
+        )
+        for key, canonical in duplicate_map.items():
+            db.execute(update(Threat).where(Threat.id == key).values(duplicate_of=canonical))
             changed += 1
 
     for row in db.execute(

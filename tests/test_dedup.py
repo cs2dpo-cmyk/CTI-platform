@@ -34,9 +34,11 @@ def test_title_similarity_keeps_different_stories_apart():
 
 
 def test_group_duplicates_merges_same_cve_across_sources():
+    # The id has to be in the headline (or part of a multi-CVE set) to be an
+    # identity signal; a body mention alone is not enough.
     items = [
-        Item(key=1, title="Exchange 修補公告", source="TWCERT", cve_text="CVE-2026-62911"),
-        Item(key=2, title="Exchange patch ships", source="THN", cve_text="CVE-2026-62911"),
+        Item(key=1, title="Exchange CVE-2026-62911 修補公告", source="TWCERT"),
+        Item(key=2, title="Exchange patch ships for CVE-2026-62911", source="THN"),
         Item(key=3, title="完全不同的新聞", source="iThome"),
     ]
     groups = group_duplicates(items)
@@ -84,3 +86,48 @@ def test_short_titles_are_not_merged_by_containment():
     ]
     groups = group_duplicates(items)
     assert len(groups) == 2
+
+
+def test_no_transitive_fusion():
+    # A is similar to B, B to C, but A and C share nothing. Union-find would
+    # have produced one group of three; a star cluster keeps A and C apart.
+    a = "PHP 發布安全性更新修補遠端程式碼執行漏洞"
+    b = "PHP 發布安全性更新修補多項漏洞"
+    c = "Apple 發布 iOS 更新修補十個資安漏洞"
+    items = [
+        Item(key=1, title=a, source="X"),
+        Item(key=2, title=b, source="Y"),
+        Item(key=3, title=c, source="Z"),
+    ]
+    groups = group_duplicates(items, title_threshold=0.5)
+    for group in groups:
+        assert not (1 in group.keys and 3 in group.keys)
+
+
+def test_single_body_cve_does_not_merge():
+    # Both bodies mention the same widely-referenced CVE; the stories differ.
+    items = [
+        Item(key=1, title="Apple 發布 iOS 更新修補十個漏洞", source="iThome", cve_text="cve 2026 111497"),
+        Item(key=2, title="PHP 發布 Windows 安全性更新", source="THN", cve_text="cve 2026 111497"),
+    ]
+    groups = group_duplicates(items)
+    assert len(groups) == 2
+
+
+def test_same_cve_in_both_titles_merges():
+    items = [
+        Item(key=1, title="CVE-2026-111497 遭利用，請更新", source="TWCERT"),
+        Item(key=2, title="CVE-2026-111497 exploited in the wild", source="THN"),
+    ]
+    groups = group_duplicates(items)
+    assert len(groups) == 1
+    assert groups[0].reasons == {'cve'}
+
+
+def test_multi_cve_set_still_merges():
+    items = [
+        Item(key=1, title="PHP 修補兩項漏洞", source="TWCERT", cve_text="CVE-2026-109618 CVE-2026-109619"),
+        Item(key=2, title="PHP2Shell 影響多家廠商", source="iThome", cve_text="CVE-2026-109618 CVE-2026-109619"),
+    ]
+    groups = group_duplicates(items)
+    assert len(groups) == 1

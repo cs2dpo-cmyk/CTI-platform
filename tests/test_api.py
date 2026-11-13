@@ -249,6 +249,13 @@ def test_threats_filter_by_region(client: TestClient):
     assert {item["region"] for item in body["items"]} == {"taiwan"}
 
 
+def test_threats_dedupe_filter(client: TestClient):
+    plain = client.get("/api/v1/threats?limit=200").json()
+    deduped = client.get("/api/v1/threats?limit=200&dedupe=true").json()
+    assert deduped["total"] <= plain["total"]
+    assert all(item["duplicate_of"] is None for item in deduped["items"])
+
+
 def test_threats_filter_by_priority(client: TestClient):
     body = client.get("/api/v1/threats", params={"priority": "P1", "limit": 200}).json()
     assert body["total"] > 0
