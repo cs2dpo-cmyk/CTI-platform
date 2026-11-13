@@ -24,7 +24,7 @@ from services import classify  # noqa: E402
 
 LABELS = ["VULN", "MALWARE", "RESEARCH", "OTHER"]
 SHEET = ROOT / "data" / "holdout_labels.csv"
-REPORT = ROOT / "data" / "holdout_report.json"
+
 
 
 def read_labels(path: Path) -> list[dict[str, str]]:
@@ -83,7 +83,8 @@ def main() -> int:
             for g in LABELS
         },
     }
-    REPORT.write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8")
+    report_path = args.sheet.with_name(args.sheet.stem + "_report.json")
+    report_path.write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8")
 
     print(f"held-out rows {len(rows)}")
     print(f"accuracy {correct}/{len(rows)} = {accuracy:.1%}")
@@ -93,7 +94,7 @@ def main() -> int:
     for label in LABELS:
         stats = report["per_class"][label]
         print(f"{label:<10}{stats['precision']:>7.2f}{stats['recall']:>7.2f}{stats['f1']:>7.2f}{stats['support']:>5}")
-    print(f"\n-> {REPORT.relative_to(ROOT)}")
+    print(f"\n-> {report_path.relative_to(ROOT)}")
     return 0
 
 

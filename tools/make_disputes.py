@@ -29,11 +29,17 @@ def read(path: Path) -> dict[str, dict[str, str]]:
 
 
 def main() -> int:
+    import argparse
+
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--round", type=int, default=1, choices=[1, 2])
+    args = parser.parse_args()
     if hasattr(sys.stdout, "reconfigure"):
         sys.stdout.reconfigure(encoding="utf-8")
 
-    first = read(DATA / "holdout_labels.csv")
-    second = read(DATA / "holdout_labels_b.csv")
+    suffix = "2" if args.round == 2 else ""
+    first = read(DATA / f"holdout{suffix}_labels.csv")
+    second = read(DATA / f"holdout{suffix}_labels_b.csv")
 
     rows = []
     for key, row in first.items():
@@ -54,7 +60,8 @@ def main() -> int:
         })
 
     rows.sort(key=lambda row: (row["A_eq_B"], row["id"]))
-    with OUT.open("w", encoding="utf-8", newline="") as handle:
+    out = DATA / (f"holdout{suffix}_disputes.csv")
+    with out.open("w", encoding="utf-8", newline="") as handle:
         writer = csv.DictWriter(
             handle, fieldnames=["id", "title", "A", "B", "model", "A_eq_B", "final", "notes"]
         )
@@ -63,7 +70,7 @@ def main() -> int:
 
     both_agree = sum(1 for row in rows if row["A_eq_B"] == "yes")
     print(f"disputes {len(rows)}  (A=B but model differs: {both_agree}, A!=B: {len(rows) - both_agree})")
-    print(f"-> {OUT.relative_to(ROOT)}")
+    print(f"-> {out.relative_to(ROOT)}")
     return 0
 
 

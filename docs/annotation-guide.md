@@ -146,3 +146,33 @@ manifest 在 `data/holdout_manifest.json`。
 被 AI 產品消息的關鍵詞觸發，把「新產品／上線／募資」誤判為研究。
 
 原始第一輪標註保留在 `data/holdout_labels_round1.csv`。
+
+## 第二輪標註（擴充語料）
+
+第一輪的 100 筆標在原始 200 筆上。擴充後語料變成 788 筆，新增的 588 筆從未標註，
+所以再抽 100 筆做第二輪：
+
+| 項目 | 內容 |
+|---|---|
+| 檔案 | `data/holdout2_labels.csv`（A）、`data/holdout2_labels_b.csv`（B） |
+| 抽樣 | 588 筆中按來源比例（THN 89、TWCERT 11），跨月份輪替 |
+| 排除 | 所有已標註過的 200 個標題（gold + 第一輪） |
+| 判定 | 規則與本指南完全相同（含邊界案例表） |
+
+流程：
+
+```bash
+# 1. 兩人各自填 label 欄
+# 2. 算一致性
+./.venv/Scripts/python.exe tools/label_agreement.py \
+  --a data/holdout2_labels.csv --b data/holdout2_labels_b.csv
+
+# 3. 列爭議並裁決（填 final 欄）
+./.venv/Scripts/python.exe tools/make_disputes.py --round 2
+
+# 4. 用裁決後的檔案評估
+./.venv/Scripts/python.exe tools/eval_holdout.py --sheet data/holdout2_labels.csv
+```
+
+第二輪的價值：這是**擴充語料上的第一個真正 held-out**，可以回答
+「語料變多之後，77% 還站得住嗎」。
