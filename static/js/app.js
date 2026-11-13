@@ -1158,7 +1158,22 @@
     }
   }
 
+  // The footer build tag mirrors the asset query string, so it can never drift
+  // from the bundle that is actually running.
+  function stampBuild() {
+    const tag = $('#buildTag');
+    const link = document.querySelector('link[href*="styles.css"]');
+    if (!tag || !link) return;
+    try {
+      const version = new URL(link.href, location.href).searchParams.get('v');
+      if (version) tag.textContent = 'build ' + version;
+    } catch {
+      /* keep the placeholder */
+    }
+  }
+
   async function init() {
+    stampBuild();
     bindFilters();
     bindFeed();
     bindForm();
