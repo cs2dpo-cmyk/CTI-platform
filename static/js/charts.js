@@ -318,31 +318,19 @@ const CTICharts = (() => {
     const labels = points.map((p) => p.date.replace('-', '/'));
     const tw = points.map((p) => p.taiwan);
     const gl = points.map((p) => p.global);
-    // A ratio is comparable even when one side has four times the volume.
-    const share = points.map((p) => (p.total > 0 ? (p.taiwan / p.total) * 100 : null));
-    // Keep the right axis tight: a 0-100 axis flattens a 10-25% series into a
-    // line glued to the bottom.
-    const shareMax = Math.min(
-      100,
-      Math.max(20, Math.ceil(Math.max(...share.filter((v) => v != null), 0) / 10) * 10)
-    );
-
-    const ctx = el.getContext('2d');
-    const fillTw = ctx.createLinearGradient(0, 0, 0, 210);
-    fillTw.addColorStop(0, 'rgba(45, 212, 191, 0.26)');
-    fillTw.addColorStop(1, 'rgba(45, 212, 191, 0)');
-    const fillGl = ctx.createLinearGradient(0, 0, 0, 210);
-    fillGl.addColorStop(0, 'rgba(96, 165, 250, 0.22)');
-    fillGl.addColorStop(1, 'rgba(96, 165, 250, 0)');
+    const share = points.map((p) => (p.total > 0 ? Math.round((p.taiwan / p.total) * 100) : null));
+    const glMax = Math.max(10, Math.ceil(Math.max(...gl, 0) / 10) * 10);
+    const twMax = Math.max(5, Math.ceil(Math.max(...tw, 0) / 5) * 5);
 
     destroyIfOrphan('timeline', el);
     if (instances.timeline) {
       const chart = instances.timeline;
       chart.data.labels = labels;
-      chart.data.datasets[0].data = tw;
-      chart.data.datasets[1].data = gl;
-      if (chart.data.datasets[2]) chart.data.datasets[2].data = share;
-      chart.options.scales.y1.max = shareMax;
+      chart.data.datasets[0].data = gl;
+      chart.data.datasets[1].data = tw;
+      chart.data.$share = share;
+      chart.options.scales.y.max = glMax;
+      chart.options.scales.y1.max = twMax;
       chart.update();
       return;
     }
@@ -351,28 +339,17 @@ const CTICharts = (() => {
       type: 'line',
       data: {
         labels,
+        // Two scales, one per series: the volumes differ fourfold, and a shared
+        // axis would flatten Taiwan against the floor.
         datasets: [
-          {
-            label: '台灣',
-            data: tw,
-            borderColor: COLORS.taiwan,
-            backgroundColor: fillTw,
-            fill: true,
-            tension: 0.36,
-            borderWidth: 1.8,
-            pointRadius: 0,
-            pointHoverRadius: 4,
-            pointHoverBackgroundColor: COLORS.taiwan,
-            pointHoverBorderColor: '#06121a',
-            pointHoverBorderWidth: 2,
-          },
           {
             label: '國際',
             data: gl,
+            yAxisID: 'y',
             borderColor: COLORS.global,
-            backgroundColor: fillGl,
+            backgroundColor: 'rgba(96, 165, 250, 0.05)',
             fill: true,
-            tension: 0.36,
+            tension: 0.3,
             borderWidth: 1.8,
             pointRadius: 0,
             pointHoverRadius: 4,
@@ -381,22 +358,22 @@ const CTICharts = (() => {
             pointHoverBorderWidth: 2,
           },
           {
-            label: '台灣佔比',
-            data: share,
+            label: '台灣',
+            data: tw,
             yAxisID: 'y1',
-            borderColor: '#f472b6',
-            borderDash: [4, 3],
-            borderWidth: 1.6,
-            fill: false,
+            borderColor: COLORS.taiwan,
+            backgroundColor: 'rgba(45, 212, 191, 0.12)',
+            fill: true,
             tension: 0.3,
+            borderWidth: 1.8,
             pointRadius: 0,
             pointHoverRadius: 4,
-            pointHoverBackgroundColor: '#f472b6',
+            pointHoverBackgroundColor: COLORS.taiwan,
             pointHoverBorderColor: '#06121a',
             pointHoverBorderWidth: 2,
-            spanGaps: true,
           },
         ],
+        $share: share,
       },
       options: {
         responsive: true,
@@ -407,9 +384,12 @@ const CTICharts = (() => {
           tooltip: {
             callbacks: {
               title: (items) => items[0].label,
-              label: (ctx) => (ctx.dataset.yAxisID === 'y1'
-                ? ` ${ctx.dataset.label}：${ctx.raw == null ? '—' : ctx.raw.toFixed(0) + '%'}`
-                : ` ${ctx.dataset.label}：${ctx.raw} 篇`),
+              label: (ctx) => ` ${ctx.dataset.label}：${ctx.raw} 篇`,
+              footer: (items) => {
+                const index = items[0]?.dataIndex ?? 0;
+                const value = (instances.timeline?.data?.$share || [])[index];
+                return value == null ? '' : `台灣佔比 ${value}%`;
+              },
             },
           },
         },
@@ -426,25 +406,20 @@ const CTICharts = (() => {
             },
           },
           y: {
+            position: 'left',
             beginAtZero: true,
-            suggestedMax: 3,
+            max: glMax,
             grid: { color: COLORS.grid, drawTicks: false },
             border: { display: false },
-            ticks: { color: COLORS.tick, stepSize: 1, padding: 6, font: { size: 10 } },
+            ticks: { color: COLORS.global, padding: 6, font: { size: 10 } },
           },
           y1: {
             position: 'right',
-            min: 0,
-            max: shareMax,
+            beginAtZero: true,
+            max: twMax,
             grid: { display: false },
             border: { display: false },
-            ticks: {
-              color: COLORS.tick,
-              maxTicksLimit: 4,
-              font: { size: 9 },
-              stepSize: Math.max(5, Math.round(shareMax / 4 / 5) * 5),
-              callback: (value) => value + '%',
-            },
+            ticks: { color: COLORS.taiwan, padding: 6, font: { size: 10 } },
           },
         },
       },

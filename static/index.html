@@ -34,7 +34,7 @@
     rel="stylesheet"
   />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.6/dist/chart.umd.min.js" defer></script>
-  <link rel="stylesheet" href="/static/css/styles.css?v=20261113k" />
+  <link rel="stylesheet" href="/static/css/styles.css?v=20261113m" />
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23060a11'/%3E%3Cpath d='M16 5l9 4v7c0 5.5-3.8 10-9 11-5.2-1-9-5.5-9-11V9l9-4z' fill='none' stroke='%2322d3ee' stroke-width='2'/%3E%3C/svg%3E" />
 </head>
 
@@ -252,19 +252,18 @@
             <p class="kicker mt-1">Monthly Volume（每月分層取樣）· <span id="timelineRange">—</span></p>
           </div>
           <div class="flex items-center gap-3 text-[11px] text-[color:var(--faint)]">
-            <span class="inline-flex items-center gap-1.5"><span class="legend-swatch bg-teal-400"></span>台灣</span>
-            <span class="inline-flex items-center gap-1.5"><span class="legend-swatch bg-blue-400"></span>國際</span>
-            <span class="inline-flex items-center gap-1.5"><span class="h-0.5 w-3 border-t border-dashed border-pink-400"></span>台灣佔比（右軸）</span>
+            <span class="inline-flex items-center gap-1.5"><span class="legend-swatch bg-blue-400"></span>國際（左軸）</span>
+            <span class="inline-flex items-center gap-1.5"><span class="legend-swatch bg-teal-400"></span>台灣（右軸）</span>
           </div>
         </div>
         <div class="panel-body">
           <div class="chart-frame h-[212px]">
-            <canvas id="timelineChart" role="img" aria-label="每月情資發布量折線圖（每月分層取樣）"></canvas>
+            <canvas id="timelineChart" role="img" aria-label="每月情資發布量（雙軸折線圖，左軸國際、右軸台灣）"></canvas>
           </div>
           <p class="mt-2 text-[10.5px] leading-relaxed text-[color:var(--faint)]" id="timelineNote">
-            左軸＝實際篇數（國際線約為台灣 4 倍，反映來源發布量：THN 每月約 15 篇、TWCERT 約 5 篇）。
-            虛線＝<strong class="text-slate-300">台灣佔比</strong>（右軸 %），這條線才是可比的比例：
-            台灣每月僅 2–5 篇，佔比高時分母也小，判讀時請一併看樣本量。
+            兩條線<strong class="text-slate-300">各自一個軸</strong>：左軸（藍）＝國際篇數、右軸（綠）＝台灣篇數，
+            各自依自身量級縮放。來源發布量差約 4 倍（THN 每月約 15 篇、TWCERT 約 5 篇），
+            因此線的<em>高度不可直接互比</em>；兩線交叉不代表量體相等。實際佔比見 tooltip。
           </p>
         </div>
       </article>
@@ -648,8 +647,8 @@
 
   <div class="toast-stack" id="toastStack" aria-live="polite" aria-atomic="false"></div>
 
-  <script src="/static/js/charts.js?v=20261113k" defer></script>
-  <script src="/static/js/app.js?v=20261113k" defer></script>
-  <script src="/static/js/rain.js?v=20261113k" defer></script>
+  <script src="/static/js/charts.js?v=20261113m" defer></script>
+  <script src="/static/js/app.js?v=20261113m" defer></script>
+  <script src="/static/js/rain.js?v=20261113m" defer></script>
 </body>
 </html>
