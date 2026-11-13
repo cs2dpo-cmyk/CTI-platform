@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import json
 import sqlite3
+import time
 import sys
 from pathlib import Path
 
@@ -57,9 +58,27 @@ def main() -> int:
     def add(text: str = "") -> None:
         lines.append(text)
 
-    add("# 評估結果（可直接引用）")
+    import subprocess
+
+    try:
+        commit = subprocess.run(
+            ["git", "rev-parse", "--short", "HEAD"], cwd=ROOT, capture_output=True, text=True, timeout=10
+        ).stdout.strip() or "unknown"
+    except Exception:
+        commit = "unknown"
+    oldest = min((meta.get("generated", "") for meta in snaps.values())) if snaps else ""
+
+    add("# 評估結果（唯一有效版本）")
     add()
-    add("> 本文件由 tools/make_eval_doc.py 從 data/*.json 自動產生，請勿手改。")
+    add("> 本文件由 tools/make_eval_doc.py 從 data/*.json 自動產生，**請勿手改**。")
+    add("> 專案對外引用的數字一律以本文件為準；舊投影片或其他文件的數字已作廢。")
+    add()
+    add("| 版本資訊 | 值 |")
+    add("|---|---|")
+    add(f"| 產生時間 | {time.strftime('%Y-%m-%d %H:%M')} |")
+    add(f"| Git commit | {commit} |")
+    add(f"| 語料筆數 | {articles} |")
+    add(f"| 資料截止 | {oldest} |")
     add()
 
     add("## 1. 語料組成")
@@ -75,7 +94,7 @@ def main() -> int:
     )
     add()
 
-    add("## 2. 分類器表現")
+    add("## 2. 分類器：開發期與第一輪 held-out")
     add()
     add("| 指標 | 值 | 說明 |")
     add("|---|---|---|")
@@ -140,8 +159,17 @@ def main() -> int:
             add("| precision@10 | %.2f |" % kev["precision"]["model"]["10"])
             add("| AUC（本系統 / CVSS） | %.3f / %.3f |" % (kev["auc"]["model"], kev["auc"]["cvss"]))
             add()
-        add("> EPSS 單獨使用即達 0.964，高於完整模型：AUC 的功勞屬於 EPSS，")
-        add("> 本系統的價值在於把利用機率轉成可執行的修補順序（SLA、曝險、資產）。")
+        baseline = tuning["cv"]["baseline"]["mean"]
+        epss_only = tuning["cv"]["epss_only"]["mean"]
+        cvss = tuning["cv"]["cvss"]["mean"]
+        fitted = tuning["cv"]["weights"]["mean"]
+        if epss_only > baseline:
+            add(f"> 僅 EPSS 即達 {epss_only:.3f}，高於完整模型（{baseline:.3f}）："
+                "AUC 的功勞屬於 EPSS，本系統的價值在於把利用機率轉成可執行的修補順序。")
+        else:
+            add(f"> 在擴充語料上完整模型（{baseline:.3f}）略高於僅 EPSS（{epss_only:.3f}）與")
+            add(f"> 純 CVSS（{cvss:.3f}）。重新擬合的權重可達 {fitted:.3f}，但產品仍採用")
+            add("> 固定且可解釋的 50/30/12/8，犧牲約 0.05 AUC 換取可解釋性。")
         add()
 
     if splits:

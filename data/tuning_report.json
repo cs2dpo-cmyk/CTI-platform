@@ -1,41 +1,41 @@
 {
-  "rows": 77,
-  "positives": 55,
-  "base_rate": 0.714,
+  "rows": 95,
+  "positives": 69,
+  "base_rate": 0.726,
   "cv": {
     "baseline": {
-      "mean": 0.884,
-      "std": 0.09,
+      "mean": 0.842,
+      "std": 0.082,
       "n": 50
     },
     "cvss": {
-      "mean": 0.489,
-      "std": 0.137,
+      "mean": 0.429,
+      "std": 0.1,
       "n": 50
     },
     "epss_only": {
-      "mean": 0.964,
-      "std": 0.052,
+      "mean": 0.827,
+      "std": 0.077,
       "n": 50
     },
     "logistic": {
-      "mean": 0.913,
-      "std": 0.074,
+      "mean": 0.879,
+      "std": 0.085,
       "n": 50
     },
     "logistic_epss": {
-      "mean": 0.921,
-      "std": 0.069,
+      "mean": 0.897,
+      "std": 0.078,
       "n": 50
     },
     "weights": {
-      "mean": 0.941,
-      "std": 0.063,
+      "mean": 0.892,
+      "std": 0.074,
       "n": 50
     },
     "weights_epss": {
-      "mean": 0.94,
-      "std": 0.064,
+      "mean": 0.93,
+      "std": 0.055,
       "n": 50
     }
   },
@@ -46,10 +46,10 @@
     "corroboration": 0.057
   },
   "proposed_weights_with_epss": {
-    "severity": 0.007,
-    "exploit": 0.004,
-    "exposure": 0.026,
-    "corroboration": 0.173,
-    "epss": 0.789
+    "severity": 0.013,
+    "exploit": 0.078,
+    "exposure": 0.006,
+    "corroboration": 0.169,
+    "epss": 0.734
   }
 }

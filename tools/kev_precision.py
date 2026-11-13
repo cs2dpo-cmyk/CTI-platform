@@ -31,8 +31,15 @@ REPORT_PATH = ROOT / "data" / "kev_report.json"
 KS = (5, 10, 20, 50)
 
 
-def load_kev(path: Path) -> set[str]:
+def load_kev(path: Path | None) -> set[str]:
+    """Read either the CISA payload or the compact ids snapshot the app ships."""
+    if path is None:
+        from services.kev import _ids
+
+        return set(_ids())
     payload = json.loads(path.read_text(encoding="utf-8"))
+    if "ids" in payload:
+        return {item.upper() for item in payload["ids"]}
     return {item["cveID"].upper() for item in payload["vulnerabilities"]}
 
 
@@ -108,7 +115,7 @@ def random_baseline(rows: list[dict], k: int, trials: int = 500) -> float:
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--db", type=Path, default=DB_PATH)
-    parser.add_argument("--kev", type=Path, required=True)
+    parser.add_argument("--kev", type=Path, default=None, help="預設使用 data/kev_ids.json")
     parser.add_argument("--include-duplicates", action="store_true")
     args = parser.parse_args()
     if hasattr(sys.stdout, "reconfigure"):

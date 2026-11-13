@@ -34,13 +34,16 @@ CURRENT_WEIGHTS = {"severity": 0.50, "exploit": 0.30, "exposure": 0.12, "corrobo
 REPORT_PATH = ROOT / "data" / "tuning_report.json"
 
 
-def load_kev(path: Path) -> set[str]:
-    payload = json.loads(path.read_text(encoding="utf-8"))
-    return {item["cveID"].upper() for item in payload["vulnerabilities"]}
+def load_kev(path: Path | None) -> set[str]:
+    from services.kev import _ids
+
+    return set(_ids())
 
 
-def load_epss(path: Path) -> dict[str, float]:
-    return {k.upper(): float(v) for k, v in json.loads(path.read_text(encoding="utf-8")).items()}
+def load_epss(path: Path | None) -> dict[str, float]:
+    from services import epss
+
+    return epss.all_scores()
 
 
 def build_rows(kev: set[str], epss: dict[str, float]) -> list[dict]:
@@ -215,8 +218,8 @@ def summarize(values: list[float]) -> dict:
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--kev", type=Path, required=True)
-    parser.add_argument("--epss", type=Path, required=True)
+    parser.add_argument("--kev", type=Path, default=None, help="預設使用 data/kev_ids.json")
+    parser.add_argument("--epss", type=Path, default=None, help="預設使用 data/epss.json")
     parser.add_argument("--repeats", type=int, default=10)
     args = parser.parse_args()
     if hasattr(sys.stdout, "reconfigure"):
