@@ -22,12 +22,15 @@ SNAPSHOT = Path(__file__).resolve().parent.parent / "data" / "epss.json"
 @lru_cache(maxsize=1)
 def _scores() -> dict[str, float]:
     try:
-        return {
-            key.upper(): float(value)
-            for key, value in json.loads(SNAPSHOT.read_text(encoding="utf-8")).items()
-        }
+        payload = json.loads(SNAPSHOT.read_text(encoding="utf-8"))
     except (OSError, ValueError):
         return {}
+    # The file carries its own provenance now ({"generated", "scores"}); the
+    # flat map is still accepted so an older snapshot keeps working.
+    scores = payload.get("scores") if isinstance(payload, dict) and "scores" in payload else payload
+    if not isinstance(scores, dict):
+        return {}
+    return {key.upper(): float(value) for key, value in scores.items()}
 
 
 def all_scores() -> dict[str, float]:

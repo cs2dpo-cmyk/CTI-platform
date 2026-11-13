@@ -291,6 +291,14 @@ def test_threats_filter_by_region(client: TestClient):
     assert {item["region"] for item in body["items"]} == {"taiwan"}
 
 
+def test_responses_carry_data_provenance(client: TestClient):
+    for path in ("/api/v1/stats", "/api/v1/threats?limit=5", "/api/v1/patch-priority?limit=5"):
+        body = client.get(path).json()
+        assert body["data_as_of"], path
+        assert body["snapshots"]["kev"]["entries"] > 0, path
+        assert body["snapshots"]["epss"]["generated"], path
+
+
 def test_patch_priority_endpoint(client: TestClient):
     body = client.get("/api/v1/patch-priority", params={"limit": 10}).json()
     assert body["total"] > 0

@@ -28,6 +28,14 @@ class ActionStep(BaseModel):
     detail: str
 
 
+class DataProvenance(BaseModel):
+    """Which data the response was computed from, and when it was captured."""
+
+    data_as_of: str = ""
+    stale_days: int | None = None
+    snapshots: dict[str, Any] = Field(default_factory=dict)
+
+
 class ThreatOut(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
@@ -68,14 +76,14 @@ class PatchItemOut(BaseModel):
     reason: str = ""
 
 
-class PatchPriorityResponse(BaseModel):
+class PatchPriorityResponse(DataProvenance):
     total: int
     returned: int
     items: list[PatchItemOut] = Field(default_factory=list)
     summary: dict = Field(default_factory=dict)
 
 
-class ThreatListResponse(BaseModel):
+class ThreatListResponse(DataProvenance):
     total: int
     limit: int
     offset: int
@@ -284,7 +292,7 @@ class ModelInfo(BaseModel):
     classification_accuracy: float | None = None
 
 
-class StatsResponse(BaseModel):
+class StatsResponse(DataProvenance):
     generated_at: datetime
     model: ModelInfo
     totals: dict[str, Any]

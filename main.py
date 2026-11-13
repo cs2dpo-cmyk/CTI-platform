@@ -23,7 +23,7 @@ from sqlalchemy.orm import Session, load_only
 
 import database
 import schemas
-from services import analytics, dataset, epss, kev, patch_priority, risk_engine
+from services import analytics, dataset, epss, kev, patch_priority, risk_engine, snapshots
 
 logging.basicConfig(level=os.getenv("LOG_LEVEL", "INFO"),
                     format="%(asctime)s %(levelname)s %(name)s %(message)s")
@@ -112,7 +112,12 @@ def stats(db: Session = Depends(database.get_db)) -> schemas.StatsResponse:
         stmt = select(database.Threat).options(load_only(*columns))
         threats = db.scalars(stmt).all()
         _, dataset_info = dataset.load_dataset()
-        cached = schemas.StatsResponse(**analytics.build_stats(threats, dataset_info))
+        cached = schemas.StatsResponse(
+            **analytics.build_stats(threats, dataset_info),
+            data_as_of=snapshots.as_of(),
+            stale_days=snapshots.staleness_days(),
+            snapshots=snapshots.describe(),
+        )
         _STATS_CACHE.clear()
         _STATS_CACHE[key] = cached
     # generated_at describes this response, not the cached computation.
@@ -271,6 +276,9 @@ def patch_priority_list(
     if priority:
         items = [item for item in items if item.priority == priority]
     return schemas.PatchPriorityResponse(
+        data_as_of=snapshots.as_of(),
+        stale_days=snapshots.staleness_days(),
+        snapshots=snapshots.describe(),
         total=summary["cves"],
         returned=min(len(items), limit),
         items=[schemas.PatchItemOut(**item.as_dict()) for item in items[:limit]],
@@ -340,6 +348,9 @@ def list_threats(
     rows = db.scalars(stmt.limit(limit).offset(offset)).all()
     items = [schemas.threat_to_schema(row) for row in rows]
     return schemas.ThreatListResponse(
+        data_as_of=snapshots.as_of(),
+        stale_days=snapshots.staleness_days(),
+        snapshots=snapshots.describe(),
         total=total,
         limit=limit,
         offset=offset,

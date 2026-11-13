@@ -1064,6 +1064,12 @@
         summary.appendChild(chip);
       });
     }
+    const asOf = $('#patchAsOf');
+    if (asOf) {
+      asOf.textContent = data.data_as_of
+        ? '資料截止 ' + data.data_as_of + (data.stale_days != null ? '（' + data.stale_days + ' 天前）' : '')
+        : '';
+    }
     const fragment = document.createDocumentFragment();
     (data.items || []).forEach((item) => {
       const tr = document.createElement('tr');

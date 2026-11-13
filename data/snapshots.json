@@ -1,0 +1,14 @@
+{
+  "epss": {
+    "generated": "2026-11-13",
+    "source": "https://api.first.org/data/v1/epss"
+  },
+  "kev": {
+    "generated": "2026-11-13",
+    "source": "https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json"
+  },
+  "assets": {
+    "generated": "2026-11-13",
+    "source": "data/assets.csv（示範清單，實際部署請替換為 CMDB 匯出）"
+  }
+}

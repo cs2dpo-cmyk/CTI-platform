@@ -34,7 +34,7 @@
     rel="stylesheet"
   />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.6/dist/chart.umd.min.js" defer></script>
-  <link rel="stylesheet" href="/static/css/styles.css?v=20261113b" />
+  <link rel="stylesheet" href="/static/css/styles.css?v=20261113c" />
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23060a11'/%3E%3Cpath d='M16 5l9 4v7c0 5.5-3.8 10-9 11-5.2-1-9-5.5-9-11V9l9-4z' fill='none' stroke='%2322d3ee' stroke-width='2'/%3E%3C/svg%3E" />
 </head>
 
@@ -584,6 +584,7 @@
           <h3 id="patchTitle" class="panel-title"><svg class="ico ico-sm text-cyan-400"><use href="#i-shield" /></svg>修補優先級（EPSS + KEV）</h3>
           <p class="kicker mt-1">GET /api/v1/patch-priority</p>
           <p class="mt-1 text-[11px] text-[color:var(--faint)]">以 FIRST EPSS 利用機率與 CISA KEV 排序，附修補 SLA 與判斷依據</p>
+          <p class="mono mt-1 text-[10px] text-[color:var(--faint)]" id="patchAsOf"></p>
         </div>
         <div class="flex flex-wrap items-center gap-2">
           <button class="btn btn-ghost" id="patchExposureToggle" type="button" aria-pressed="true">曝險：開</button>
@@ -639,8 +640,8 @@
 
   <div class="toast-stack" id="toastStack" aria-live="polite" aria-atomic="false"></div>
 
-  <script src="/static/js/charts.js?v=20261113b" defer></script>
-  <script src="/static/js/app.js?v=20261113b" defer></script>
-  <script src="/static/js/rain.js?v=20261113b" defer></script>
+  <script src="/static/js/charts.js?v=20261113c" defer></script>
+  <script src="/static/js/app.js?v=20261113c" defer></script>
+  <script src="/static/js/rain.js?v=20261113c" defer></script>
 </body>
 </html>
