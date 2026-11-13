@@ -163,6 +163,13 @@
       note.textContent = '重複 ' + totals.duplicates + ' 已合併';
       kpiFoot.appendChild(note);
     }
+    const sampleNote = $('#sampleNote');
+    if (sampleNote && totals.balanced_rows && totals.natural_p1_share != null) {
+      sampleNote.textContent =
+        '本頁含 ' + num(totals.balanced_rows) + ' 筆平衡對照樣本，故 P1 佔比略高於自然語料的 '
+        + (totals.natural_p1_share * 100).toFixed(1) + '%（自然語料平均 '
+        + totals.natural_avg_score + ' 分）';
+    }
     $('#kpiTw').textContent = num(totals.taiwan);
     $('#kpiGlobal').textContent = num(totals.global);
     $('#heroCorpus').innerHTML = `${num(corpus)}<span class="ml-1 text-[11px] text-[color:var(--faint)]">篇</span>`;

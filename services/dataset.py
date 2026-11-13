@@ -73,6 +73,28 @@ def dataset_dir() -> Path:
     return Path(override) if override else DEFAULT_DATASET_DIR
 
 
+def canonical_urls() -> set[str]:
+    """URLs of the deliberately balanced 200-row sample.
+
+    The expanded files are appended to the canonical ones, so a row belongs to
+    the balanced sample exactly when its URL is in these two files.
+    """
+    from services import dataset as _self
+
+    directory = dataset_dir()
+    meta = _read_meta(directory)
+    taiwan, global_ = _csv_paths(directory, meta)
+    urls: set[str] = set()
+    for path in (taiwan, global_):
+        if not path.exists():
+            continue
+        for row in _self._rows_from_csv(path):
+            url = (row.get("source_url") or "").strip()
+            if url:
+                urls.add(url)
+    return urls
+
+
 def _read_meta(directory: Path) -> dict[str, Any]:
     path = directory / "dataset_meta.json"
     if path.exists():

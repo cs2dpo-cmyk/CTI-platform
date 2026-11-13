@@ -27,6 +27,12 @@ const BASE = process.env.CTI_BASE_URL || 'http://127.0.0.1:8123';
 const STATIC = process.env.CTI_STATIC_DIR
   || fileURLToPath(new URL('../static', import.meta.url));
 
+// Expectations are derived from the live API so a corpus change does not break
+// the suite; the point is to test the render pipeline, not to freeze the data.
+const STATS = await fetch(`${BASE}/api/v1/stats`).then((response) => response.json());
+const TOTALS = STATS.totals;
+const PAGES = Math.max(1, Math.ceil((TOTALS.corpus - (TOTALS.duplicates || 0)) / 25));
+
 const errors = [];
 
 function assert(condition, message) {
@@ -119,15 +125,15 @@ const $ = (selector) => window.document.querySelector(selector);
 const $$ = (selector) => Array.from(window.document.querySelectorAll(selector));
 
 // ---------------------------------------------------------------- render checks
-assert($('#kpiTotal').textContent.trim() === '200', `KPI total rendered (got "${$('#kpiTotal').textContent}")`);
-assert($('#kpiTw').textContent.trim() === '100', 'KPI Taiwan count rendered');
-assert($('#kpiGlobal').textContent.trim() === '100', 'KPI global count rendered');
+assert($('#kpiTotal').textContent.trim() === String(TOTALS.corpus), `KPI total rendered (got "${$('#kpiTotal').textContent}")`);
+assert($('#kpiTw').textContent.trim() === String(TOTALS.taiwan), 'KPI Taiwan count rendered');
+assert($('#kpiGlobal').textContent.trim() === String(TOTALS.global), 'KPI global count rendered');
 assert($('#kpiP1').textContent.trim().length > 0 && $('#kpiP1').textContent.trim() !== '—', 'KPI P1 rendered');
 assert($('#kpiTopMeta').textContent.trim() !== '—', 'KPI top meta-category rendered');
 assert($('#kpiAvgScore').textContent.trim() !== '—', 'KPI average score rendered');
 
 assert($$('#metaLegend .legend-row').length === 4, `meta legend rows (got ${$$('#metaLegend .legend-row').length})`);
-assert($$('#categoryStrip .tally').length === 6, `cluster tallies (got ${$$('#categoryStrip .tally').length})`);
+assert($$('#categoryStrip .tally').length === STATS.clusters.length, `cluster tallies (got ${$$('#categoryStrip .tally').length})`);
 assert(
   $$('#categoryStrip .tally')
     .map((node) => node.textContent.replace(/\s+/g, ' ').trim())
@@ -135,14 +141,14 @@ assert(
     .includes('C0'),
   'cluster tallies expose the raw cluster ids'
 );
-assert($('#pieCenterTotal').textContent.trim() === '200', 'pie centre total rendered');
+assert($('#pieCenterTotal').textContent.trim() === String(TOTALS.corpus), 'pie centre total rendered');
 
 assert($$('#matrixGrid .matrix-card').length === 3, `matrix lanes (got ${$$('#matrixGrid .matrix-card').length})`);
 assert($$('#matrixGrid .step').length > 0, 'matrix playbooks rendered');
 
 assert($$('#feedBody .feed-row').length === 25, `feed first page rows (got ${$$('#feedBody .feed-row').length})`);
-assert($('#feedTotal').textContent.trim() === '196', 'feed total rendered (dedupe default)');
-assert($('#pageLabel').textContent.includes('1 / 8'), `pagination label (got "${$('#pageLabel').textContent}")`);
+assert($('#feedTotal').textContent.trim() === String(TOTALS.corpus - (TOTALS.duplicates || 0)), 'feed total rendered (dedupe default)');
+assert($('#pageLabel').textContent.includes('1 / ' + PAGES), `pagination label (got "${$('#pageLabel').textContent}")`);
 
 assert($$('#insightGrid article').length === 4, `insight cards (got ${$$('#insightGrid article').length})`);
 assert(window.Chart.instances?.length === 4, `chart instances (got ${window.Chart.instances?.length})`);
@@ -226,7 +232,7 @@ assert($('#apiStatus').textContent.includes('已連線'), 'API status pill updat
 {
   const pie = window.Chart.instances.find((chart) => chart.config.type === 'doughnut');
   assert(!!pie, 'doughnut chart exists');
-  assert($('#pieCenterTotal').textContent.trim() === '200', 'pie centre rests on the corpus total');
+  assert($('#pieCenterTotal').textContent.trim() === String(TOTALS.corpus), 'pie centre rests on the corpus total');
 
   pie.options.onHover({}, [{ index: 0 }]);
   assert(
@@ -236,7 +242,7 @@ assert($('#apiStatus').textContent.includes('已連線'), 'API status pill updat
   assert($('#pieCenterCaption').textContent.trim() === 'VULN', 'hovering a slice names the category');
 
   pie.canvas.dispatchEvent(new window.MouseEvent('mouseleave'));
-  assert($('#pieCenterTotal').textContent.trim() === '200', 'leaving the doughnut restores the total');
+  assert($('#pieCenterTotal').textContent.trim() === String(TOTALS.corpus), 'leaving the doughnut restores the total');
   assert($('#pieCenterCaption').textContent.trim() === 'articles', 'leaving the doughnut restores the caption');
 }
 

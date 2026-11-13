@@ -99,6 +99,27 @@ def health(db: Session = Depends(database.get_db)) -> schemas.HealthResponse:
 _STATS_CACHE: dict[tuple[Any, ...], schemas.StatsResponse] = {}
 
 
+def _sample_breakdown(db: Session) -> dict:
+    """How much of the corpus comes from the balanced sample, and what the
+    natural rows say about urgency when the balanced rows are removed."""
+    balanced = dataset.canonical_urls()
+    rows = db.execute(
+        select(database.Threat.source_url, database.Threat.priority, database.Threat.risk_score)
+    ).all()
+    natural = [row for row in rows if (row.source_url or "") not in balanced]
+    natural_scored = [row for row in natural if row.risk_score is not None]
+    return {
+        "balanced_rows": len(rows) - len(natural),
+        "natural_rows": len(natural),
+        "natural_p1_share": round(
+            sum(1 for row in natural if row.priority == "P1") / len(natural), 3
+        ) if natural else None,
+        "natural_avg_score": round(
+            sum(row.risk_score for row in natural_scored) / len(natural_scored), 1
+        ) if natural_scored else None,
+    }
+
+
 @api.get("/stats", response_model=schemas.StatsResponse, summary="全球 / 台灣情資統計與 Meta-Category 分布")
 def stats(db: Session = Depends(database.get_db)) -> schemas.StatsResponse:
     version = database.corpus_version(db)
@@ -112,8 +133,10 @@ def stats(db: Session = Depends(database.get_db)) -> schemas.StatsResponse:
         stmt = select(database.Threat).options(load_only(*columns))
         threats = db.scalars(stmt).all()
         _, dataset_info = dataset.load_dataset()
+        stats_payload = analytics.build_stats(threats, dataset_info)
+        stats_payload["totals"].update(_sample_breakdown(db))
         cached = schemas.StatsResponse(
-            **analytics.build_stats(threats, dataset_info),
+            **stats_payload,
             data_as_of=snapshots.as_of(),
             stale_days=snapshots.staleness_days(),
             snapshots=snapshots.describe(),
