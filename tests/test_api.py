@@ -155,6 +155,48 @@ def test_dates_come_from_the_publishers_not_from_the_row_order(client: TestClien
 # --------------------------------------------------------------------------- #
 
 
+def test_assess_uses_epss_for_known_cve(client: TestClient):
+    from services import epss
+
+    known = next(iter(epss.all_scores()))
+    assert epss.score_for([known]) is not None
+    body = client.post(
+        "/api/v1/assess",
+        json={
+            "asset_type": "web_app",
+            "threat_source": "zero_day",
+            "category": "VULN",
+            "cve_id": known,
+        },
+    ).json()
+    exploit = next(f for f in body["factors"] if f["key"] == "exploit")
+    assert "EPSS" in exploit["value"]
+    assert "利用機率" in body["summary"]
+
+
+def test_assess_kev_forces_p1(client: TestClient):
+    from services.kev import _ids
+
+    known = sorted(_ids())[0]
+    body = client.post(
+        "/api/v1/assess",
+        json={
+            "asset_type": "web_app",
+            "threat_source": "zero_day",
+            "category": "VULN",
+            "cve_id": known,
+            "cvss": 3.0,
+            "exploit_status": "unknown",
+            "exposure": "internal",
+            "data_sensitivity": "low",
+        },
+    ).json()
+    assert body["priority"] == "P1"
+    assert "CISA KEV" in body["summary"]
+    exploit = next(f for f in body["factors"] if f["key"] == "exploit")
+    assert "KEV" in exploit["value"]
+
+
 def test_assess_critical_inputs_return_p1(client: TestClient):
     response = client.post(
         "/api/v1/assess",

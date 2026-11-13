@@ -23,7 +23,7 @@ from sqlalchemy.orm import Session, load_only
 
 import database
 import schemas
-from services import analytics, dataset, epss, patch_priority, risk_engine
+from services import analytics, dataset, epss, kev, patch_priority, risk_engine
 
 logging.basicConfig(level=os.getenv("LOG_LEVEL", "INFO"),
                     format="%(asctime)s %(levelname)s %(name)s %(message)s")
@@ -129,6 +129,8 @@ def assess(payload: schemas.AssessRequest, db: Session = Depends(database.get_db
     matched = _match_corpus(
         db, cve_id=payload.cve_id, category=payload.category, region=payload.region
     )
+    epss_score = epss.score_for([payload.cve_id]) if payload.cve_id else None
+    kev_hit = kev.is_exploited(payload.cve_id) if payload.cve_id else False
     result = risk_engine.assess(
         asset_type=payload.asset_type,
         threat_source=payload.threat_source,
@@ -140,6 +142,8 @@ def assess(payload: schemas.AssessRequest, db: Session = Depends(database.get_db
         controls=payload.controls,
         data_sensitivity=payload.data_sensitivity,
         region_hits=matched["region_hits"],
+        epss=epss_score,
+        kev=kev_hit,
     )
 
     # Corroboration bonus: a CVE that already appears in the intel corpus is
@@ -157,12 +161,15 @@ def assess(payload: schemas.AssessRequest, db: Session = Depends(database.get_db
 
     score = round(min(result.score + bonus, 99.0), 1)
     final_priority = risk_engine.priority_for(score)
-    if payload.cvss is not None and payload.cvss >= 9.0 and payload.exploit_status == "active":
+    if kev_hit:
+        # Confirmed exploitation outranks any numeric band.
+        final_priority = "P1"
+    elif payload.cvss is not None and payload.cvss >= 9.0 and payload.exploit_status == "active":
         final_priority = "P1"
 
     meta = risk_engine.PRIORITY_META[final_priority]
     plan = risk_engine.playbook(risk_engine.meta_of(payload.category), final_priority)
-    summary = _summarise(payload, score, final_priority, matched)
+    summary = _summarise(payload, score, final_priority, matched, epss=epss_score, kev=kev_hit)
 
     return schemas.AssessResponse(
         assessment_id=uuid.uuid4().hex[:12],
@@ -211,7 +218,8 @@ def _match_corpus(db: Session, *, cve_id: str | None, category: str,
 
 
 def _summarise(payload: schemas.AssessRequest, score: float, priority: str,
-               matched: dict[str, Any]) -> str:
+               matched: dict[str, Any], epss: float | None = None,
+               kev: bool = False) -> str:
     asset = risk_engine.ASSET_TYPES[payload.asset_type]["label"]
     threat = risk_engine.THREAT_SOURCES[payload.threat_source]["label"]
     region = "台灣在地" if payload.region == "taiwan" else "國際來源"
@@ -222,6 +230,10 @@ def _summarise(payload: schemas.AssessRequest, score: float, priority: str,
     if payload.cve_id:
         parts.append(f"，其中 {matched['cve_hits']} 筆直接提及 {payload.cve_id}")
     parts.append(f"；在地關聯採計{region} {matched.get('region_hits', 0)} 筆語料。")
+    if kev:
+        parts.append("該 CVE 已列入 CISA KEV，利用事實明確。")
+    elif epss is not None:
+        parts.append(f"FIRST EPSS 估計未來 30 天利用機率為 {epss:.0%}。")
     return "".join(parts)
 
 

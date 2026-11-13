@@ -310,6 +310,8 @@ def assess(
     controls: Iterable[str] | None = None,
     data_sensitivity: str = "medium",
     region_hits: int | None = None,
+    epss: float | None = None,
+    kev: bool = False,
 ) -> RiskResult:
     """Score one asset/threat combination and derive its P1-P3 disposition."""
     asset = ASSET_TYPES.get(asset_type, ASSET_TYPES["web_app"])
@@ -320,6 +322,18 @@ def assess(
 
     severity, severity_label = _severity_from_cvss(cvss, taxonomy["severity"])
 
+    # Measured exploitation evidence outranks the dropdown: KEV means it is
+    # already being exploited, EPSS is a calibrated probability, and the
+    # self-reported status is only used when neither is available.
+    if kev:
+        exploit_weight, exploit_label = 1.0, "CISA KEV（已遭利用）"
+    elif exploit_status == "active":
+        exploit_weight, exploit_label = 1.0, exploit["label"]
+    elif epss is not None:
+        exploit_weight, exploit_label = float(epss), f"EPSS {epss:.0%}（實測機率）"
+    else:
+        exploit_weight, exploit_label = exploit["weight"], exploit["label"]
+
     weighted = [
         Factor("asset", "資產關鍵度", asset["label"], asset["weight"], 0.30,
                asset["weight"] * 0.30 * 100),
@@ -327,8 +341,8 @@ def assess(
                threat["weight"] * 0.26 * 100),
         Factor("severity", "漏洞嚴重度", severity_label, severity, 0.20,
                severity * 0.20 * 100),
-        Factor("exploit", "利用成熟度", exploit["label"], exploit["weight"], 0.14,
-               exploit["weight"] * 0.14 * 100),
+        Factor("exploit", "利用成熟度", exploit_label, exploit_weight, 0.14,
+               exploit_weight * 0.14 * 100),
         Factor("exposure", "暴露程度", exposure_info["label"], exposure_info["weight"], 0.10,
                exposure_info["weight"] * 0.10 * 100),
     ]
@@ -364,6 +378,9 @@ def assess(
 
     priority = priority_for(score)
     escalations: list[str] = []
+    if kev and priority != "P1":
+        priority = "P1"
+        escalations.append("CISA KEV：已遭實際利用，升級為 P1")
     if cvss is not None and cvss >= 9.0 and exploit_status == "active" and priority != "P1":
         priority = "P1"
         escalations.append("CVSS ≥ 9.0 且已在野利用，強制升級 P1")
