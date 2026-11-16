@@ -39,6 +39,7 @@ class PatchItem:
     epss: float | None
     cvss: float | None
     exploited: bool
+    cvss_source: str = "none"
     exposure: str = exposure_ctx.UNKNOWN
     exposure_source: str = "none"
     assets: list[str] = field(default_factory=list)
@@ -113,6 +114,7 @@ class PatchItem:
             "sla": self.sla,
             "epss": None if self.epss is None else round(self.epss, 4),
             "cvss": None if self.cvss is None else round(self.cvss, 1),
+            "cvss_source": self.cvss_source,
             "exploited": self.exploited,
             "exposure": self.exposure,
             "exposure_label": exposure_ctx.SOURCE_LABELS[self.exposure_source],
@@ -165,6 +167,7 @@ def build(rows: list[dict], epss: dict[str, float], use_exposure: bool = True) -
                     cve=key,
                     epss=epss.get(key),
                     cvss=row.get("cvss"),
+                    cvss_source=row.get("cvss_source") or "none",
                     exploited=is_exploited(key),
                 )
                 table[key] = item
@@ -179,6 +182,7 @@ def build(rows: list[dict], epss: dict[str, float], use_exposure: bool = True) -
             cvss = row.get("cvss")
             if cvss is not None and (item.cvss is None or cvss > item.cvss):
                 item.cvss = cvss
+                item.cvss_source = row.get("cvss_source") or "none"
             title = row.get("title") or ""
             if title:
                 titles[key].append(title)
@@ -215,6 +219,8 @@ def summarize(items: list[PatchItem]) -> dict:
         "exploited": sum(1 for item in items if item.exploited),
         "exposed": sum(1 for item in items if item.exposed),
         "taiwan_reported": sum(1 for item in items if item.taiwan_articles),
+        "cvss_unknown": sum(1 for item in items if item.cvss is None),
+        "cvss_from_cveorg": sum(1 for item in items if item.cvss_source == "cve.org"),
         "exposure_sources": {
             source: sum(1 for item in items if item.exposure_source == source)
             for source in ("manual", "inventory", "reported", "inferred", "none")

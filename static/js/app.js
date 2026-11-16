@@ -1231,6 +1231,15 @@
         chip.textContent = key + ' ' + (counts[key] || 0);
         summary.appendChild(chip);
       });
+      const unknownCvss = Number((data.summary && data.summary.cvss_unknown) || 0);
+      if (unknownCvss > 0) {
+        const chip = document.createElement('span');
+        chip.className = 'badge';
+        chip.dataset.tone = 'low';
+        chip.textContent = 'CVSS 未知 ' + unknownCvss;
+        chip.title = '文章與 CVE.org 都查不到分數；這些項目的分級只靠 EPSS／KEV';
+        summary.appendChild(chip);
+      }
       const localCount = Number((data.summary && data.summary.taiwan_reported) || 0);
       if (localCount > 0) {
         const chip = document.createElement('span');
@@ -1287,8 +1296,25 @@
       epssCell.appendChild(label);
       tr.appendChild(epssCell);
 
-      tr.appendChild(patchCell(item.cvss == null ? '—' : Number(item.cvss).toFixed(1),
-        'px-2 py-2.5 mono text-[11.5px] text-slate-300'));
+      const cvssCell = document.createElement('td');
+      cvssCell.className = 'px-2 py-2.5 mono text-[11.5px] text-slate-300';
+      if (item.cvss == null) {
+        cvssCell.textContent = '—';
+        cvssCell.title = '文章與 CVE.org 皆未提供分數';
+      } else {
+        cvssCell.appendChild(document.createTextNode(Number(item.cvss).toFixed(1)));
+        if (item.cvss_source === 'cve.org') {
+          // Mark the fallback: the number is authoritative but not from the article.
+          const mark = document.createElement('span');
+          mark.className = 'ml-1 text-[9px] text-cyan-300/80';
+          mark.textContent = '官';
+          mark.title = '文章未揭露分數，取自 CVE.org 公告';
+          cvssCell.appendChild(mark);
+        } else if (item.cvss_source === 'article') {
+          cvssCell.title = '分數由該篇報導提供';
+        }
+      }
+      tr.appendChild(cvssCell);
       const exposureCell = document.createElement('td');
       exposureCell.className = 'px-2 py-2.5';
       exposureCell.appendChild(exposureBadge(item));

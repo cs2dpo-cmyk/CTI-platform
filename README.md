@@ -155,6 +155,24 @@ score = 100 × (0.50 × 嚴重度 + 0.30 × 利用機率 + 0.12 × 暴露 + 0.08
 （KEV／EPSS／CVSS／LOW 加上 PUBLIC／INTERNAL／NO_EXPOSURE），前端只負責翻譯成標籤，
 因此「為什麼是 P1」在後端與畫面是同一份邏輯。
 
+### CVSS 的來源（為什麼有些是空白）
+
+CVSS 只從**文章文字**抓（標題＋內文），不是資料庫欄位。實際情況：
+
+- 原始 200 筆有內文，擴充的 588 筆只有標題
+- 即使有內文，也只有約一半的報導會寫出數字（更多只寫「critical」）
+- 因此 288 個 CVE 中有 149 個（52%）原本沒有分數
+
+補救方式是 tools/refresh_cvss.py：只針對「沒有任何文章寫過分數」的 CVE，
+向 CVE.org（CIRCL 鏡像）查詢並存成 data/cvss.json。優先序是
+**文章 > CVE.org 快照 > 空白**，因為文章的分數可追溯回那一則報導。
+
+畫面上：分數後面帶「官」上標代表來自 CVE.org（文章未揭露），
+滑過可看說明；完全查不到的顯示「—」，卡片標題列另有「CVSS 未知 N」統計。
+
+要讓新快照生效必須重建資料庫（風險分數會變）：本機刪除 data/cti.db 後重啟；
+Render 每次部署都是全新檔案系統，會自動重建。
+
 ### 完整清單與匯出
 
 儀表板預設只顯示前 8 筆（給主管看的摘要），表格底部有「查看全部 288 筆」按鈕：
@@ -178,6 +196,7 @@ score = 100 × (0.50 × 嚴重度 + 0.30 × 利用機率 + 0.12 × 暴露 + 0.08
 | --- | --- | --- |
 | EPSS | data/epss.json | node tools/refresh_snapshots.mjs |
 | KEV | data/kev_ids.json | 同上 |
+| CVSS | data/cvss.json | tools/refresh_cvss.py（只補文章沒寫的） |
 | 資產 | data/assets.csv | tools/asset_import.py --file ... --apply |
 
 data/snapshots.json 記錄每個快照的來源與擷取日期；data_as_of 取**最舊**的那一個。

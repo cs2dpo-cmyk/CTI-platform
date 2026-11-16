@@ -11,7 +11,7 @@
     "kev_rows": 21,
     "base_rate": 0.875,
     "precision_at_10": 0.9,
-    "auc": 0.508,
+    "auc": 0.548,
     "categories": {
       "MALWARE": 246,
       "RESEARCH": 165,
@@ -60,7 +60,7 @@
     "kev_rows": 48,
     "base_rate": 0.676,
     "precision_at_10": 1.0,
-    "auc": 0.88,
+    "auc": 0.871,
     "categories": {
       "MALWARE": 126,
       "RESEARCH": 59,

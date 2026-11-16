@@ -19,7 +19,7 @@ from datetime import date
 from pathlib import Path
 from typing import Any, Iterable
 
-from services import classify
+from services import classify, cvss
 from services.epss import score_for
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -226,6 +226,17 @@ def load_dataset(*, refresh: bool = False) -> tuple[list[DatasetRecord], dict[st
             category, _reason = classify.classify(title)
             evidence = classify.extract_evidence(title, text)
             evidence["epss"] = score_for(evidence.get("cves"))
+            # Severity: what the article said wins (it is traceable to that
+            # headline); the CVE.org snapshot only fills the silence.
+            if evidence.get("cvss") is not None:
+                evidence["cvss_source"] = "article"
+            else:
+                fallback = cvss.score_for(evidence.get("cves"))
+                if fallback is not None:
+                    evidence["cvss"] = fallback
+                    evidence["cvss_source"] = "cve.org"
+                else:
+                    evidence["cvss_source"] = "none"
 
             source = row.get("platform") or ("THN" if region == "global" else "UNKNOWN")
             published = _parse_date(row.get(date_column, ""))

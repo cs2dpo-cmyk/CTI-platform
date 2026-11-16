@@ -26,7 +26,7 @@ def _registry() -> dict:
 
 
 def _entries(name: str) -> int | None:
-    from services import assets, epss, kev
+    from services import assets, cvss, epss, kev
 
     if name == "epss":
         return len(epss.all_scores())
@@ -34,6 +34,8 @@ def _entries(name: str) -> int | None:
         return kev.snapshot_size()
     if name == "assets":
         return len(assets.load())
+    if name == "cvss":
+        return len(cvss.all_scores())
     return None
 
 

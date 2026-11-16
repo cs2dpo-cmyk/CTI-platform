@@ -4,13 +4,13 @@
   "base_rate": 0.726,
   "cv": {
     "baseline": {
-      "mean": 0.842,
-      "std": 0.082,
+      "mean": 0.853,
+      "std": 0.089,
       "n": 50
     },
     "cvss": {
-      "mean": 0.429,
-      "std": 0.1,
+      "mean": 0.561,
+      "std": 0.143,
       "n": 50
     },
     "epss_only": {
@@ -19,22 +19,22 @@
       "n": 50
     },
     "logistic": {
-      "mean": 0.879,
-      "std": 0.085,
+      "mean": 0.878,
+      "std": 0.083,
       "n": 50
     },
     "logistic_epss": {
-      "mean": 0.897,
-      "std": 0.078,
+      "mean": 0.901,
+      "std": 0.071,
       "n": 50
     },
     "weights": {
-      "mean": 0.892,
-      "std": 0.074,
+      "mean": 0.897,
+      "std": 0.071,
       "n": 50
     },
     "weights_epss": {
-      "mean": 0.93,
+      "mean": 0.936,
       "std": 0.055,
       "n": 50
     }

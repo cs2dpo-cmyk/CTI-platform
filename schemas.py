@@ -68,6 +68,8 @@ class PatchItemOut(BaseModel):
     sla: str
     epss: float | None = None
     cvss: float | None = None
+    # "article" (stated in a headline), "cve.org" (snapshot fallback), "none".
+    cvss_source: str = "none"
     exploited: bool = False
     exposure: str = "unknown"
     exposure_label: str = ""

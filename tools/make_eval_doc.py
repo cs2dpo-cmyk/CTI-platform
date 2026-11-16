@@ -191,8 +191,12 @@ def main() -> int:
                 f"{stats['cve_rows']} | {stats['kev_rows']} | {p10} | {auc_value} |"
             )
         add()
-        add("> 重要限制一：已標註的 200 筆集中在 2025-07 之後，因此發展窗口只有")
-        add("> 31 筆可評估（AUC 0.51，等同隨機，樣本太小）；測試窗口有 169 筆。")
+        dev = splits.get("development") or {}
+        test = splits.get("test") or {}
+        if dev and test:
+            add("> 重要限制一：已標註的 200 筆集中在 2025-07 之後，因此發展窗口只有")
+            add(f"> {dev['labelled']} 筆可評估（AUC {dev['auc']:.2f}，樣本太小，不宜解讀）；"
+                f"測試窗口有 {test['labelled']} 筆。")
         add("> 限制二：EPSS/KEV 為 2026-11 快照，無法還原「當時」的利用機率。")
         add()
 

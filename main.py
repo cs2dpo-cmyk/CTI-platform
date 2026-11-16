@@ -304,6 +304,7 @@ def patch_priority_list(
             "source": record.source,
             "published_at": record.published_at,
             "cvss": record.evidence.get("cvss"),
+            "cvss_source": record.evidence.get("cvss_source"),
             "title": record.title,
             "region": record.region,
             "public_facing": record.evidence.get("exposure") == "public",

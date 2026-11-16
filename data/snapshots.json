@@ -10,5 +10,9 @@
   "assets": {
     "generated": "2026-11-13",
     "source": "data/assets.csv（示範清單，實際部署請替換為 CMDB 匯出）"
+  },
+  "cvss": {
+    "generated": "2026-11-16",
+    "source": "https://cve.circl.lu/api/cve（CVE.org 紀錄，僅補文章未揭露的分數）"
   }
 }
