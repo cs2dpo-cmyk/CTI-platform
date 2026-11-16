@@ -537,6 +537,12 @@ body::after {
   background: rgba(96, 165, 250, 0.12);
   border-color: rgba(96, 165, 250, 0.34);
 }
+/* A CVE a Taiwan source also reported: the local angle on a global list. */
+[data-tone="local"] {
+  color: #ffe6c7;
+  background: rgba(251, 146, 60, 0.16);
+  border-color: rgba(251, 146, 60, 0.5);
+}
 
 .dot {
   width: 5px;

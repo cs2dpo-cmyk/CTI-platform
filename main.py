@@ -23,7 +23,16 @@ from sqlalchemy.orm import Session, load_only
 
 import database
 import schemas
-from services import analytics, dataset, epss, kev, patch_priority, risk_engine, snapshots
+from services import (
+    analytics,
+    dataset,
+    epss,
+    kev,
+    local_impact,
+    patch_priority,
+    risk_engine,
+    snapshots,
+)
 
 logging.basicConfig(level=os.getenv("LOG_LEVEL", "INFO"),
                     format="%(asctime)s %(levelname)s %(name)s %(message)s")
@@ -296,6 +305,7 @@ def patch_priority_list(
             "published_at": record.published_at,
             "cvss": record.evidence.get("cvss"),
             "title": record.title,
+            "region": record.region,
             "public_facing": record.evidence.get("exposure") == "public",
         }
         for record in records
@@ -377,6 +387,12 @@ def list_threats(
 
     rows = db.scalars(stmt.limit(limit).offset(offset)).all()
     items = [schemas.threat_to_schema(row) for row in rows]
+    # Cross-source confirmation: how many of this article's CVEs a Taiwan source
+    # also reported. Computed only for the page that is returned.
+    if items:
+        local = local_impact.from_db(db)
+        for item in items:
+            item.taiwan_cve_hits = local_impact.hits_for(item.cve_ids, local)
     return schemas.ThreatListResponse(
         data_as_of=snapshots.as_of(),
         stale_days=snapshots.staleness_days(),

@@ -628,6 +628,9 @@
               <span>${esc(item.category_label)}</span>
               <span class="mono rounded border border-[#27384f] px-1">C${esc(item.cluster ?? '—')}</span>
               <span class="mono text-[color:var(--muted)]">${esc(item.published_at)}</span>
+              ${item.region === 'global' && item.taiwan_cve_hits > 0
+                ? `<span class="badge" data-tone="local" title="此情資提到的 CVE 也有台灣來源報導">本地通報 ×${esc(item.taiwan_cve_hits)}</span>`
+                : ''}
             </div>
           </td>
           <td>
@@ -1083,6 +1086,15 @@
         chip.textContent = key + ' ' + (counts[key] || 0);
         summary.appendChild(chip);
       });
+      const localCount = Number((data.summary && data.summary.taiwan_reported) || 0);
+      if (localCount > 0) {
+        const chip = document.createElement('span');
+        chip.className = 'badge';
+        chip.dataset.tone = 'local';
+        chip.textContent = '本地通報 ' + localCount;
+        chip.title = '清單中有 ' + localCount + ' 個 CVE 也有台灣來源報導';
+        summary.appendChild(chip);
+      }
     }
     const asOf = $('#patchAsOf');
     if (asOf) {
@@ -1098,6 +1110,20 @@
       const cve = document.createElement('td');
       cve.className = 'px-4 py-2.5 mono text-[11.5px] text-cyan-200';
       cve.textContent = item.cve;
+      if (item.taiwan_articles > 0) {
+        // The local angle: this CVE reached a Taiwanese source, not just an
+        // international feed. The title lists which articles said so.
+        const localBadge = document.createElement('span');
+        localBadge.className = 'badge ml-2';
+        localBadge.dataset.tone = 'local';
+        localBadge.textContent = item.taiwan_articles > 1
+          ? '本地通報 ×' + item.taiwan_articles
+          : '本地通報';
+        const sources = (item.taiwan_sources || []).join('、');
+        const titles = (item.taiwan_titles || []).slice(0, 3).join(' ｜ ');
+        localBadge.title = (sources ? sources + '：' : '') + (titles || '台灣來源亦有報導');
+        cve.appendChild(localBadge);
+      }
       tr.appendChild(cve);
 
       const epssCell = document.createElement('td');

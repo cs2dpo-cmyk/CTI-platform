@@ -44,6 +44,11 @@ class PatchItem:
     assets: list[str] = field(default_factory=list)
     articles: int = 0
     sources: set[str] = field(default_factory=set)
+    # A CVE that a Taiwan source also reported reached local advisories, which
+    # matters more than another international write-up.
+    taiwan_articles: int = 0
+    taiwan_sources: set[str] = field(default_factory=set)
+    taiwan_titles: list[str] = field(default_factory=list)
     first_seen: date | None = None
     priority: str = "P3"
 
@@ -89,6 +94,9 @@ class PatchItem:
             "assets": self.assets,
             "articles": self.articles,
             "sources": sorted(self.sources),
+            "taiwan_articles": self.taiwan_articles,
+            "taiwan_sources": sorted(self.taiwan_sources),
+            "taiwan_titles": self.taiwan_titles,
             "first_seen": self.first_seen.isoformat() if self.first_seen else None,
             "reason": self.reason,
         }
@@ -149,6 +157,12 @@ def build(rows: list[dict], epss: dict[str, float], use_exposure: bool = True) -
             title = row.get("title") or ""
             if title:
                 titles[key].append(title)
+            if (row.get("region") or "").lower() == "taiwan":
+                item.taiwan_articles += 1
+                if row.get("source"):
+                    item.taiwan_sources.add(row["source"])
+                if title and len(item.taiwan_titles) < 3:
+                    item.taiwan_titles.append(title)
             if row.get("public_facing"):
                 public[key] = True
 
@@ -175,6 +189,7 @@ def summarize(items: list[PatchItem]) -> dict:
         "by_priority": counts,
         "exploited": sum(1 for item in items if item.exploited),
         "exposed": sum(1 for item in items if item.exposed),
+        "taiwan_reported": sum(1 for item in items if item.taiwan_articles),
         "exposure_sources": {
             source: sum(1 for item in items if item.exposure_source == source)
             for source in ("manual", "inventory", "reported", "inferred", "none")

@@ -335,6 +335,26 @@ def test_patch_priority_filter(client: TestClient):
     assert all(item["priority"] == "P1" for item in body["items"])
 
 
+def test_patch_priority_flags_taiwan_reported_cves(client: TestClient):
+    body = client.get("/api/v1/patch-priority", params={"limit": 300}).json()
+    assert "taiwan_reported" in body["summary"]
+    flagged = [item for item in body["items"] if item["taiwan_articles"]]
+    assert flagged, "語料中應有 CVE 同時被台灣來源報導"
+    assert any(item["taiwan_sources"] for item in flagged)
+    assert all(item["taiwan_articles"] <= item["articles"] for item in body["items"])
+    assert body["summary"]["taiwan_reported"] == len(flagged)
+
+
+def test_threats_report_local_cve_hits(client: TestClient):
+    body = client.get("/api/v1/threats", params={"limit": 200}).json()
+    rows = [item for item in body["items"] if item["taiwan_cve_hits"]]
+    assert rows, "應有情資的 CVE 與台灣來源重疊"
+    for item in body["items"]:
+        assert 0 <= item["taiwan_cve_hits"] <= len(item["cve_ids"])
+    hit = rows[0]
+    assert hit["taiwan_cve_hits"] >= 1 and hit["cve_ids"]
+
+
 def test_threats_dedupe_filter(client: TestClient):
     all_rows = client.get("/api/v1/threats?limit=200&dedupe=false").json()
     deduped = client.get("/api/v1/threats?limit=200").json()  # dedupe defaults on

@@ -55,6 +55,8 @@ class ThreatOut(BaseModel):
     action_plan: list[ActionStep] = Field(default_factory=list)
     cve_id: str | None = None
     cve_ids: list[str] = Field(default_factory=list)
+    # How many of the CVEs above a Taiwan source also reported.
+    taiwan_cve_hits: int = 0
     duplicate_of: int | None = None
     published_at: date
     created_at: datetime | None = None
@@ -72,6 +74,9 @@ class PatchItemOut(BaseModel):
     assets: list[str] = Field(default_factory=list)
     articles: int = 0
     sources: list[str] = Field(default_factory=list)
+    taiwan_articles: int = 0
+    taiwan_sources: list[str] = Field(default_factory=list)
+    taiwan_titles: list[str] = Field(default_factory=list)
     first_seen: str | None = None
     reason: str = ""
 
