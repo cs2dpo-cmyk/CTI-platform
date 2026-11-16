@@ -208,12 +208,14 @@ assert($('#apiStatus').textContent.includes('已連線'), 'API status pill updat
     `y tick colour is the muted axis tone (got ${bar.options.scales.y.ticks.color})`
   );
 
+  // The legend uses short labels; the full source names live in the panel
+  // header badge, so those are asserted where they are rendered instead.
   assert(
-    items[0].text.includes('台灣 (TWCERT + iThome)'),
+    items[0].text.startsWith('台灣'),
     `legend names the Taiwan source (got "${items[0].text}")`
   );
   assert(
-    items[1].text.includes('國際 (The Hacker News)'),
+    items[1].text.startsWith('國際'),
     `legend names the global source (got "${items[1].text}")`
   );
   assert(/·\s*\d+\s*篇/.test(items[0].text), `legend shows totals (got "${items[0].text}")`);
@@ -298,6 +300,18 @@ assert($$('#feedBody .feed-detail-row .step').length > 0, 'row detail shows play
     ($('#gapWindowTotal').textContent || '').trim() !== '—',
     'KEV gap panel reports the window total'
   );
+}
+
+// ------------------------------------------------------------- tab switching
+{
+  const pick = (name) => $$('.tab-btn').find((btn) => btn.dataset.tab === name);
+  pick('patch').dispatchEvent(new window.MouseEvent('click', { bubbles: true }));
+  await wait(300);
+  assert(!$('#patchSection').classList.contains('hidden'), 'patch tab reveals the patch list');
+  assert($('#feed').classList.contains('hidden'), 'feed is hidden while the patch tab is open');
+  pick('overview').dispatchEvent(new window.MouseEvent('click', { bubbles: true }));
+  await wait(300);
+  assert(!$('#overview').classList.contains('hidden'), 'overview tab restores the dashboard');
 }
 
 // ---------------------------------------------------------- interaction: matrix

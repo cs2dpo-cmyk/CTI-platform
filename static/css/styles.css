@@ -404,6 +404,27 @@ body::after {
 }
 
 /* Navigation ------------------------------------------------------------- */
+/* Tab buttons reuse the nav-link look but need an explicit selected state:
+   without it a user cannot tell which workflow step is on screen. */
+.tab-btn {
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  font: inherit;
+}
+.tab-btn[aria-selected="true"] {
+  color: #e8f8ff;
+  background: rgba(34, 211, 238, 0.12);
+  border-radius: 8px;
+}
+.flow-step {
+  cursor: pointer;
+}
+.flow-step:hover {
+  border-color: rgba(34, 211, 238, 0.55);
+  color: #d9f6ff;
+}
+
 .nav-link {
   position: relative;
   padding: 6px 10px;

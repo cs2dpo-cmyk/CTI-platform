@@ -251,7 +251,9 @@ const CTICharts = (() => {
               font: { size: 10.5, weight: '500' },
               generateLabels: (chart) =>
                 chart.data.datasets.map((dataset, index) => ({
-                  text: `${dataset.label} · ${dataset.data.reduce((sum, value) => sum + value, 0)} 篇`,
+                  // Full source names live in the panel header badge; the legend
+                  // only has room for the short form before it clips.
+                  text: `${String(dataset.label).split(' (')[0]} · ${dataset.data.reduce((sum, value) => sum + value, 0)} 篇`,
                   fillStyle: dataset.backgroundColor,
                   strokeStyle: dataset.hoverBackgroundColor,
                   fontColor: COMPARISON_LEGEND_TEXT[index] || '#FFFFFF',

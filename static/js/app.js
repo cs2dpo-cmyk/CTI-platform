@@ -326,13 +326,12 @@
         ? `時間軸為來源實際發布日期（已驗證 ${num(verified)} 筆${estimated ? `，推估 ${num(estimated)} 筆` : ''}）`
         : '原始 CSV 未含發布日期，時間軸依擷取順序回推';
 
-    const accuracy = info.validation?.accuracy;
     const classified = Object.entries(info.classification || {})
       .map(([key, value]) => `${key} ${num(value)}`)
       .join(' / ');
-    const labelNote = accuracy
-      ? `逐篇規則分類（${classified}；對 ${num(info.validation?.n ?? 0)} 筆人工標註準確率 ${Math.round(accuracy * 100)}%）`
-      : '逐篇規則分類（services/classify.py）';
+    // The in-sample figure lived here and contradicted the held-out number in
+    // the hero; the dashboard points at the evaluation document instead.
+    const labelNote = `逐篇規則分類（${classified}；準確率與 κ 見評估文件）`;
 
     node.textContent = `資料來源：${files || '—'}（匯出 ${esc(info.exported_at || '—')}，台灣 ${
       num(rows.taiwan ?? 0)
@@ -837,6 +836,13 @@
     $('#resultConfidence').textContent = result.cve_id || '無 CVE';
     $('#resultSummary').textContent = result.summary;
     $('#resultOwner').textContent = result.owner;
+    // Same vocabulary as the patch table: which signals produced this band.
+    const topFactors = [...result.factors].sort((a, b) => b.points - a.points).slice(0, 2);
+    $('#resultPath').innerHTML = topFactors
+      .map((factor) => `<span class="chip" data-tone="low">${esc(factor.label)} +${esc(factor.points)}</span>`)
+      .join('')
+      + `<span class="mono text-[10px] text-[color:var(--faint)]">→ ${esc(result.priority)} · ${esc(result.sla_hours)}h</span>`;
+
     $('#assessIdBadge').textContent = `#${result.assessment_id}`;
     $('#planCount').textContent = `${result.action_plan.length} steps`;
 
@@ -1095,6 +1101,44 @@
     wrap.appendChild(outcome);
     td.appendChild(wrap);
     return td;
+  }
+
+  /* ------------------------------------------------------------------ tabs */
+  const TABS = ['overview', 'patch', 'assess', 'feed'];
+
+  function showTab(name, options) {
+    const settings = options || {};
+    const target = TABS.includes(name) ? name : 'overview';
+    // Only the sections in <main> are toggled: the nav buttons carry data-tab
+    // too, and hiding them would remove the control that does the switching.
+    $$('main [data-tab]').forEach((node) => {
+      node.classList.toggle('hidden', node.dataset.tab !== target);
+    });
+    $$('.tab-btn').forEach((btn) => {
+      btn.setAttribute('aria-selected', String(btn.dataset.tab === target));
+    });
+    if (settings.updateHash !== false) {
+      history.replaceState(null, '', '#' + target);
+    }
+    // A chart drawn while its section was hidden collapses to zero height, so
+    // redraw the overview charts when the user comes back to them.
+    if (target === 'overview' && state.stats && typeof CTICharts !== 'undefined') {
+      requestAnimationFrame(() => CTICharts.renderStats(state.stats));
+    }
+  }
+
+  function bindTabs() {
+    $$('.tab-btn').forEach((btn) => {
+      btn.addEventListener('click', () => showTab(btn.dataset.tab));
+    });
+    $$('[data-goto]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        showTab(btn.dataset.goto);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+    });
+    const initial = (location.hash || '').replace('#', '');
+    showTab(initial || 'overview', { updateHash: false });
   }
 
   /* --------------------------------------------------------------- KEV gap */
@@ -1510,6 +1554,7 @@
 
   async function init() {
     stampBuild();
+    bindTabs();
     bindFilters();
     bindFeed();
     bindForm();

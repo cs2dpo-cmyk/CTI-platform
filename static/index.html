@@ -34,7 +34,7 @@
     rel="stylesheet"
   />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.6/dist/chart.umd.min.js" defer></script>
-  <link rel="stylesheet" href="/static/css/styles.css?v=20261116f" />
+  <link rel="stylesheet" href="/static/css/styles.css?v=20261117b" />
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23060a11'/%3E%3Cpath d='M16 5l9 4v7c0 5.5-3.8 10-9 11-5.2-1-9-5.5-9-11V9l9-4z' fill='none' stroke='%2322d3ee' stroke-width='2'/%3E%3C/svg%3E" />
 </head>
 
@@ -84,11 +84,11 @@
         </div>
       </div>
 
-      <nav class="hidden items-center gap-1 lg:flex" aria-label="區塊導覽">
-        <a class="nav-link" href="#overview">總覽</a>
-        <a class="nav-link" href="#assess">即時評估</a>
-        <a class="nav-link" href="#matrix">決策矩陣</a>
-        <a class="nav-link" href="#feed">情資流</a>
+      <nav class="flex items-center gap-1 overflow-x-auto" id="tabNav" aria-label="區塊分頁" role="tablist">
+        <button class="nav-link tab-btn" type="button" role="tab" data-tab="overview" aria-selected="true">總覽</button>
+        <button class="nav-link tab-btn" type="button" role="tab" data-tab="patch" aria-selected="false">修補清單</button>
+        <button class="nav-link tab-btn" type="button" role="tab" data-tab="assess" aria-selected="false">即時評估</button>
+        <button class="nav-link tab-btn" type="button" role="tab" data-tab="feed" aria-selected="false">情資流</button>
       </nav>
 
       <div class="flex items-center gap-2">
@@ -107,7 +107,7 @@
   <main id="main" class="mx-auto max-w-[1440px] space-y-5 px-4 py-6 sm:px-6 lg:space-y-6 lg:px-8 lg:py-8">
 
     <!-- ===================== Hero ===================== -->
-    <section class="panel reveal overflow-hidden" aria-labelledby="heroTitle">
+    <section class="panel reveal overflow-hidden" data-tab="overview" aria-labelledby="heroTitle">
       <div class="grid gap-6 p-5 sm:p-6 lg:grid-cols-[1.55fr_1fr] lg:gap-8">
         <div class="space-y-3">
           <div class="flex flex-wrap items-center gap-2">
@@ -128,6 +128,13 @@
             以 TF-IDF 向量化與 K-Means 分群梳理 788 篇跨平台情資，再以逐篇規則分類與可解釋的
             加權風險模型，即時輸出 P1–P3 處置建議與回應 SLA，讓 CISO 在時間差中提前部署防禦資源。
           </p>
+          <div class="flex flex-wrap items-center gap-2 pt-1 text-[11px]">
+            <button class="chip flow-step" type="button" data-goto="overview">① 看態勢<span class="ml-1 opacity-55">總覽</span></button>
+            <span class="text-[color:var(--faint)]">→</span>
+            <button class="chip flow-step" type="button" data-goto="patch">② 排修補<span class="ml-1 opacity-55">P1–P3 與 SLA</span></button>
+            <span class="text-[color:var(--faint)]">→</span>
+            <button class="chip flow-step" type="button" data-goto="assess">③ 評風險<span class="ml-1 opacity-55">情境評估</span></button>
+          </div>
           <div class="flex flex-wrap items-center gap-x-5 gap-y-2 pt-1 text-[11px] text-[color:var(--faint)]">
             <span class="mono">TF-IDF · 1,000 dims</span>
             <span class="h-3 w-px bg-[#27384f]"></span>
@@ -167,7 +174,7 @@
     </section>
 
     <!-- ===================== KPI row ===================== -->
-    <section id="overview" class="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4 stagger" aria-label="關鍵指標">
+    <section id="overview" data-tab="overview" class="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4 stagger" aria-label="關鍵指標">
       <article class="panel kpi panel-hover">
         <div class="kpi-label"><span>解析情資樣本</span><span class="mono text-[10.5px] text-[color:var(--faint)]">CORPUS</span></div>
         <div class="kpi-value" id="kpiTotal">—</div>
@@ -199,10 +206,10 @@
       </article>
     </section>
 
-    <p class="mono -mt-2 px-1 text-[10.5px] text-[color:var(--faint)]" id="sampleNote"></p>
+    <p class="mono -mt-2 px-1 text-[10.5px] text-[color:var(--faint)]" id="sampleNote" data-tab="overview"></p>
 
     <!-- ===================== Charts ===================== -->
-    <section class="grid grid-cols-1 gap-4 lg:grid-cols-12 lg:gap-5" aria-label="情資視覺化">
+    <section data-tab="overview" class="grid grid-cols-1 gap-4 lg:grid-cols-12 lg:gap-5" aria-label="情資視覺化">
       <article class="panel panel-hover lg:col-span-5 reveal">
         <div class="panel-head">
           <div>
@@ -288,7 +295,7 @@
     </section>
 
     <!-- ===================== Risk console ===================== -->
-    <section id="assess" class="grid grid-cols-1 gap-4 lg:grid-cols-12 lg:gap-5" aria-labelledby="assessTitle">
+    <section id="assess" data-tab="assess" class="grid grid-cols-1 gap-4 lg:grid-cols-12 lg:gap-5" aria-labelledby="assessTitle">
       <article class="panel lg:col-span-7">
         <div class="panel-head">
           <div>
@@ -473,6 +480,8 @@
               </div>
             </div>
 
+            <div id="resultPath" class="flex flex-wrap items-center gap-1.5"></div>
+
             <p class="rounded-lg border border-[#1b2739] bg-[#08101b]/80 p-2.5 text-[11.5px] leading-relaxed text-[color:var(--muted)]" id="resultSummary">—</p>
 
             <div>
@@ -498,7 +507,7 @@
     </section>
 
     <!-- ===================== Decision matrix ===================== -->
-    <section id="matrix" class="panel" aria-labelledby="matrixTitle">
+    <section id="matrix" data-tab="overview" class="panel" aria-labelledby="matrixTitle">
       <div class="panel-head flex-wrap">
         <div>
           <h3 id="matrixTitle" class="panel-title"><svg class="ico ico-sm text-amber-300"><use href="#i-sliders" /></svg>P1–P3 決策矩陣</h3>
@@ -519,7 +528,7 @@
     </section>
 
     <!-- ===================== Feed ===================== -->
-    <section id="feed" class="panel" aria-labelledby="feedTitle">
+    <section id="feed" data-tab="feed" class="panel" aria-labelledby="feedTitle">
       <div class="panel-head flex-col gap-3 md:flex-row md:items-center">
         <div>
           <h3 id="feedTitle" class="panel-title"><svg class="ico ico-sm text-cyan-400"><use href="#i-list" /></svg>情資流與 AI 分群明細</h3>
@@ -589,7 +598,7 @@
     </section>
 
     <!-- ===================== Patch priority (EPSS) ===================== -->
-    <section class="panel" id="patchSection" aria-labelledby="patchTitle">
+    <section class="panel" id="patchSection" data-tab="patch" aria-labelledby="patchTitle">
       <div class="panel-head flex-col gap-3 md:flex-row md:items-center">
         <div>
           <h3 id="patchTitle" class="panel-title"><svg class="ico ico-sm text-cyan-400"><use href="#i-shield" /></svg>修補優先級（EPSS + KEV）</h3>
@@ -643,7 +652,7 @@
     </section>
 
     <!-- ===================== KEV coverage gap ===================== -->
-    <section class="panel" id="gapSection" aria-labelledby="gapTitle">
+    <section class="panel" id="gapSection" data-tab="patch" aria-labelledby="gapTitle">
       <div class="panel-head flex-col gap-3 md:flex-row md:items-center">
         <div>
           <h3 id="gapTitle" class="panel-title"><svg class="ico ico-sm text-amber-300"><use href="#i-alert" /></svg>已知被利用但未收錄</h3>
@@ -684,7 +693,7 @@
     </section>
 
     <!-- ===================== Insights ===================== -->
-    <section class="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-4 stagger" id="insightGrid" aria-label="AI 洞察"></section>
+    <section class="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-4 stagger" id="insightGrid" data-tab="overview" aria-label="AI 洞察"></section>
 
   </main>
 
@@ -711,8 +720,8 @@
 
   <div class="toast-stack" id="toastStack" aria-live="polite" aria-atomic="false"></div>
 
-  <script src="/static/js/charts.js?v=20261116f" defer></script>
-  <script src="/static/js/app.js?v=20261116f" defer></script>
-  <script src="/static/js/rain.js?v=20261116f" defer></script>
+  <script src="/static/js/charts.js?v=20261117b" defer></script>
+  <script src="/static/js/app.js?v=20261117b" defer></script>
+  <script src="/static/js/rain.js?v=20261117b" defer></script>
 </body>
 </html>
