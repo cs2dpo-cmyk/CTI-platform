@@ -81,9 +81,34 @@ class PatchItem:
             return f"{signal}；內網資產（人工指定）→ 降一級"
         return f"{signal}；未取得曝險資訊，維持原級"
 
+    @property
+    def path(self) -> list[str]:
+        """The decision path as tokens, so the UI can render it as chips.
+
+        The reason field says the same thing as prose; this is the auditable
+        form (which signals fired, in band order) shown beside the band.
+        """
+        tokens: list[str] = []
+        if self.exploited:
+            tokens.append("KEV")
+        elif (self.epss or 0.0) >= EPSS_SCHEDULE:
+            tokens.append("EPSS")
+        elif (self.cvss or 0.0) >= CVSS_SCHEDULE:
+            tokens.append("CVSS")
+        else:
+            tokens.append("LOW")
+        if self.exposed:
+            tokens.append("PUBLIC")
+        elif self.exposure == exposure_ctx.INTERNAL:
+            tokens.append("INTERNAL")
+        else:
+            tokens.append("NO_EXPOSURE")
+        return tokens
+
     def as_dict(self) -> dict:
         return {
             "cve": self.cve,
+            "path": self.path,
             "priority": self.priority,
             "sla": self.sla,
             "epss": None if self.epss is None else round(self.epss, 4),

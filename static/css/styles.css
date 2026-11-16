@@ -543,6 +543,31 @@ body::after {
   background: rgba(251, 146, 60, 0.16);
   border-color: rgba(251, 146, 60, 0.5);
 }
+[data-tone="exposed"] {
+  color: #c9f2ff;
+  background: rgba(34, 211, 238, 0.12);
+  border-color: rgba(34, 211, 238, 0.38);
+}
+[data-tone="internal"] {
+  color: #d7e3f4;
+  background: rgba(148, 163, 184, 0.14);
+  border-color: rgba(148, 163, 184, 0.4);
+}
+
+/* Decision-path chips: smaller than .badge so two fit in one table cell. */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 1.5px 7px;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
 
 .dot {
   width: 5px;

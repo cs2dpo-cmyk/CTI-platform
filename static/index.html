@@ -34,7 +34,7 @@
     rel="stylesheet"
   />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.6/dist/chart.umd.min.js" defer></script>
-  <link rel="stylesheet" href="/static/css/styles.css?v=20261116a" />
+  <link rel="stylesheet" href="/static/css/styles.css?v=20261116b" />
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23060a11'/%3E%3Cpath d='M16 5l9 4v7c0 5.5-3.8 10-9 11-5.2-1-9-5.5-9-11V9l9-4z' fill='none' stroke='%2322d3ee' stroke-width='2'/%3E%3C/svg%3E" />
 </head>
 
@@ -114,14 +114,18 @@
             <span class="badge badge-p3">
               <span class="dot"></span>研究 PoC · v1.0
             </span>
-            <span class="badge" data-tone="low">平衡語料 50 台灣 : 50 國際</span>
+            <span class="badge" data-tone="tw" title="本系統的預設使用者：負責內部資產曝險與修補分流的企業部署商">
+              <svg class="ico ico-sm" style="width:12px;height:12px"><use href="#i-shield" /></svg>
+              部署商 Deployer · 內部資產曝險與修補分流
+            </span>
+            <span class="badge" data-tone="low">語料 788 篇 · 平衡對照 200</span>
           </div>
           <h2 id="heroTitle" class="headline text-xl font-semibold text-white sm:text-2xl lg:text-[26px]">
             全球預警 × 在地落地，
             <span class="text-cyan-300">把情資聲量換算成可執行的優先級</span>
           </h2>
           <p class="prose-cap text-[13px] leading-relaxed text-[color:var(--muted)]">
-            以 TF-IDF 向量化與 K-Means 分群梳理 100 篇跨平台情資，再以逐篇規則分類與可解釋的
+            以 TF-IDF 向量化與 K-Means 分群梳理 788 篇跨平台情資，再以逐篇規則分類與可解釋的
             加權風險模型，即時輸出 P1–P3 處置建議與回應 SLA，讓 CISO 在時間差中提前部署防禦資源。
           </p>
           <div class="flex flex-wrap items-center gap-x-5 gap-y-2 pt-1 text-[11px] text-[color:var(--faint)]">
@@ -129,7 +133,7 @@
             <span class="h-3 w-px bg-[#27384f]"></span>
             <span class="mono">逐篇規則分類</span>
             <span class="h-3 w-px bg-[#27384f]"></span>
-            <span class="mono">分類準確率 91%</span>
+            <span class="mono">分類 held-out 73%</span>
             <span class="h-3 w-px bg-[#27384f]"></span>
             <span class="mono">FastAPI + SQLite</span>
           </div>
@@ -143,7 +147,7 @@
           </div>
           <div class="rounded-xl border border-[#1b2739] bg-[#0a111c]/70 p-3">
             <div class="kicker">情資語料</div>
-            <div class="mt-1.5 font-mono text-lg font-semibold text-cyan-300" id="heroCorpus">100<span class="ml-1 text-[11px] text-[color:var(--faint)]">篇</span></div>
+            <div class="mt-1.5 font-mono text-lg font-semibold text-cyan-300" id="heroCorpus">788<span class="ml-1 text-[11px] text-[color:var(--faint)]">篇</span></div>
             <p class="mt-1 text-[11px] text-[color:var(--faint)]">TWCERT · iThome · THN</p>
           </div>
           <div class="rounded-xl border border-[#1b2739] bg-[#0a111c]/70 p-3">
@@ -647,8 +651,8 @@
 
   <div class="toast-stack" id="toastStack" aria-live="polite" aria-atomic="false"></div>
 
-  <script src="/static/js/charts.js?v=20261116a" defer></script>
-  <script src="/static/js/app.js?v=20261116a" defer></script>
-  <script src="/static/js/rain.js?v=20261116a" defer></script>
+  <script src="/static/js/charts.js?v=20261116b" defer></script>
+  <script src="/static/js/app.js?v=20261116b" defer></script>
+  <script src="/static/js/rain.js?v=20261116b" defer></script>
 </body>
 </html>

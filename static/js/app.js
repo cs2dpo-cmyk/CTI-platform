@@ -1058,6 +1058,42 @@
     return span;
   }
 
+  // Decision path: which signals fired, in band order, plus the resulting band.
+  // Rendered as chips so a reviewer can audit the band without reading prose.
+  const PATH_META = {
+    KEV: { label: '積極利用', tone: 'critical' },
+    EPSS: { label: '高利用機率', tone: 'elevated' },
+    CVSS: { label: 'CVSS ≥ 9', tone: 'elevated' },
+    LOW: { label: '低度利用', tone: 'low' },
+    // The arrow is the point: the exposure column shows the state, the chip
+    // shows what it did to the band.
+    PUBLIC: { label: '對外曝險 ↗', tone: 'exposed' },
+    INTERNAL: { label: '內網 ↘', tone: 'internal' },
+    NO_EXPOSURE: { label: '無曝險訊號', tone: 'low' },
+  };
+
+  function pathCell(item) {
+    const td = document.createElement('td');
+    td.className = 'px-4 py-2.5';
+    td.title = item.reason || '';
+    const wrap = document.createElement('div');
+    wrap.className = 'flex flex-wrap items-center gap-1';
+    (item.path || []).forEach((token) => {
+      const meta = PATH_META[token] || { label: token, tone: 'low' };
+      const chip = document.createElement('span');
+      chip.className = 'chip';
+      chip.dataset.tone = meta.tone;
+      chip.textContent = meta.label;
+      wrap.appendChild(chip);
+    });
+    const outcome = document.createElement('span');
+    outcome.className = 'mono text-[10px] text-[color:var(--faint)]';
+    outcome.textContent = '→ ' + item.priority;
+    wrap.appendChild(outcome);
+    td.appendChild(wrap);
+    return td;
+  }
+
   function patchBadge(priority) {
     const span = document.createElement('span');
     span.className = 'badge badge-' + priority.toLowerCase();
@@ -1164,7 +1200,7 @@
       tr.appendChild(badgeCell);
 
       tr.appendChild(patchCell(item.sla, 'px-2 py-2.5 text-[11.5px] text-slate-300'));
-      tr.appendChild(patchCell(item.reason, 'px-4 py-2.5 text-[11.5px] text-[color:var(--muted)]'));
+      tr.appendChild(pathCell(item));
       fragment.appendChild(tr);
     });
     body.appendChild(fragment);

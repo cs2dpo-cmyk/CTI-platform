@@ -79,6 +79,9 @@ class PatchItemOut(BaseModel):
     taiwan_titles: list[str] = Field(default_factory=list)
     first_seen: str | None = None
     reason: str = ""
+    # Which signals produced the band: KEV / EPSS / CVSS / LOW, then PUBLIC /
+    # INTERNAL / NO_EXPOSURE. Rendered as chips so the decision is auditable.
+    path: list[str] = Field(default_factory=list)
 
 
 class PatchPriorityResponse(DataProvenance):

@@ -345,6 +345,19 @@ def test_patch_priority_flags_taiwan_reported_cves(client: TestClient):
     assert body["summary"]["taiwan_reported"] == len(flagged)
 
 
+def test_patch_priority_exposes_decision_path(client: TestClient):
+    body = client.get("/api/v1/patch-priority", params={"limit": 50}).json()
+    assert body["items"]
+    for item in body["items"]:
+        assert item["path"], "每筆修補項目都要有決策路徑"
+        assert item["path"][0] in {"KEV", "EPSS", "CVSS", "LOW"}
+        assert item["path"][-1] in {"PUBLIC", "INTERNAL", "NO_EXPOSURE"}
+        if item["exploited"]:
+            assert item["path"][0] == "KEV", "KEV 必須是路徑的第一個訊號"
+        if item["priority"] == "P1" and item["exploited"]:
+            assert item["path"][0] == "KEV"
+
+
 def test_threats_report_local_cve_hits(client: TestClient):
     body = client.get("/api/v1/threats", params={"limit": 200}).json()
     rows = [item for item in body["items"] if item["taiwan_cve_hits"]]
