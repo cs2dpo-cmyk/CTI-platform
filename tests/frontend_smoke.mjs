@@ -347,6 +347,13 @@ assert($('#scoreValue').textContent.trim().length > 0 && $('#scoreValue').textCo
 assert($('#priorityBadge').textContent.trim() === 'P1', `assessment priority (got "${$('#priorityBadge').textContent}")`);
 assert($$('#factorList .factor').length === 5, `factor rows (got ${$$('#factorList .factor').length})`);
 assert($$('#resultPlan .step').length >= 3, 'assessment playbook rendered');
+assert(
+  /%$/.test($('#scoreMarker').style.left) && parseFloat($('#scoreMarker').style.left) > 0,
+  `score marker sits on the threshold rail (got "${$('#scoreMarker').style.left}")`
+);
+assert($$('#resultPath .chip').length === 2, `decision path chips (got ${$$('#resultPath .chip').length})`);
+await wait(900);
+assert($$('#whatIf .chip').length >= 1, `what-if comparison rendered (got ${$$('#whatIf .chip').length})`);
 
 // --------------------------------------------------------------- invalid CVE path
 $('#cveId').value = 'CVE-26-1';

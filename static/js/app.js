@@ -775,6 +775,7 @@
     try {
       const result = await api('/assess', { method: 'POST', body: JSON.stringify(payload) });
       renderAssessment(result);
+      renderWhatIf(payload, result);
       toast(`評估完成：${result.priority} · 風險分數 ${result.score}`, 'success');
     } catch (error) {
       toast(`評估失敗：${error.message}`, 'error');
@@ -815,6 +816,60 @@
     requestAnimationFrame(tick);
   }
 
+  const WHATIF_CONTROLS = {
+    edr: 'EDR',
+    mfa: 'MFA',
+    waf: 'WAF / IPS',
+    segmentation: '網段隔離',
+    backup: '3-2-1 備份',
+    patch_pipeline: '自動化修補',
+  };
+
+  // "What would it take to downgrade this?" is the question a CISO actually
+  // asks, and it is answerable by re-running the same assessment with one
+  // input changed. Two variants keep the request count predictable.
+  async function renderWhatIf(payload, result) {
+    const box = $('#whatIf');
+    if (!box) return;
+    box.textContent = '';
+    const chosen = new Set(payload.controls || []);
+    const variants = [];
+    const missing = Object.keys(WHATIF_CONTROLS).find((key) => !chosen.has(key));
+    if (missing) {
+      variants.push({ label: '加 ' + WHATIF_CONTROLS[missing], body: { ...payload, controls: [...chosen, missing] } });
+    }
+    if (payload.exposure !== 'internal') {
+      variants.push({ label: '改為內網', body: { ...payload, exposure: 'internal' } });
+    }
+    const note = $('#whatIfNote');
+    if (!variants.length) {
+      if (note) note.textContent = '已套用全部控制項';
+      return;
+    }
+    if (note) note.textContent = '以相同條件試算';
+
+    const settled = await Promise.all(
+      variants.map(async (variant) => {
+        try {
+          const next = await api('/assess', { method: 'POST', body: JSON.stringify(variant.body) });
+          return { label: variant.label, score: Number(next.score), priority: next.priority };
+        } catch {
+          return null;
+        }
+      })
+    );
+
+    settled.filter(Boolean).forEach((row) => {
+      const chip = document.createElement('span');
+      chip.className = 'chip';
+      chip.dataset.tone = row.priority === 'P1' ? 'critical' : row.priority === 'P2' ? 'elevated' : 'low';
+      const delta = Math.round(row.score - Number(result.score));
+      chip.textContent = `${row.label} → ${Math.round(row.score)} 分（${row.priority}，${delta >= 0 ? '+' : ''}${delta}）`;
+      chip.title = '以相同條件試算，只改變這一項';
+      box.appendChild(chip);
+    });
+  }
+
   function renderAssessment(result) {
     $('#assessEmpty').classList.add('hidden');
     const panel = $('#assessResult');
@@ -822,6 +877,12 @@
 
     const tone = PRIORITY_TONE[result.priority] || '#22d3ee';
     animateScore(result.score, tone);
+
+    const marker = $('#scoreMarker');
+    if (marker) {
+      const position = Math.max(0, Math.min(100, Number(result.score) || 0));
+      marker.style.left = position + '%';
+    }
 
     const badge = $('#priorityBadge');
     badge.textContent = result.priority;
