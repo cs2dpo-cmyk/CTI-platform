@@ -1044,6 +1044,9 @@
 
   /* -------------------------------------------------------- patch priority */
   let patchExposure = true;
+  let patchExpanded = false;
+  let patchData = null;
+  const patchFilter = { q: '', priority: '', local: false };
 
   function exposureBadge(item) {
     const span = document.createElement('span');
@@ -1109,11 +1112,117 @@
   }
 
   // Values from the API are untrusted: every cell goes through textContent.
+  function patchFilteredItems(items) {
+    const needle = patchFilter.q.toLowerCase();
+    return items.filter((item) => {
+      if (patchFilter.priority && item.priority !== patchFilter.priority) return false;
+      if (patchFilter.local && !(item.taiwan_articles > 0)) return false;
+      if (needle && !String(item.cve || '').toLowerCase().includes(needle)) return false;
+      return true;
+    });
+  }
+
+  function updatePatchFooter(data, shown) {
+    const total = Number(data.total || (data.items || []).length);
+    const count = $('#patchCount');
+    if (count) {
+      count.textContent = patchExpanded
+        ? '顯示 ' + shown.length + ' / ' + total + ' 筆'
+        : '僅顯示前 ' + shown.length + ' 筆（共 ' + total + '）';
+    }
+    const filters = $('#patchFilters');
+    if (filters) filters.hidden = !patchExpanded;
+    const exportBtn = $('#patchExport');
+    if (exportBtn) exportBtn.hidden = !patchExpanded;
+    const viewAll = $('#patchViewAll');
+    if (viewAll) {
+      viewAll.textContent = patchExpanded ? '收合（只看前 8 筆）' : '查看全部 ' + total + ' 筆';
+    }
+  }
+
+  // CSV export works on what is on screen, so an engineer can export a filtered
+  // slice (e.g. only P1, or only Taiwan-reported CVEs) without a second UI.
+  function exportPatchCsv(items) {
+    const header = ['cve', 'priority', 'sla', 'epss', 'cvss', 'exposure', 'articles', 'taiwan_articles', 'path', 'reason'];
+    const cell = (value) => '"' + String(value == null ? '' : value).replace(/"/g, '""') + '"';
+    const lines = [header.join(',')].concat(
+      items.map((item) => [
+        item.cve,
+        item.priority,
+        item.sla,
+        item.epss == null ? '' : item.epss,
+        item.cvss == null ? '' : item.cvss,
+        item.exposure_label || item.exposure,
+        item.articles,
+        item.taiwan_articles || 0,
+        (item.path || []).join('+'),
+        item.reason || '',
+      ].map(cell).join(','))
+    );
+    // The BOM keeps Excel from mangling the Chinese in the reason column.
+    const blob = new Blob(['\ufeff' + lines.join('\r\n')], { type: 'text/csv;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'patch-priority-' + new Date().toISOString().slice(0, 10) + '.csv';
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(url);
+  }
+
+  function bindPatchControls() {
+    const viewAll = $('#patchViewAll');
+    if (viewAll) {
+      viewAll.addEventListener('click', () => {
+        patchExpanded = !patchExpanded;
+        loadPatchPriority();
+      });
+    }
+    const search = $('#patchSearch');
+    if (search) {
+      let timer = null;
+      search.addEventListener('input', () => {
+        clearTimeout(timer);
+        timer = setTimeout(() => {
+          patchFilter.q = search.value.trim();
+          if (patchData) renderPatchPriority(patchData);
+        }, 180);
+      });
+    }
+    document.querySelectorAll('[data-patch-prio]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const value = btn.dataset.patchPrio;
+        patchFilter.priority = patchFilter.priority === value ? '' : value;
+        document.querySelectorAll('[data-patch-prio]').forEach((node) => {
+          node.setAttribute('aria-pressed', String(node.dataset.patchPrio === patchFilter.priority));
+        });
+        if (patchData) renderPatchPriority(patchData);
+      });
+    });
+    const localOnly = $('#patchLocalOnly');
+    if (localOnly) {
+      localOnly.addEventListener('click', () => {
+        patchFilter.local = !patchFilter.local;
+        localOnly.setAttribute('aria-pressed', String(patchFilter.local));
+        if (patchData) renderPatchPriority(patchData);
+      });
+    }
+    const exportBtn = $('#patchExport');
+    if (exportBtn) {
+      exportBtn.addEventListener('click', () => {
+        exportPatchCsv(patchFilteredItems((patchData && patchData.items) || []));
+      });
+    }
+  }
+
   function renderPatchPriority(data) {
     const body = $('#patchBody');
     const summary = $('#patchSummary');
     if (!body) return;
     body.textContent = '';
+    patchData = data;
+    const shown = patchExpanded ? patchFilteredItems(data.items || []) : (data.items || []);
     if (summary) {
       summary.textContent = '';
       const counts = (data.summary && data.summary.by_priority) || {};
@@ -1139,7 +1248,7 @@
         : '';
     }
     const fragment = document.createDocumentFragment();
-    (data.items || []).forEach((item) => {
+    shown.forEach((item) => {
       const tr = document.createElement('tr');
       tr.className = 'border-t border-[#1b2739]/70';
 
@@ -1204,6 +1313,7 @@
       fragment.appendChild(tr);
     });
     body.appendChild(fragment);
+    updatePatchFooter(data, shown);
   }
 
   async function loadPatchPriority() {
@@ -1211,7 +1321,10 @@
     if (!body) return;
     try {
       const suffix = patchExposure ? '' : '&exposure=false';
-      const data = await api('/patch-priority?limit=8' + suffix);
+      // The API caps at 300; the corpus has 288 CVEs, so one request covers the
+      // full list and the filters run client-side without round-trips.
+      const limit = patchExpanded ? 300 : 8;
+      const data = await api('/patch-priority?limit=' + limit + suffix);
       renderPatchPriority(data);
     } catch (error) {
       body.textContent = '';
@@ -1264,6 +1377,7 @@
         loadPatchPriority();
       });
     }
+    bindPatchControls();
   }
 
   if (document.readyState === 'loading') {

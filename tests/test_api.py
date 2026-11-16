@@ -345,6 +345,17 @@ def test_patch_priority_flags_taiwan_reported_cves(client: TestClient):
     assert body["summary"]["taiwan_reported"] == len(flagged)
 
 
+def test_patch_priority_serves_the_full_list(client: TestClient):
+    body = client.get("/api/v1/patch-priority", params={"limit": 300}).json()
+    assert body["total"] > 200, "完整清單應包含全部 CVE"
+    assert body["returned"] == min(body["total"], 300)
+    assert len(body["items"]) == body["returned"]
+    # The view-all mode must keep the band ordering the top-8 view relies on.
+    order = {"P1": 0, "P2": 1, "P3": 2}
+    bands = [order[item["priority"]] for item in body["items"]]
+    assert bands == sorted(bands)
+
+
 def test_patch_priority_exposes_decision_path(client: TestClient):
     body = client.get("/api/v1/patch-priority", params={"limit": 50}).json()
     assert body["items"]

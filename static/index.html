@@ -34,7 +34,7 @@
     rel="stylesheet"
   />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.6/dist/chart.umd.min.js" defer></script>
-  <link rel="stylesheet" href="/static/css/styles.css?v=20261116b" />
+  <link rel="stylesheet" href="/static/css/styles.css?v=20261116c" />
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23060a11'/%3E%3Cpath d='M16 5l9 4v7c0 5.5-3.8 10-9 11-5.2-1-9-5.5-9-11V9l9-4z' fill='none' stroke='%2322d3ee' stroke-width='2'/%3E%3C/svg%3E" />
 </head>
 
@@ -621,6 +621,22 @@
           </tbody>
         </table>
       </div>
+      <div class="flex flex-wrap items-center justify-between gap-2 border-t border-[#1b2739]/70 px-4 py-2.5">
+        <div class="flex flex-wrap items-center gap-2" id="patchFilters" hidden>
+          <input class="input w-[168px]" id="patchSearch" type="search" placeholder="搜尋 CVE…" aria-label="搜尋 CVE" />
+          <div class="flex items-center gap-1" role="group" aria-label="依優先級篩選">
+            <button class="chip" data-patch-prio="P1" type="button" aria-pressed="false">P1</button>
+            <button class="chip" data-patch-prio="P2" type="button" aria-pressed="false">P2</button>
+            <button class="chip" data-patch-prio="P3" type="button" aria-pressed="false">P3</button>
+          </div>
+          <button class="chip" id="patchLocalOnly" type="button" aria-pressed="false">僅本地通報</button>
+        </div>
+        <span class="mono text-[10.5px] text-[color:var(--faint)]" id="patchCount"></span>
+        <div class="flex items-center gap-2">
+          <button class="btn btn-ghost" id="patchExport" type="button" hidden>匯出 CSV</button>
+          <button class="btn" id="patchViewAll" type="button">查看全部 <span id="patchTotal">—</span> 筆</button>
+        </div>
+      </div>
     </section>
 
     <!-- ===================== Insights ===================== -->
@@ -651,8 +667,8 @@
 
   <div class="toast-stack" id="toastStack" aria-live="polite" aria-atomic="false"></div>
 
-  <script src="/static/js/charts.js?v=20261116b" defer></script>
-  <script src="/static/js/app.js?v=20261116b" defer></script>
-  <script src="/static/js/rain.js?v=20261116b" defer></script>
+  <script src="/static/js/charts.js?v=20261116c" defer></script>
+  <script src="/static/js/app.js?v=20261116c" defer></script>
+  <script src="/static/js/rain.js?v=20261116c" defer></script>
 </body>
 </html>

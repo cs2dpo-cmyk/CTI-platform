@@ -266,6 +266,21 @@ await wait(120);
 assert($$('#feedBody .feed-detail-row').length === 1, 'row expansion renders detail');
 assert($$('#feedBody .feed-detail-row .step').length > 0, 'row detail shows playbook');
 
+// ------------------------------------------------------- interaction: view all
+{
+  const button = $('#patchViewAll');
+  assert(!!button && button.textContent.includes('查看全部'), 'patch panel offers a view-all control');
+  const before = $$('#patchBody tr').length;
+  button.dispatchEvent(new window.MouseEvent('click', { bubbles: true }));
+  await wait(1500);
+  const after = $$('#patchBody tr').length;
+  assert(after > before, `view all expands the table (${before} -> ${after})`);
+  assert(!$('#patchFilters').hidden, 'filters appear when the list expands');
+  $('#patchViewAll').dispatchEvent(new window.MouseEvent('click', { bubbles: true }));
+  await wait(1500);
+  assert($$('#patchBody tr').length === before, 'collapsing restores the top-8 view');
+}
+
 // ---------------------------------------------------------- interaction: matrix
 const p2Card = $('.matrix-card[data-priority="P2"] .matrix-toggle');
 p2Card.dispatchEvent(new window.MouseEvent('click', { bubbles: true }));

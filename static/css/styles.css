@@ -554,6 +554,23 @@ body::after {
   border-color: rgba(148, 163, 184, 0.4);
 }
 
+/* Filter chips are buttons: they need a pressed state, .badge is static. */
+button.chip {
+  cursor: pointer;
+  background: rgba(148, 163, 184, 0.08);
+  border-color: rgba(148, 163, 184, 0.32);
+  color: #c8d4e6;
+}
+button.chip:hover {
+  border-color: rgba(34, 211, 238, 0.45);
+  color: #d9f6ff;
+}
+button.chip[aria-pressed="true"] {
+  background: rgba(34, 211, 238, 0.16);
+  border-color: rgba(34, 211, 238, 0.55);
+  color: #b9f2ff;
+}
+
 /* Decision-path chips: smaller than .badge so two fit in one table cell. */
 .chip {
   display: inline-flex;
