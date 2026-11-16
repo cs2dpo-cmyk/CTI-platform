@@ -28,6 +28,7 @@ from services import (
     dataset,
     epss,
     kev,
+    kev_gap,
     local_impact,
     patch_priority,
     risk_engine,
@@ -324,6 +325,54 @@ def patch_priority_list(
         returned=min(len(items), limit),
         items=[schemas.PatchItemOut(**item.as_dict()) for item in items[:limit]],
         summary=summary,
+    )
+
+
+@api.get("/kev-uncovered", response_model=schemas.KevGapResponse,
+         summary="KEV 窗內但語料未收錄的漏洞（覆蓋缺口）")
+def kev_uncovered(
+    ransomware_only: bool = Query(False, description="只看勒索軟體已利用"),
+    q: str | None = Query(None, max_length=80, description="CVE／廠商／產品關鍵字"),
+    limit: int = Query(50, ge=1, le=700),
+    offset: int = Query(0, ge=0),
+) -> schemas.KevGapResponse:
+    """What the news corpus never reported, measured against KEV.
+
+    The patch list ranks what the sources wrote about; this list is the honest
+    complement - KEV entries added inside the corpus window that no article
+    named. It is deliberately separate: these rows have no exposure context and
+    no article trail, so folding them into the patch list would fake evidence
+    the corpus does not have.
+    """
+    gap = kev_gap.build()
+    items = gap["items"]
+    if ransomware_only:
+        items = [item for item in items if item["ransomware"]]
+    if q:
+        needle = q.strip().lower()
+        items = [
+            item
+            for item in items
+            if needle in item["cve"].lower()
+            or needle in item["vendor"].lower()
+            or needle in item["product"].lower()
+        ]
+    total = len(items)
+    page = items[offset : offset + limit]
+    return schemas.KevGapResponse(
+        data_as_of=snapshots.as_of(),
+        stale_days=snapshots.staleness_days(),
+        snapshots=snapshots.describe(),
+        window_start=gap["window_start"],
+        window_end=gap["window_end"],
+        kev_total=gap["kev_total"],
+        kev_in_window=gap["kev_in_window"],
+        covered=gap["covered"],
+        uncovered=gap["uncovered"],
+        ransomware=gap["ransomware"],
+        total=total,
+        returned=len(page),
+        items=[schemas.KevGapItem(**item) for item in page],
     )
 
 

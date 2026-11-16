@@ -13,6 +13,7 @@ from functools import lru_cache
 from pathlib import Path
 
 SNAPSHOT = Path(__file__).resolve().parent.parent / "data" / "kev_ids.json"
+FULL = Path(__file__).resolve().parent.parent / "data" / "kev_full.json"
 
 
 @lru_cache(maxsize=1)
@@ -30,3 +31,21 @@ def is_exploited(cve: str) -> bool:
 
 def snapshot_size() -> int:
     return len(_ids())
+
+
+@lru_cache(maxsize=1)
+def full() -> dict[str, dict]:
+    """Every KEV entry with its metadata (added date, ransomware use, vendor).
+
+    kev_ids.json is enough for "is this exploited"; this richer snapshot exists
+    so the gap view can say what the corpus never saw and when it was added.
+    """
+    try:
+        payload = json.loads(FULL.read_text(encoding="utf-8"))
+        return payload.get("vulnerabilities") or {}
+    except (OSError, ValueError):
+        return {}
+
+
+def ransomware_use(cve: str) -> str:
+    return (full().get(cve.upper()) or {}).get("ransomware", "Unknown")

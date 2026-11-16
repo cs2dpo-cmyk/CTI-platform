@@ -93,6 +93,31 @@ class PatchPriorityResponse(DataProvenance):
     summary: dict = Field(default_factory=dict)
 
 
+class KevGapItem(BaseModel):
+    cve: str
+    added: str | None = None
+    ransomware: bool = False
+    vendor: str = ""
+    product: str = ""
+    name: str = ""
+    epss: float | None = None
+    cvss: float | None = None
+
+
+class KevGapResponse(DataProvenance):
+    # The gap is measured on the corpus date span so the denominator is fair.
+    window_start: str
+    window_end: str
+    kev_total: int
+    kev_in_window: int
+    covered: int
+    uncovered: int
+    ransomware: int
+    total: int
+    returned: int
+    items: list[KevGapItem] = Field(default_factory=list)
+
+
 class ThreatListResponse(DataProvenance):
     total: int
     limit: int

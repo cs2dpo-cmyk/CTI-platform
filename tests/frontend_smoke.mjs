@@ -281,6 +281,17 @@ assert($$('#feedBody .feed-detail-row .step').length > 0, 'row detail shows play
   assert($$('#patchBody tr').length === before, 'collapsing restores the top-8 view');
 }
 
+// --------------------------------------------------------- KEV gap panel
+{
+  await wait(400);
+  const rows = $$('#gapBody tr').length;
+  assert(rows > 0, `KEV gap panel renders rows (got ${rows})`);
+  assert(
+    ($('#gapWindowTotal').textContent || '').trim() !== '—',
+    'KEV gap panel reports the window total'
+  );
+}
+
 // ---------------------------------------------------------- interaction: matrix
 const p2Card = $('.matrix-card[data-priority="P2"] .matrix-toggle');
 p2Card.dispatchEvent(new window.MouseEvent('click', { bubbles: true }));

@@ -100,6 +100,8 @@ def main() -> int:
     parser.add_argument("--limit", type=int, default=0, help="本次最多抓幾筆（0=全部）")
     parser.add_argument("--refresh", action="store_true", help="忽略既有快照，全部重抓")
     parser.add_argument("--dry-run", action="store_true", help="只列出要抓的 CVE")
+    parser.add_argument("--from-kev", action="store_true",
+                        help="改抓 KEV 窗內、語料未收錄的 CVE（補漏頁用）")
     args = parser.parse_args()
     if hasattr(sys.stdout, "reconfigure"):
         sys.stdout.reconfigure(encoding="utf-8")
@@ -109,7 +111,12 @@ def main() -> int:
         payload = json.loads(OUT.read_text(encoding="utf-8"))
         existing = payload.get("scores") or {}
 
-    targets = corpus_cves(missing_only=True)
+    if args.from_kev:
+        from services import kev_gap
+
+        targets = kev_gap.uncovered_cves()
+    else:
+        targets = corpus_cves(missing_only=True)
     todo = [cve for cve in targets if args.refresh or cve not in existing]
     if args.limit:
         todo = todo[: args.limit]

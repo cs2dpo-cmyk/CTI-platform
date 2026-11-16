@@ -170,9 +170,15 @@ def test_dates_come_from_the_publishers_not_from_the_row_order(client: TestClien
 
 
 def test_assess_uses_epss_for_known_cve(client: TestClient):
-    from services import epss
+    from services import epss, kev
 
-    known = next(iter(epss.all_scores()))
+    # High EPSS *and* not in KEV: KEV takes precedence in the factor text, so a
+    # KEV CVE would make this assertion test the wrong branch.
+    known = next(
+        cve
+        for cve, score in epss.all_scores().items()
+        if score >= 0.5 and not kev.is_exploited(cve)
+    )
     assert epss.score_for([known]) is not None
     body = client.post(
         "/api/v1/assess",
@@ -367,6 +373,28 @@ def test_patch_priority_exposes_decision_path(client: TestClient):
             assert item["path"][0] == "KEV", "KEV 必須是路徑的第一個訊號"
         if item["priority"] == "P1" and item["exploited"]:
             assert item["path"][0] == "KEV"
+
+
+def test_kev_uncovered_reports_the_coverage_gap(client: TestClient):
+    body = client.get("/api/v1/kev-uncovered", params={"limit": 5}).json()
+    assert body["kev_in_window"] > 0
+    assert body["covered"] + body["uncovered"] == body["kev_in_window"]
+    assert body["covered"] < body["kev_in_window"], "語料不應涵蓋全部 KEV"
+    assert body["window_start"] <= body["window_end"]
+    assert len(body["items"]) == 5
+    assert all(item["cve"].startswith("CVE-") for item in body["items"])
+    # Ransomware-linked entries sort first; the flag sequence must be sorted.
+    flags = [item["ransomware"] for item in body["items"]]
+    assert flags == sorted(flags, reverse=True)
+
+
+def test_kev_uncovered_ransomware_filter(client: TestClient):
+    body = client.get(
+        "/api/v1/kev-uncovered", params={"ransomware_only": "true", "limit": 700}
+    ).json()
+    assert body["items"]
+    assert all(item["ransomware"] for item in body["items"])
+    assert body["total"] == body["ransomware"]
 
 
 def test_threats_report_local_cve_hits(client: TestClient):

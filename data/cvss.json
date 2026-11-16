@@ -2,8 +2,44 @@
  "generated": "2026-11-16",
  "source": "https://cve.circl.lu/api/cve (CVE.org records)",
  "scores": {
+  "CVE-2014-0497": {
+   "score": 8.8,
+   "version": "3.1",
+   "source": "cve.org",
+   "fetched": "2026-11-16"
+  },
+  "CVE-2014-6278": {
+   "score": 8.8,
+   "version": "3.1",
+   "source": "cve.org",
+   "fetched": "2026-11-16"
+  },
+  "CVE-2015-5477": {
+   "score": 7.5,
+   "version": "3.1",
+   "source": "cve.org",
+   "fetched": "2026-11-16"
+  },
+  "CVE-2016-10033": {
+   "score": 9.8,
+   "version": "3.1",
+   "source": "cve.org",
+   "fetched": "2026-11-16"
+  },
   "CVE-2016-6210": {
    "score": 5.9,
+   "version": "3.1",
+   "source": "cve.org",
+   "fetched": "2026-11-16"
+  },
+  "CVE-2017-1000253": {
+   "score": 7.8,
+   "version": "3.1",
+   "source": "cve.org",
+   "fetched": "2026-11-16"
+  },
+  "CVE-2017-1000353": {
+   "score": 9.8,
    "version": "3.1",
    "source": "cve.org",
    "fetched": "2026-11-16"
@@ -14,8 +50,44 @@
    "source": "cve.org",
    "fetched": "2026-11-16"
   },
+  "CVE-2018-8639": {
+   "score": 8.4,
+   "version": "3.1",
+   "source": "cve.org",
+   "fetched": "2026-11-16"
+  },
+  "CVE-2019-6693": {
+   "score": 6.5,
+   "version": "3.1",
+   "source": "cve.org",
+   "fetched": "2026-11-16"
+  },
+  "CVE-2020-0618": {
+   "score": 9.8,
+   "version": "3.1",
+   "source": "cve.org",
+   "fetched": "2026-11-16"
+  },
   "CVE-2020-25078": {
    "score": 7.5,
+   "version": "3.1",
+   "source": "cve.org",
+   "fetched": "2026-11-16"
+  },
+  "CVE-2020-29574": {
+   "score": 9.8,
+   "version": "3.1",
+   "source": "cve.org",
+   "fetched": "2026-11-16"
+  },
+  "CVE-2021-22054": {
+   "score": 7.5,
+   "version": "3.1",
+   "source": "cve.org",
+   "fetched": "2026-11-16"
+  },
+  "CVE-2021-26086": {
+   "score": 5.3,
    "version": "3.1",
    "source": "cve.org",
    "fetched": "2026-11-16"
@@ -50,14 +122,80 @@
    "source": "cve.org",
    "fetched": "2026-11-16"
   },
+  "CVE-2021-43226": {
+   "score": 7.8,
+   "version": "3.1",
+   "source": "cve.org",
+   "fetched": "2026-11-16"
+  },
+  "CVE-2021-44529": {
+   "score": 9.8,
+   "version": "3.1",
+   "source": "cve.org",
+   "fetched": "2026-11-16"
+  },
+  "CVE-2022-24816": {
+   "score": 10.0,
+   "version": "3.1",
+   "source": "cve.org",
+   "fetched": "2026-11-16"
+  },
+  "CVE-2023-21529": {
+   "score": 8.8,
+   "version": "3.1",
+   "source": "cve.org",
+   "fetched": "2026-11-16"
+  },
+  "CVE-2023-22527": {
+   "score": 10.0,
+   "version": "3.0",
+   "source": "cve.org",
+   "fetched": "2026-11-16"
+  },
+  "CVE-2023-24955": {
+   "score": 7.2,
+   "version": "3.1",
+   "source": "cve.org",
+   "fetched": "2026-11-16"
+  },
+  "CVE-2023-27351": {
+   "score": 8.2,
+   "version": "3.0",
+   "source": "cve.org",
+   "fetched": "2026-11-16"
+  },
+  "CVE-2023-28461": {
+   "score": 9.8,
+   "version": "3.1",
+   "source": "cve.org",
+   "fetched": "2026-11-16"
+  },
   "CVE-2023-2868": {
    "score": 9.4,
    "version": "3.1",
    "source": "cve.org",
    "fetched": "2026-11-16"
   },
+  "CVE-2023-34048": {
+   "score": 9.8,
+   "version": "3.1",
+   "source": "cve.org",
+   "fetched": "2026-11-16"
+  },
+  "CVE-2023-35082": {
+   "score": 10.0,
+   "version": "3.0",
+   "source": "cve.org",
+   "fetched": "2026-11-16"
+  },
   "CVE-2023-39780": {
    "score": 8.8,
+   "version": "3.1",
+   "source": "cve.org",
+   "fetched": "2026-11-16"
+  },
+  "CVE-2023-43208": {
+   "score": 9.8,
    "version": "3.1",
    "source": "cve.org",
    "fetched": "2026-11-16"
@@ -74,6 +212,144 @@
    "source": "cve.org",
    "fetched": "2026-11-16"
   },
+  "CVE-2023-48788": {
+   "score": 9.3,
+   "version": "3.1",
+   "source": "cve.org",
+   "fetched": "2026-11-16"
+  },
+  "CVE-2024-0012": {
+   "score": 9.3,
+   "version": "4.0",
+   "source": "cve.org",
+   "fetched": "2026-11-16"
+  },
+  "CVE-2024-1086": {
+   "score": 7.8,
+   "version": "3.1",
+   "source": "cve.org",
+   "fetched": "2026-11-16"
+  },
+  "CVE-2024-11667": {
+   "score": 7.5,
+   "version": "3.1",
+   "source": "cve.org",
+   "fetched": "2026-11-16"
+  },
+  "CVE-2024-1709": {
+   "score": 10.0,
+   "version": "3.1",
+   "source": "cve.org",
+   "fetched": "2026-11-16"
+  },
+  "CVE-2024-21338": {
+   "score": 7.8,
+   "version": "3.1",
+   "source": "cve.org",
+   "fetched": "2026-11-16"
+  },
+  "CVE-2024-21412": {
+   "score": 8.1,
+   "version": "3.1",
+   "source": "cve.org",
+   "fetched": "2026-11-16"
+  },
+  "CVE-2024-21762": {
+   "score": 9.6,
+   "version": "3.1",
+   "source": "cve.org",
+   "fetched": "2026-11-16"
+  },
+  "CVE-2024-21893": {
+   "score": 8.2,
+   "version": "3.0",
+   "source": "cve.org",
+   "fetched": "2026-11-16"
+  },
+  "CVE-2024-23692": {
+   "score": 9.8,
+   "version": "3.1",
+   "source": "cve.org",
+   "fetched": "2026-11-16"
+  },
+  "CVE-2024-23897": {
+   "score": 9.8,
+   "version": "3.1",
+   "source": "cve.org",
+   "fetched": "2026-11-16"
+  },
+  "CVE-2024-24919": {
+   "score": 8.6,
+   "version": "3.1",
+   "source": "cve.org",
+   "fetched": "2026-11-16"
+  },
+  "CVE-2024-26169": {
+   "score": 7.8,
+   "version": "3.1",
+   "source": "cve.org",
+   "fetched": "2026-11-16"
+  },
+  "CVE-2024-27198": {
+   "score": 9.8,
+   "version": "3.1",
+   "source": "cve.org",
+   "fetched": "2026-11-16"
+  },
+  "CVE-2024-27199": {
+   "score": 7.3,
+   "version": "3.1",
+   "source": "cve.org",
+   "fetched": "2026-11-16"
+  },
+  "CVE-2024-27348": {
+   "score": 9.8,
+   "version": "3.1",
+   "source": "cve.org",
+   "fetched": "2026-11-16"
+  },
+  "CVE-2024-28995": {
+   "score": 8.6,
+   "version": "3.1",
+   "source": "cve.org",
+   "fetched": "2026-11-16"
+  },
+  "CVE-2024-29824": {
+   "score": 9.6,
+   "version": "3.0",
+   "source": "cve.org",
+   "fetched": "2026-11-16"
+  },
+  "CVE-2024-30051": {
+   "score": 7.8,
+   "version": "3.1",
+   "source": "cve.org",
+   "fetched": "2026-11-16"
+  },
+  "CVE-2024-30088": {
+   "score": 7.0,
+   "version": "3.1",
+   "source": "cve.org",
+   "fetched": "2026-11-16"
+  },
+  "CVE-2024-32113": {
+   "score": 9.1,
+   "version": "3.1",
+   "source": "cve.org",
+   "fetched": "2026-11-16"
+  },
+  "CVE-2024-36401": {
+   "score": 9.8,
+   "version": "3.1",
+   "source": "cve.org",
+   "fetched": "2026-11-16"
+  },
+  "CVE-2024-37085": {
+   "score": 6.8,
+   "version": "3.1",
+   "source": "cve.org",
+   "fetched": "2026-11-16"
+  },
   "CVE-2024-39717": {
    "score": 6.6,
    "version": "3.0",
@@ -86,8 +362,26 @@
    "source": "cve.org",
    "fetched": "2026-11-16"
   },
+  "CVE-2024-40766": {
+   "score": 9.3,
+   "version": "3.1",
+   "source": "cve.org",
+   "fetched": "2026-11-16"
+  },
   "CVE-2024-41710": {
    "score": 6.8,
+   "version": "3.1",
+   "source": "cve.org",
+   "fetched": "2026-11-16"
+  },
+  "CVE-2024-41713": {
+   "score": 9.1,
+   "version": "3.1",
+   "source": "cve.org",
+   "fetched": "2026-11-16"
+  },
+  "CVE-2024-45519": {
+   "score": 10.0,
    "version": "3.1",
    "source": "cve.org",
    "fetched": "2026-11-16"
@@ -98,8 +392,56 @@
    "source": "cve.org",
    "fetched": "2026-11-16"
   },
+  "CVE-2024-4879": {
+   "score": 9.8,
+   "version": "3.1",
+   "source": "cve.org",
+   "fetched": "2026-11-16"
+  },
+  "CVE-2024-49039": {
+   "score": 8.8,
+   "version": "3.1",
+   "source": "cve.org",
+   "fetched": "2026-11-16"
+  },
+  "CVE-2024-50623": {
+   "score": 9.8,
+   "version": "3.1",
+   "source": "cve.org",
+   "fetched": "2026-11-16"
+  },
+  "CVE-2024-51378": {
+   "score": 10.0,
+   "version": "3.1",
+   "source": "cve.org",
+   "fetched": "2026-11-16"
+  },
+  "CVE-2024-5217": {
+   "score": 9.8,
+   "version": "3.1",
+   "source": "cve.org",
+   "fetched": "2026-11-16"
+  },
   "CVE-2024-53375": {
    "score": 8.0,
+   "version": "3.1",
+   "source": "cve.org",
+   "fetched": "2026-11-16"
+  },
+  "CVE-2024-55956": {
+   "score": 9.8,
+   "version": "3.1",
+   "source": "cve.org",
+   "fetched": "2026-11-16"
+  },
+  "CVE-2024-57726": {
+   "score": 9.9,
+   "version": "3.1",
+   "source": "cve.org",
+   "fetched": "2026-11-16"
+  },
+  "CVE-2024-57728": {
+   "score": 7.2,
    "version": "3.1",
    "source": "cve.org",
    "fetched": "2026-11-16"
@@ -116,8 +458,110 @@
    "source": "cve.org",
    "fetched": "2026-11-16"
   },
+  "CVE-2024-6670": {
+   "score": 9.8,
+   "version": "3.1",
+   "source": "cve.org",
+   "fetched": "2026-11-16"
+  },
+  "CVE-2024-9465": {
+   "score": 9.2,
+   "version": "4.0",
+   "source": "cve.org",
+   "fetched": "2026-11-16"
+  },
+  "CVE-2024-9680": {
+   "score": 9.8,
+   "version": "3.1",
+   "source": "cve.org",
+   "fetched": "2026-11-16"
+  },
+  "CVE-2025-0282": {
+   "score": 9.0,
+   "version": "3.1",
+   "source": "cve.org",
+   "fetched": "2026-11-16"
+  },
+  "CVE-2025-10035": {
+   "score": 10.0,
+   "version": "3.1",
+   "source": "cve.org",
+   "fetched": "2026-11-16"
+  },
+  "CVE-2025-14733": {
+   "score": 9.3,
+   "version": "4.0",
+   "source": "cve.org",
+   "fetched": "2026-11-16"
+  },
+  "CVE-2025-22225": {
+   "score": 8.2,
+   "version": "3.1",
+   "source": "cve.org",
+   "fetched": "2026-11-16"
+  },
+  "CVE-2025-22457": {
+   "score": 9.0,
+   "version": "3.1",
+   "source": "cve.org",
+   "fetched": "2026-11-16"
+  },
+  "CVE-2025-23006": {
+   "score": 9.8,
+   "version": "3.1",
+   "source": "cve.org",
+   "fetched": "2026-11-16"
+  },
+  "CVE-2025-24813": {
+   "score": 10.0,
+   "version": "3.1",
+   "source": "cve.org",
+   "fetched": "2026-11-16"
+  },
+  "CVE-2025-24893": {
+   "score": 9.8,
+   "version": "3.1",
+   "source": "cve.org",
+   "fetched": "2026-11-16"
+  },
+  "CVE-2025-25257": {
+   "score": 9.6,
+   "version": "3.1",
+   "source": "cve.org",
+   "fetched": "2026-11-16"
+  },
+  "CVE-2025-26399": {
+   "score": 9.8,
+   "version": "3.1",
+   "source": "cve.org",
+   "fetched": "2026-11-16"
+  },
   "CVE-2025-26633": {
    "score": 7.0,
+   "version": "3.1",
+   "source": "cve.org",
+   "fetched": "2026-11-16"
+  },
+  "CVE-2025-29824": {
+   "score": 7.8,
+   "version": "3.1",
+   "source": "cve.org",
+   "fetched": "2026-11-16"
+  },
+  "CVE-2025-31161": {
+   "score": 9.8,
+   "version": "3.1",
+   "source": "cve.org",
+   "fetched": "2026-11-16"
+  },
+  "CVE-2025-31324": {
+   "score": 10.0,
+   "version": "3.1",
+   "source": "cve.org",
+   "fetched": "2026-11-16"
+  },
+  "CVE-2025-32432": {
+   "score": 10.0,
    "version": "3.1",
    "source": "cve.org",
    "fetched": "2026-11-16"
@@ -128,9 +572,69 @@
    "source": "cve.org",
    "fetched": "2026-11-16"
   },
+  "CVE-2025-42999": {
+   "score": 9.1,
+   "version": "3.1",
+   "source": "cve.org",
+   "fetched": "2026-11-16"
+  },
+  "CVE-2025-4427": {
+   "score": 5.3,
+   "version": "3.1",
+   "source": "cve.org",
+   "fetched": "2026-11-16"
+  },
+  "CVE-2025-48703": {
+   "score": 9.0,
+   "version": "3.1",
+   "source": "cve.org",
+   "fetched": "2026-11-16"
+  },
+  "CVE-2025-49113": {
+   "score": 9.9,
+   "version": "3.1",
+   "source": "cve.org",
+   "fetched": "2026-11-16"
+  },
+  "CVE-2025-49704": {
+   "score": 8.8,
+   "version": "3.1",
+   "source": "cve.org",
+   "fetched": "2026-11-16"
+  },
+  "CVE-2025-49706": {
+   "score": 6.5,
+   "version": "3.1",
+   "source": "cve.org",
+   "fetched": "2026-11-16"
+  },
+  "CVE-2025-52691": {
+   "score": 10.0,
+   "version": "3.1",
+   "source": "cve.org",
+   "fetched": "2026-11-16"
+  },
+  "CVE-2025-53770": {
+   "score": 9.8,
+   "version": "3.1",
+   "source": "cve.org",
+   "fetched": "2026-11-16"
+  },
+  "CVE-2025-61884": {
+   "score": 7.5,
+   "version": "3.1",
+   "source": "cve.org",
+   "fetched": "2026-11-16"
+  },
   "CVE-2025-70795": {
    "score": 5.5,
    "version": "3.1",
+   "source": "cve.org",
+   "fetched": "2026-11-16"
+  },
+  "CVE-2025-8088": {
+   "score": 8.4,
+   "version": "4.0",
    "source": "cve.org",
    "fetched": "2026-11-16"
   },
@@ -207,6 +711,12 @@
    "fetched": "2026-11-16"
   },
   "CVE-2026-105134": {
+   "score": 10.0,
+   "version": "3.1",
+   "source": "cve.org",
+   "fetched": "2026-11-16"
+  },
+  "CVE-2026-10520": {
    "score": 10.0,
    "version": "3.1",
    "source": "cve.org",
@@ -566,6 +1076,18 @@
    "source": "cve.org",
    "fetched": "2026-11-16"
   },
+  "CVE-2026-15409": {
+   "score": 10.0,
+   "version": "3.1",
+   "source": "cve.org",
+   "fetched": "2026-11-16"
+  },
+  "CVE-2026-15410": {
+   "score": 7.2,
+   "version": "3.1",
+   "source": "cve.org",
+   "fetched": "2026-11-16"
+  },
   "CVE-2026-16305": {
    "score": 7.8,
    "version": "3.1",
@@ -584,9 +1106,21 @@
    "source": "cve.org",
    "fetched": "2026-11-16"
   },
+  "CVE-2026-1731": {
+   "score": 9.9,
+   "version": "4.0",
+   "source": "cve.org",
+   "fetched": "2026-11-16"
+  },
   "CVE-2026-19868": {
    "score": 7.5,
    "version": "3.1",
+   "source": "cve.org",
+   "fetched": "2026-11-16"
+  },
+  "CVE-2026-21589": {
+   "score": 9.3,
+   "version": "4.0",
    "source": "cve.org",
    "fetched": "2026-11-16"
   },
@@ -604,6 +1138,12 @@
   },
   "CVE-2026-33096": {
    "score": 7.5,
+   "version": "3.1",
+   "source": "cve.org",
+   "fetched": "2026-11-16"
+  },
+  "CVE-2026-33825": {
+   "score": 7.8,
    "version": "3.1",
    "source": "cve.org",
    "fetched": "2026-11-16"
@@ -656,6 +1196,12 @@
    "source": "cve.org",
    "fetched": "2026-11-16"
   },
+  "CVE-2026-45321": {
+   "score": 9.6,
+   "version": "3.1",
+   "source": "cve.org",
+   "fetched": "2026-11-16"
+  },
   "CVE-2026-45492": {
    "score": 5.4,
    "version": "3.1",
@@ -674,9 +1220,21 @@
    "source": "cve.org",
    "fetched": "2026-11-16"
   },
+  "CVE-2026-45659": {
+   "score": 8.8,
+   "version": "3.1",
+   "source": "cve.org",
+   "fetched": "2026-11-16"
+  },
   "CVE-2026-46817": {
    "score": 9.8,
    "version": "3.1",
+   "source": "cve.org",
+   "fetched": "2026-11-16"
+  },
+  "CVE-2026-48027": {
+   "score": 9.3,
+   "version": "4.0",
    "source": "cve.org",
    "fetched": "2026-11-16"
   },
@@ -688,6 +1246,12 @@
   },
   "CVE-2026-48558": {
    "score": 10.0,
+   "version": "3.1",
+   "source": "cve.org",
+   "fetched": "2026-11-16"
+  },
+  "CVE-2026-50751": {
+   "score": 9.3,
    "version": "3.1",
    "source": "cve.org",
    "fetched": "2026-11-16"
@@ -712,6 +1276,12 @@
   },
   "CVE-2026-58882": {
    "score": 7.5,
+   "version": "3.1",
+   "source": "cve.org",
+   "fetched": "2026-11-16"
+  },
+  "CVE-2026-59310": {
+   "score": 9.8,
    "version": "3.1",
    "source": "cve.org",
    "fetched": "2026-11-16"
@@ -758,6 +1328,12 @@
    "source": "cve.org",
    "fetched": "2026-11-16"
   },
+  "CVE-2026-63077": {
+   "score": 9.8,
+   "version": "3.1",
+   "source": "cve.org",
+   "fetched": "2026-11-16"
+  },
   "CVE-2026-65339": {
    "score": 5.0,
    "version": "3.1",
@@ -776,6 +1352,12 @@
    "source": "cve.org",
    "fetched": "2026-11-16"
   },
+  "CVE-2026-75650": {
+   "score": 10.0,
+   "version": "3.1",
+   "source": "cve.org",
+   "fetched": "2026-11-16"
+  },
   "CVE-2026-76506": {
    "score": 7.6,
    "version": "3.1",
@@ -784,6 +1366,12 @@
   },
   "CVE-2026-80097": {
    "score": 8.6,
+   "version": "3.1",
+   "source": "cve.org",
+   "fetched": "2026-11-16"
+  },
+  "CVE-2026-8037": {
+   "score": 9.6,
    "version": "3.1",
    "source": "cve.org",
    "fetched": "2026-11-16"
