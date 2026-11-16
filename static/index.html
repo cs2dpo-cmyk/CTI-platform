@@ -34,7 +34,7 @@
     rel="stylesheet"
   />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.6/dist/chart.umd.min.js" defer></script>
-  <link rel="stylesheet" href="/static/css/styles.css?v=20261117c" />
+  <link rel="stylesheet" href="/static/css/styles.css?v=20261117d" />
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23060a11'/%3E%3Cpath d='M16 5l9 4v7c0 5.5-3.8 10-9 11-5.2-1-9-5.5-9-11V9l9-4z' fill='none' stroke='%2322d3ee' stroke-width='2'/%3E%3C/svg%3E" />
 </head>
 
@@ -683,11 +683,17 @@
             <span class="badge" data-tone="local" title="這些 CVE 沒有新聞報導，只有 KEV 與 EPSS／CVSS 可依據">全球盲點補強 · 僅 KEV/EPSS</span>
           </p>
         </div>
-        <div class="flex flex-wrap items-center gap-2">
-          <button class="chip" id="gapRansomOnly" type="button" aria-pressed="false">僅勒索軟體</button>
-          <button class="btn btn-ghost" id="gapExpand" type="button">顯示全部</button>
-        </div>
       </div>
+      <button class="flex w-full items-center justify-between gap-3 border-t border-[#1b2739]/70 px-4 py-2.5 text-left" id="gapToggle" type="button" aria-expanded="false" aria-controls="gapContent">
+        <span class="flex flex-wrap items-center gap-2 text-[11.5px] text-[color:var(--muted)]">
+          <span class="mono" id="gapSummary">—</span>
+        </span>
+        <span class="mono text-[10.5px] text-cyan-300" id="gapToggleLabel">展開清單 →</span>
+      </button>
+      <div id="gapContent" class="hidden">
+        <div class="flex flex-wrap items-center gap-2 border-t border-[#1b2739]/70 px-4 py-2">
+          <button class="chip" id="gapRansomOnly" type="button" aria-pressed="false">僅勒索軟體</button>
+        </div>
       <div class="overflow-x-auto">
         <table class="w-full text-left text-[12.5px]">
           <thead>
@@ -707,6 +713,7 @@
         </table>
       </div>
       <p class="border-t border-[#1b2739]/70 px-4 py-2.5 text-[10.5px] leading-relaxed text-[color:var(--faint)]" id="gapNote"></p>
+      </div>
     </section>
 
     <!-- ===================== Insights ===================== -->
@@ -737,8 +744,8 @@
 
   <div class="toast-stack" id="toastStack" aria-live="polite" aria-atomic="false"></div>
 
-  <script src="/static/js/charts.js?v=20261117c" defer></script>
-  <script src="/static/js/app.js?v=20261117c" defer></script>
-  <script src="/static/js/rain.js?v=20261117c" defer></script>
+  <script src="/static/js/charts.js?v=20261117d" defer></script>
+  <script src="/static/js/app.js?v=20261117d" defer></script>
+  <script src="/static/js/rain.js?v=20261117d" defer></script>
 </body>
 </html>

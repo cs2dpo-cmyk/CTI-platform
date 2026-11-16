@@ -286,8 +286,15 @@ assert($$('#feedBody .feed-detail-row .step').length > 0, 'row detail shows play
 // --------------------------------------------------------- KEV gap panel
 {
   await wait(400);
+  // Collapsed by default: the summary must carry the numbers, and expanding
+  // must actually load the rows.
+  const summary = ($('#gapSummary').textContent || '').trim();
+  assert(/未收錄/.test(summary), `KEV gap summary states the count (got "${summary}")`);
+  assert($('#gapContent').classList.contains('hidden'), 'gap table starts collapsed');
+  $('#gapToggle').dispatchEvent(new window.MouseEvent('click', { bubbles: true }));
+  await wait(900);
   const rows = $$('#gapBody tr').length;
-  assert(rows > 0, `KEV gap panel renders rows (got ${rows})`);
+  assert(rows > 0, `expanding the gap loads rows (got ${rows})`);
   const gapBadge = $$('#gapSection .badge')
     .map((node) => node.textContent.trim())
     .find((text) => text.includes('全球盲點補強'));
