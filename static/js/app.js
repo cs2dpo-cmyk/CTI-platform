@@ -1126,6 +1126,15 @@
     tr.appendChild(patchCell(item.cvss == null ? '—' : Number(item.cvss).toFixed(1),
       'px-2 py-2.5 mono text-[11.5px] text-slate-300'));
 
+    const priorityCell = document.createElement('td');
+    priorityCell.className = 'px-2 py-2.5';
+    const pBadge = document.createElement('span');
+    pBadge.className = 'badge badge-' + String(item.priority || 'p1').toLowerCase();
+    pBadge.textContent = item.priority || 'P1';
+    pBadge.title = 'KEV 項目一律 P1（' + (item.sla || '24 小時') + '）';
+    priorityCell.appendChild(pBadge);
+    tr.appendChild(priorityCell);
+
     const vendor = document.createElement('td');
     vendor.className = 'px-2 py-2.5 text-[11.5px] text-[color:var(--muted)]';
     vendor.textContent = [item.vendor, item.product].filter(Boolean).join(' · ') || '—';
@@ -1171,7 +1180,7 @@
     if (!items.length) {
       const tr = document.createElement('tr');
       const td = document.createElement('td');
-      td.colSpan = 6;
+      td.colSpan = 7;
       td.className = 'px-4 py-8 text-center text-[12px] text-[color:var(--faint)]';
       td.textContent = '目前沒有符合條件的項目';
       tr.appendChild(td);
@@ -1192,7 +1201,7 @@
       body.textContent = '';
       const tr = document.createElement('tr');
       const td = document.createElement('td');
-      td.colSpan = 6;
+      td.colSpan = 7;
       td.className = 'px-4 py-8 text-center text-[12px] text-[color:var(--faint)]';
       td.textContent = '覆蓋缺口載入失敗：' + error.message;
       tr.appendChild(td);

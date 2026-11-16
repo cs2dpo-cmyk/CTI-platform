@@ -95,6 +95,8 @@ class PatchPriorityResponse(DataProvenance):
 
 class KevGapItem(BaseModel):
     cve: str
+    priority: str = "P1"
+    sla: str = "24 小時"
     added: str | None = None
     ransomware: bool = False
     vendor: str = ""

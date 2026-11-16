@@ -129,6 +129,15 @@ class PatchItem:
         }
 
 
+def base_band(exploited: bool, epss: float | None, cvss: float | None) -> str:
+    """The band before any exposure shift, for callers outside the corpus.
+
+    The KEV gap list uses it so "KEV means P1" is enforced by the same code that
+    enforces it for the patch list, not by a second copy of the rule.
+    """
+    return _base_band(PatchItem(cve="", epss=epss, cvss=cvss, exploited=exploited))
+
+
 def _base_band(item: PatchItem) -> str:
     if item.exploited:
         return "P1"

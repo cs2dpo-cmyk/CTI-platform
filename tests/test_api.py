@@ -388,6 +388,14 @@ def test_kev_uncovered_reports_the_coverage_gap(client: TestClient):
     assert flags == sorted(flags, reverse=True)
 
 
+def test_kev_uncovered_items_are_banded_p1(client: TestClient):
+    body = client.get("/api/v1/kev-uncovered", params={"limit": 100}).json()
+    assert body["items"]
+    # Every gap item is in KEV, and KEV is the P1 rule - so the band is uniform.
+    assert {item["priority"] for item in body["items"]} == {"P1"}
+    assert {item["sla"] for item in body["items"]} == {"24 小時"}
+
+
 def test_kev_uncovered_ransomware_filter(client: TestClient):
     body = client.get(
         "/api/v1/kev-uncovered", params={"ransomware_only": "true", "limit": 700}

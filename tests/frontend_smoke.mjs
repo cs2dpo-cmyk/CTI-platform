@@ -286,6 +286,14 @@ assert($$('#feedBody .feed-detail-row .step').length > 0, 'row detail shows play
   await wait(400);
   const rows = $$('#gapBody tr').length;
   assert(rows > 0, `KEV gap panel renders rows (got ${rows})`);
+  const gapBadge = $$('#gapSection .badge')
+    .map((node) => node.textContent.trim())
+    .find((text) => text.includes('全球盲點補強'));
+  assert(!!gapBadge, 'gap panel carries its source badge');
+  const patchBadge = $$('#patchSection .badge')
+    .map((node) => node.textContent.trim())
+    .find((text) => text.includes('新聞通報'));
+  assert(!!patchBadge, 'patch panel carries its source badge');
   assert(
     ($('#gapWindowTotal').textContent || '').trim() !== '—',
     'KEV gap panel reports the window total'

@@ -34,7 +34,7 @@
     rel="stylesheet"
   />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.6/dist/chart.umd.min.js" defer></script>
-  <link rel="stylesheet" href="/static/css/styles.css?v=20261116e" />
+  <link rel="stylesheet" href="/static/css/styles.css?v=20261116f" />
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23060a11'/%3E%3Cpath d='M16 5l9 4v7c0 5.5-3.8 10-9 11-5.2-1-9-5.5-9-11V9l9-4z' fill='none' stroke='%2322d3ee' stroke-width='2'/%3E%3C/svg%3E" />
 </head>
 
@@ -596,6 +596,9 @@
           <p class="kicker mt-1">GET /api/v1/patch-priority</p>
           <p class="mt-1 text-[11px] text-[color:var(--faint)]">以 FIRST EPSS 利用機率與 CISA KEV 排序，附修補 SLA 與判斷依據</p>
           <p class="mono mt-1 text-[10px] text-[color:var(--faint)]" id="patchAsOf"></p>
+          <p class="mt-1.5 flex flex-wrap items-center gap-2">
+            <span class="badge" data-tone="global" title="這 288 個 CVE 來自新聞語料，再加上 EPSS／KEV／CVSS 全球資料">新聞通報 × 全球模型</span>
+          </p>
         </div>
         <div class="flex flex-wrap items-center gap-2">
           <button class="btn btn-ghost" id="patchExposureToggle" type="button" aria-pressed="true">曝險：開</button>
@@ -650,6 +653,9 @@
             <span id="gapWindowTotal" class="mono text-slate-300">—</span> 筆，下列是沒有新聞報導的漏洞
           </p>
           <p class="mono mt-1 text-[10px] text-[color:var(--faint)]" id="gapAsOf"></p>
+          <p class="mt-1.5 flex flex-wrap items-center gap-2">
+            <span class="badge" data-tone="local" title="這些 CVE 沒有新聞報導，只有 KEV 與 EPSS／CVSS 可依據">全球盲點補強 · 僅 KEV/EPSS</span>
+          </p>
         </div>
         <div class="flex flex-wrap items-center gap-2">
           <button class="chip" id="gapRansomOnly" type="button" aria-pressed="false">僅勒索軟體</button>
@@ -664,12 +670,13 @@
               <th class="px-2 py-2">加入 KEV</th>
               <th class="w-[150px] px-2 py-2">EPSS</th>
               <th class="px-2 py-2">CVSS</th>
+              <th class="px-2 py-2">優先級</th>
               <th class="px-2 py-2">廠商／產品</th>
               <th class="px-2 py-2">勒索</th>
             </tr>
           </thead>
           <tbody id="gapBody">
-            <tr><td colspan="6" class="py-8"><div class="skeleton mx-auto h-4 w-2/3"></div></td></tr>
+            <tr><td colspan="7" class="py-8"><div class="skeleton mx-auto h-4 w-2/3"></div></td></tr>
           </tbody>
         </table>
       </div>
@@ -704,8 +711,8 @@
 
   <div class="toast-stack" id="toastStack" aria-live="polite" aria-atomic="false"></div>
 
-  <script src="/static/js/charts.js?v=20261116e" defer></script>
-  <script src="/static/js/app.js?v=20261116e" defer></script>
-  <script src="/static/js/rain.js?v=20261116e" defer></script>
+  <script src="/static/js/charts.js?v=20261116f" defer></script>
+  <script src="/static/js/app.js?v=20261116f" defer></script>
+  <script src="/static/js/rain.js?v=20261116f" defer></script>
 </body>
 </html>

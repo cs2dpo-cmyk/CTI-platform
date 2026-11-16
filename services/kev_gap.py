@@ -14,7 +14,7 @@ from __future__ import annotations
 
 from functools import lru_cache
 
-from services import cvss, dataset, epss, kev
+from services import cvss, dataset, epss, kev, patch_priority
 
 
 @lru_cache(maxsize=1)
@@ -55,9 +55,12 @@ def build() -> dict:
     for cve, meta in in_window.items():
         if cve in corpus:
             continue
+        band = patch_priority.base_band(True, scores.get(cve), severity.get(cve))
         items.append(
             {
                 "cve": cve,
+                "priority": band,
+                "sla": patch_priority.SLA[band],
                 "added": meta.get("added") or None,
                 "ransomware": meta.get("ransomware") == "Known",
                 "vendor": meta.get("vendor") or "",
