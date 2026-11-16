@@ -1270,24 +1270,11 @@
       asOf.textContent = '視窗 ' + data.window_start + ' → ' + data.window_end
         + '｜KEV 總數 ' + num(data.kev_total);
     }
-    // Collapsed by default: the daily job is the patch list, and this table is
-    // a monthly coverage check. One summary line keeps it visible without
-    // doubling the page height.
-    const pct = data.kev_in_window ? Math.round((data.covered / data.kev_in_window) * 100) : 0;
-    const summary = $('#gapSummary');
-    if (summary) {
-      summary.textContent = num(data.uncovered) + ' 筆未收錄（' + num(data.ransomware)
-        + ' 筆勒索）· 覆蓋率 ' + pct + '%';
-    }
-    const toggle = $('#gapToggle');
-    if (toggle) toggle.setAttribute('aria-expanded', String(gapExpanded));
-    const toggleLabel = $('#gapToggleLabel');
-    if (toggleLabel) toggleLabel.textContent = gapExpanded ? '收合 ↑' : '展開清單 →';
-    const content = $('#gapContent');
-    if (content) content.classList.toggle('hidden', !gapExpanded);
-    if (!gapExpanded) return;
+    const expand = $('#gapExpand');
+    if (expand) expand.textContent = gapExpanded ? '收合' : '顯示全部 ' + num(data.uncovered) + ' 筆';
     const note = $('#gapNote');
     if (note) {
+      const pct = data.kev_in_window ? Math.round((data.covered / data.kev_in_window) * 100) : 0;
       note.textContent = '這 ' + num(data.uncovered) + ' 筆在 CISA KEV 內、但語料沒有報導，因此沒有曝險與文章可追溯；'
         + '其中 ' + num(data.ransomware) + ' 筆與勒索軟體有關（已排在最前）。'
         + '覆蓋率 ' + pct + '%（' + num(data.covered) + ' / ' + num(data.kev_in_window) + '）。';
@@ -1311,8 +1298,7 @@
     const body = $('#gapBody');
     if (!body) return;
     try {
-      // limit=1 when collapsed: it still returns the counts the summary needs.
-      const params = new URLSearchParams({ limit: String(gapExpanded ? 700 : 1) });
+      const params = new URLSearchParams({ limit: String(gapExpanded ? 700 : 12) });
       if (gapRansomOnly) params.set('ransomware_only', 'true');
       const data = await api('/kev-uncovered?' + params.toString());
       renderKevGap(data);
@@ -1337,9 +1323,9 @@
         loadKevGap();
       });
     }
-    const toggle = $('#gapToggle');
-    if (toggle) {
-      toggle.addEventListener('click', () => {
+    const expand = $('#gapExpand');
+    if (expand) {
+      expand.addEventListener('click', () => {
         gapExpanded = !gapExpanded;
         loadKevGap();
       });
