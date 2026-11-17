@@ -93,6 +93,20 @@ class PatchPriorityResponse(DataProvenance):
     summary: dict = Field(default_factory=dict)
 
 
+class CveContextResponse(DataProvenance):
+    cve: str
+    in_corpus: bool
+    articles: int
+    categories: dict[str, int] = Field(default_factory=dict)
+    suggested_category: str
+    reason: str
+    kev: bool = False
+    epss: float | None = None
+    cvss: float | None = None
+    first_seen: str | None = None
+    titles: list[str] = Field(default_factory=list)
+
+
 class KevGapItem(BaseModel):
     cve: str
     priority: str = "P1"

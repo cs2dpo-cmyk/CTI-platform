@@ -375,6 +375,27 @@ def test_patch_priority_exposes_decision_path(client: TestClient):
             assert item["path"][0] == "KEV"
 
 
+def test_cve_context_suggests_a_category(client: TestClient):
+    body = client.get("/api/v1/cve/CVE-2026-111497").json()
+    assert body["in_corpus"] is True
+    assert body["articles"] >= 1
+    assert body["suggested_category"] in {"VULN", "MALWARE", "RESEARCH"}
+    assert sum(body["categories"].values()) == body["articles"]
+    assert body["reason"], "建議必須附理由"
+    assert "CVE-2026-111497" == body["cve"]
+
+
+def test_cve_context_defaults_to_vuln_for_unknown_cve(client: TestClient):
+    body = client.get("/api/v1/cve/CVE-1999-99999").json()
+    assert body["in_corpus"] is False
+    assert body["articles"] == 0
+    assert body["suggested_category"] == "VULN"
+
+
+def test_cve_context_rejects_a_bad_id(client: TestClient):
+    assert client.get("/api/v1/cve/nonsense").status_code == 422
+
+
 def test_kev_uncovered_reports_the_coverage_gap(client: TestClient):
     body = client.get("/api/v1/kev-uncovered", params={"limit": 5}).json()
     assert body["kev_in_window"] > 0

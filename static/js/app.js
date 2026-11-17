@@ -816,6 +816,90 @@
     requestAnimationFrame(tick);
   }
 
+  /* ------------------------------------------------------- CVE category hint */
+  const CATEGORY_SHORT = { VULN: '系統漏洞', MALWARE: '惡意攻擊', RESEARCH: '研究治理' };
+  let categoryAuto = true;
+
+  function renderCveContext(ctx) {
+    const box = $('#cveContext');
+    if (!box) return;
+    box.textContent = '';
+
+    const chip = (text, tone, title) => {
+      const node = document.createElement('span');
+      node.className = 'badge';
+      if (tone) node.dataset.tone = tone;
+      node.textContent = text;
+      if (title) node.title = title;
+      box.appendChild(node);
+    };
+
+    if (ctx.in_corpus) chip('情資 ' + ctx.articles + ' 篇', 'low', (ctx.titles || []).join(' ｜ '));
+    if (ctx.kev) chip('KEV 已利用', 'critical', '列入 CISA KEV，已被實際利用');
+    if (ctx.epss != null) chip('EPSS ' + Math.round(ctx.epss * 100) + '%', 'elevated', 'FIRST EPSS 利用機率');
+    if (ctx.cvss != null) chip('CVSS ' + Number(ctx.cvss).toFixed(1), 'elevated', 'CVE.org / 文章提供的分數');
+    chip('建議 ' + (CATEGORY_SHORT[ctx.suggested_category] || ctx.suggested_category), 'exposed', ctx.reason);
+
+    const select = $('#category');
+    if (categoryAuto && select && CATEGORY_SHORT[ctx.suggested_category]) {
+      select.value = ctx.suggested_category;
+    }
+
+    const note = document.createElement('span');
+    note.className = 'text-[10px] text-[color:var(--faint)]';
+    note.textContent = categoryAuto ? '已自動套用類別（可手動更改）' : '類別為手動選擇';
+    box.appendChild(note);
+
+    if (!categoryAuto) {
+      const reset = document.createElement('button');
+      reset.type = 'button';
+      reset.className = 'chip';
+      reset.textContent = '重新自動判定';
+      reset.addEventListener('click', () => {
+        categoryAuto = true;
+        lookupCve($('#cveId').value);
+      });
+      box.appendChild(reset);
+    }
+  }
+
+  async function lookupCve(raw) {
+    const box = $('#cveContext');
+    if (!box) return;
+    const cve = String(raw || '').trim().toUpperCase();
+    if (!/^CVE-\d{4}-\d{4,7}$/.test(cve)) {
+      box.textContent = '';
+      return;
+    }
+    try {
+      const ctx = await api('/cve/' + encodeURIComponent(cve));
+      renderCveContext(ctx);
+    } catch {
+      box.textContent = '';
+    }
+  }
+
+  function bindCveContext() {
+    const input = $('#cveId');
+    if (input) {
+      let timer = null;
+      input.addEventListener('input', () => {
+        clearTimeout(timer);
+        timer = setTimeout(() => lookupCve(input.value), 350);
+      });
+    }
+    // Touching the select means the user overrides the inference; stop
+    // overwriting their choice until they ask for it again.
+    const select = $('#category');
+    if (select) {
+      select.addEventListener('change', () => {
+        categoryAuto = false;
+        const box = $('#cveContext');
+        if (box && input && input.value.trim()) lookupCve(input.value);
+      });
+    }
+  }
+
   const WHATIF_CONTROLS = {
     edr: 'EDR',
     mfa: 'MFA',
@@ -1619,6 +1703,7 @@
     bindFilters();
     bindFeed();
     bindForm();
+    bindCveContext();
     bindGlobal();
     renderPriorityChips();
 

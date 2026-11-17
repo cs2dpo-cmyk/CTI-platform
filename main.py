@@ -29,6 +29,7 @@ from services import (
     epss,
     kev,
     kev_gap,
+    cve_context,
     local_impact,
     patch_priority,
     risk_engine,
@@ -325,6 +326,27 @@ def patch_priority_list(
         returned=min(len(items), limit),
         items=[schemas.PatchItemOut(**item.as_dict()) for item in items[:limit]],
         summary=summary,
+    )
+
+
+@api.get("/cve/{cve_id}", response_model=schemas.CveContextResponse,
+         summary="單一 CVE 的語料上下文與類別建議")
+def cve_detail(cve_id: str) -> schemas.CveContextResponse:
+    """What the corpus and the snapshots say about one CVE.
+
+    The assessment form uses this to pre-select the category: a CVE is a
+    vulnerability record, but the story around it may be an attack campaign, so
+    the corpus majority is a better answer than asking the user to guess.
+    """
+    context = cve_context.lookup(cve_id)
+    if context is None:
+        raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                            detail="CVE 編號格式應為 CVE-YYYY-NNNN")
+    return schemas.CveContextResponse(
+        data_as_of=snapshots.as_of(),
+        stale_days=snapshots.staleness_days(),
+        snapshots=snapshots.describe(),
+        **context,
     )
 
 
