@@ -35,6 +35,16 @@ def test_falls_back_to_adp_and_dedupes():
     ]
 
 
+def test_family_mapping_for_known_cves():
+    from services import cwe
+
+    # CWE-77 command injection / CWE-119 memory buffer: fixed by the snapshot.
+    assert cwe.family("CVE-2024-3400") == "RCE"
+    assert cwe.family("CVE-2023-4966") == "MEMORY"
+    assert cwe.family("CVE-1999-99999") == "UNKNOWN"
+    assert cwe.family_label("RCE") == "遠端執行"
+
+
 def test_ignores_non_cwe_entries():
     payload = record(cna={"problemTypes": [{"descriptions": [{"cweId": "NVD-CWE-Other", "description": "Other"}]}]})
     assert refresh_cwe.cwes_from_record(payload) == []

@@ -283,6 +283,20 @@ assert($$('#feedBody .feed-detail-row .step').length > 0, 'row detail shows play
   assert($$('#patchBody tr').length === before, 'collapsing restores the top-8 view');
 }
 
+// ------------------------------------------------------ weakness filter
+{
+  const rce = $$('#weaknessFilter .chip').find((node) => node.dataset.weakness === 'RCE');
+  assert(!!rce, 'weakness filter offers an RCE chip');
+  rce.dispatchEvent(new window.MouseEvent('click', { bubbles: true }));
+  await wait(900);
+  const rows = $$('#patchBody tr').length;
+  assert(rows > 8, `weakness filter expands the patch list (got ${rows})`);
+  const stillRce = $$('#weaknessFilter .chip').find((node) => node.dataset.weakness === 'RCE');
+  assert(stillRce.getAttribute('aria-pressed') === 'true', 'RCE chip shows as pressed');
+  stillRce.dispatchEvent(new window.MouseEvent('click', { bubbles: true }));
+  await wait(900);
+}
+
 // --------------------------------------------------------- KEV gap panel
 {
   await wait(400);

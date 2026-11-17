@@ -24,6 +24,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from datetime import date
 
+from services import cwe
 from services import exposure as exposure_ctx
 from services.kev import is_exploited
 
@@ -50,6 +51,7 @@ class PatchItem:
     taiwan_articles: int = 0
     taiwan_sources: set[str] = field(default_factory=set)
     taiwan_titles: list[str] = field(default_factory=list)
+    weakness: str = "UNKNOWN"
     first_seen: date | None = None
     priority: str = "P3"
 
@@ -121,6 +123,8 @@ class PatchItem:
             "assets": self.assets,
             "articles": self.articles,
             "sources": sorted(self.sources),
+            "weakness": self.weakness,
+            "weakness_label": cwe.family_label(self.weakness),
             "taiwan_articles": self.taiwan_articles,
             "taiwan_sources": sorted(self.taiwan_sources),
             "taiwan_titles": self.taiwan_titles,
@@ -178,6 +182,7 @@ def build(rows: list[dict], epss: dict[str, float], use_exposure: bool = True) -
                     cvss=row.get("cvss"),
                     cvss_source=row.get("cvss_source") or "none",
                     exploited=is_exploited(key),
+                    weakness=cwe.family(key),
                 )
                 table[key] = item
                 titles[key] = []
@@ -228,6 +233,20 @@ def summarize(items: list[PatchItem]) -> dict:
         "exploited": sum(1 for item in items if item.exploited),
         "exposed": sum(1 for item in items if item.exposed),
         "taiwan_reported": sum(1 for item in items if item.taiwan_articles),
+        # A list, not a dict: the UI needs the stable key for filtering and the
+        # label for display, and the order is the family order.
+        "by_weakness": [
+            {
+                "key": key,
+                "label": label,
+                "count": sum(1 for item in items if item.weakness == key),
+            }
+            for key, label, _members in cwe.FAMILIES
+        ]
+        + [
+            {"key": "OTHER", "label": "其他弱點", "count": sum(1 for item in items if item.weakness == "OTHER")},
+            {"key": "UNKNOWN", "label": "未標示", "count": sum(1 for item in items if item.weakness == "UNKNOWN")},
+        ],
         "cvss_unknown": sum(1 for item in items if item.cvss is None),
         "cvss_from_cveorg": sum(1 for item in items if item.cvss_source == "cve.org"),
         "exposure_sources": {

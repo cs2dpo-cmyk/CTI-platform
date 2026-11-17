@@ -1204,7 +1204,7 @@
   let patchExposure = true;
   let patchExpanded = false;
   let patchData = null;
-  const patchFilter = { q: '', priority: '', local: false };
+  const patchFilter = { q: '', priority: '', local: false, weakness: '' };
 
   function exposureBadge(item) {
     const span = document.createElement('span');
@@ -1448,6 +1448,36 @@
     });
   }
 
+  // Weakness filter chips come from the CWE families. Clicking one expands the
+  // list first: filtering 8 rows would mostly return nothing.
+  function renderWeaknessChips(data) {
+    const box = $('#weaknessFilter');
+    if (!box) return;
+    const rows = (data.summary && data.summary.by_weakness) || [];
+    box.textContent = '';
+
+    const make = (key, label, count) => {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'chip';
+      btn.dataset.weakness = key;
+      const active = (patchFilter.weakness || '') === key;
+      btn.setAttribute('aria-pressed', String(active));
+      btn.textContent = count == null ? label : label + ' ' + count;
+      btn.title = key ? '依 CWE 弱點類型篩選' : '顯示全部弱點類型';
+      btn.addEventListener('click', () => {
+        patchFilter.weakness = active ? '' : key;
+        if (patchFilter.weakness) patchExpanded = true;
+        loadPatchPriority();
+      });
+      box.appendChild(btn);
+    };
+
+    const total = rows.reduce((sum, row) => sum + (row.count || 0), 0);
+    make('', '全部', total || null);
+    rows.filter((row) => row.count > 0).forEach((row) => make(row.key, row.label, row.count));
+  }
+
   function updatePatchFooter(data, shown) {
     const total = Number(data.total || (data.items || []).length);
     const count = $('#patchCount');
@@ -1666,6 +1696,7 @@
     });
     body.appendChild(fragment);
     updatePatchFooter(data, shown);
+    renderWeaknessChips(data);
   }
 
   async function loadPatchPriority() {
@@ -1676,7 +1707,9 @@
       // The API caps at 300; the corpus has 288 CVEs, so one request covers the
       // full list and the filters run client-side without round-trips.
       const limit = patchExpanded ? 300 : 8;
-      const data = await api('/patch-priority?limit=' + limit + suffix);
+      const params = new URLSearchParams({ limit: String(limit) });
+      if (patchFilter.weakness) params.set('weakness', patchFilter.weakness);
+      const data = await api('/patch-priority?' + params.toString() + suffix);
       renderPatchPriority(data);
     } catch (error) {
       body.textContent = '';

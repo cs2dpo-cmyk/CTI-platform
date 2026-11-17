@@ -336,6 +336,17 @@ def test_patch_priority_endpoint(client: TestClient):
     assert sum(body["summary"]["by_priority"].values()) == body["total"]
 
 
+def test_patch_priority_filters_by_weakness(client: TestClient):
+    body = client.get(
+        "/api/v1/patch-priority", params={"limit": 300, "weakness": "RCE"}
+    ).json()
+    assert body["items"]
+    assert all(item["weakness"] == "RCE" for item in body["items"])
+    counts = {row["key"]: row["count"] for row in body["summary"]["by_weakness"]}
+    assert counts.get("RCE", 0) >= len(body["items"])
+    assert all(item["weakness_label"] for item in body["items"])
+
+
 def test_patch_priority_filter(client: TestClient):
     body = client.get("/api/v1/patch-priority", params={"priority": "P1", "limit": 5}).json()
     assert all(item["priority"] == "P1" for item in body["items"])

@@ -70,6 +70,9 @@ class PatchItemOut(BaseModel):
     cvss: float | None = None
     # "article" (stated in a headline), "cve.org" (snapshot fallback), "none".
     cvss_source: str = "none"
+    # Coarse CWE family for filtering: RCE / SQLI / AUTH / ... / OTHER / UNKNOWN.
+    weakness: str = "UNKNOWN"
+    weakness_label: str = ""
     exploited: bool = False
     exposure: str = "unknown"
     exposure_label: str = ""

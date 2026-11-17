@@ -43,6 +43,50 @@ def labels(cve: str) -> list[str]:
     return out
 
 
+# Coarse families for filtering. Ordered: the first matching family wins, so
+# the list is sorted from "most specific exploit primitive" to "generic".
+FAMILIES: tuple[tuple[str, str, set[int]], ...] = (
+    ("RCE", "遠端執行", {77, 78, 94, 95, 96, 99, 1336, 917}),
+    ("DESERIALIZE", "反序列化", {502, 915}),
+    ("SQLI", "SQL 注入", {89}),
+    ("XSS", "XSS", {79, 80, 83, 87}),
+    ("AUTH", "認證繞過", {287, 288, 290, 306, 620, 640, 862, 863, 269, 284, 285, 732}),
+    ("PATH", "路徑遍歷", {22, 23, 36, 434, 538}),
+    ("SSRF", "SSRF", {918}),
+    ("XXE", "XXE", {611}),
+    ("MEMORY", "記憶體安全", {119, 120, 121, 122, 125, 190, 191, 416, 476, 787}),
+    ("INPUT", "輸入驗證", {20, 116, 128, 444, 707, 754, 1287}),
+    ("CRYPTO", "加密／憑證", {259, 295, 327, 330, 347, 798}),
+    ("INFO", "資訊洩露", {200, 209, 532, 552}),
+)
+
+
+def family(cve: str) -> str:
+    """Coarse family key for a CVE: one of FAMILIES keys, OTHER or UNKNOWN."""
+    entries = for_cve(cve)
+    if not entries:
+        return "UNKNOWN"
+    ids: set[int] = set()
+    for entry in entries:
+        raw = str(entry.get("id") or "")
+        if raw.startswith("CWE-"):
+            try:
+                ids.add(int(raw[4:]))
+            except ValueError:
+                continue
+    for key, _label, members in FAMILIES:
+        if ids & members:
+            return key
+    return "OTHER"
+
+
+def family_label(key: str) -> str:
+    for name, label, _members in FAMILIES:
+        if name == key:
+            return label
+    return {"OTHER": "其他弱點", "UNKNOWN": "未標示"}.get(key, key)
+
+
 def meta() -> dict:
     payload = _payload()
     entries = payload.get("cves") or {}
