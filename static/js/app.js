@@ -838,6 +838,13 @@
     if (ctx.kev) chip('KEV 已利用', 'critical', '列入 CISA KEV，已被實際利用');
     if (ctx.epss != null) chip('EPSS ' + Math.round(ctx.epss * 100) + '%', 'elevated', 'FIRST EPSS 利用機率');
     if (ctx.cvss != null) chip('CVSS ' + Number(ctx.cvss).toFixed(1), 'elevated', 'CVE.org / 文章提供的分數');
+    (ctx.cwes || []).slice(0, 2).forEach((entry) => {
+      const name = entry.name || '';
+      // The full CWE name is long English; the chip shows a short form and the
+      // tooltip keeps the exact wording for citation.
+      const short = name.length > 16 ? name.slice(0, 16) + '…' : name;
+      chip(entry.id + ' ' + short, 'low', entry.id + ' ' + name);
+    });
     chip('建議 ' + (CATEGORY_SHORT[ctx.suggested_category] || ctx.suggested_category), 'exposed', ctx.reason);
 
     const select = $('#category');

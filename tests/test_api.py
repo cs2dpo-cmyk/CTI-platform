@@ -385,6 +385,16 @@ def test_cve_context_suggests_a_category(client: TestClient):
     assert "CVE-2026-111497" == body["cve"]
 
 
+def test_cve_context_carries_cwe_when_known(client: TestClient):
+    body = client.get("/api/v1/cve/CVE-2023-4966").json()
+    assert "cwes" in body
+    for entry in body["cwes"]:
+        assert entry["id"].startswith("CWE-")
+        assert entry["name"], "CWE 必須帶名稱"
+    if body["cwes"]:
+        assert "CWE-" in body["reason"], "理由應提到弱點類型"
+
+
 def test_cve_context_defaults_to_vuln_for_unknown_cve(client: TestClient):
     body = client.get("/api/v1/cve/CVE-1999-99999").json()
     assert body["in_corpus"] is False

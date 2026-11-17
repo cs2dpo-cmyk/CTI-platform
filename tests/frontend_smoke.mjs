@@ -364,6 +364,7 @@ assert($$('#whatIf .chip').length >= 1, `what-if comparison rendered (got ${$$('
   const chips = $$('#cveContext .badge').map((node) => node.textContent);
   assert(chips.some((text) => text.includes('情資')), `CVE context shows corpus hits (got ${chips.join('|')})`);
   assert(chips.some((text) => text.includes('建議')), 'CVE context shows a category suggestion');
+  assert(chips.some((text) => text.startsWith('CWE-')), `CVE context shows the CWE type (got ${chips.join('|')})`);
   assert($('#category').value === 'VULN', `category auto-selected (got ${$('#category').value})`);
 }
 

@@ -12,7 +12,7 @@ import re
 from collections import Counter
 from functools import lru_cache
 
-from services import cvss, dataset, epss, kev
+from services import cwe, cvss, dataset, epss, kev
 
 CVE_PATTERN = re.compile(r"^CVE-\d{4}-\d{4,7}$")
 CATEGORY_LABELS = {
@@ -76,9 +76,19 @@ def lookup(cve: str) -> dict | None:
         suggested = "VULN"
         reason = "語料未收錄此 CVE；CVE 屬漏洞編號，預設為系統漏洞類"
 
+    weaknesses = cwe.for_cve(key)
+    if weaknesses:
+        first = weaknesses[0]
+        reason += f"；弱點類型 {first.get('id', '')} {first.get('name', '')}".rstrip()
+        if suggested != "VULN":
+            # The story was told as an attack, but the CVE itself is a weakness
+            # record. Say so instead of letting the user guess which one applies.
+            reason += "（此 CVE 本質為漏洞，若你的情境是修補排程可改選系統漏洞）"
+
     return {
         "cve": key,
         "in_corpus": bool(entry),
+        "cwes": weaknesses,
         "articles": articles,
         "categories": counts,
         "suggested_category": suggested,

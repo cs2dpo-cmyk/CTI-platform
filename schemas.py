@@ -100,6 +100,7 @@ class CveContextResponse(DataProvenance):
     categories: dict[str, int] = Field(default_factory=dict)
     suggested_category: str
     reason: str
+    cwes: list[dict] = Field(default_factory=list)
     kev: bool = False
     epss: float | None = None
     cvss: float | None = None

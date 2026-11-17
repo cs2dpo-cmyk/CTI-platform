@@ -1,0 +1,1864 @@
+{
+ "generated": "2026-11-17",
+ "source": "https://cve.circl.lu/api/cve (CVE.org problemTypes)",
+ "cves": {
+  "CVE-2013-2165": [],
+  "CVE-2016-6210": [
+   {
+    "id": "CWE-200",
+    "name": "Exposure of Sensitive Information to an Unauthorized Actor"
+   }
+  ],
+  "CVE-2017-11774": [
+   {
+    "id": "CWE-119",
+    "name": "Improper Restriction of Operations within the Bounds of a Memory Buffer"
+   }
+  ],
+  "CVE-2017-7921": [],
+  "CVE-2020-25078": [],
+  "CVE-2020-25169": [
+   {
+    "id": "CWE-319",
+    "name": "CLEARTEXT TRANSMISSION OF SENSITIVE INFORMATION CWE-319"
+   }
+  ],
+  "CVE-2020-7961": [
+   {
+    "id": "CWE-502",
+    "name": "Deserialization of Untrusted Data"
+   }
+  ],
+  "CVE-2021-20035": [
+   {
+    "id": "CWE-78",
+    "name": "Improper Neutralization of Special Elements used in an OS Command ('OS Command Injection')"
+   }
+  ],
+  "CVE-2021-20038": [
+   {
+    "id": "CWE-121",
+    "name": "Stack-based Buffer Overflow"
+   }
+  ],
+  "CVE-2021-20039": [
+   {
+    "id": "CWE-78",
+    "name": "Improper Neutralization of Special Elements used in an OS Command ('OS Command Injection')"
+   }
+  ],
+  "CVE-2021-26829": [
+   {
+    "id": "CWE-79",
+    "name": "Improper Neutralization of Input During Web Page Generation ('Cross-site Scripting')"
+   }
+  ],
+  "CVE-2021-33044": [
+   {
+    "id": "CWE-287",
+    "name": "Improper Authentication"
+   }
+  ],
+  "CVE-2021-33045": [
+   {
+    "id": "CWE-287",
+    "name": "Improper Authentication"
+   }
+  ],
+  "CVE-2021-35464": [
+   {
+    "id": "CWE-502",
+    "name": "Deserialization of Untrusted Data"
+   }
+  ],
+  "CVE-2021-35587": [
+   {
+    "id": "CWE-306",
+    "name": "Missing Authentication for Critical Function"
+   }
+  ],
+  "CVE-2021-36260": [
+   {
+    "id": "CWE-78",
+    "name": "Improper Neutralization of Special Elements used in an OS Command ('OS Command Injection')"
+   }
+  ],
+  "CVE-2021-4034": [
+   {
+    "id": "CWE-787",
+    "name": "(CWE-787|CWE-125)"
+   }
+  ],
+  "CVE-2022-22536": [
+   {
+    "id": "CWE-444",
+    "name": "Inconsistent Interpretation of HTTP Requests ('HTTP Request Smuggling')"
+   }
+  ],
+  "CVE-2023-20269": [
+   {
+    "id": "CWE-288",
+    "name": "Authentication Bypass Using an Alternate Path or Channel"
+   }
+  ],
+  "CVE-2023-2868": [
+   {
+    "id": "CWE-20",
+    "name": "Improper Input Validation"
+   }
+  ],
+  "CVE-2023-39780": [
+   {
+    "id": "CWE-78",
+    "name": "Improper Neutralization of Special Elements used in an OS Command ('OS Command Injection')"
+   }
+  ],
+  "CVE-2023-41265": [
+   {
+    "id": "CWE-444",
+    "name": "Inconsistent Interpretation of HTTP Requests ('HTTP Request/Response Smuggling')"
+   }
+  ],
+  "CVE-2023-41266": [
+   {
+    "id": "CWE-22",
+    "name": "Improper Limitation of a Pathname to a Restricted Directory ('Path Traversal')"
+   }
+  ],
+  "CVE-2023-44221": [
+   {
+    "id": "CWE-78",
+    "name": "Improper Neutralization of Special Elements used in an OS Command ('OS Command Injection')"
+   }
+  ],
+  "CVE-2023-46604": [
+   {
+    "id": "CWE-502",
+    "name": "Deserialization of Untrusted Data"
+   }
+  ],
+  "CVE-2023-48365": [
+   {
+    "id": "CWE-444",
+    "name": "Inconsistent Interpretation of HTTP Requests ('HTTP Request/Response Smuggling')"
+   }
+  ],
+  "CVE-2023-4966": [
+   {
+    "id": "CWE-119",
+    "name": "Improper Restriction of Operations within the Bounds of a Memory Buffer"
+   }
+  ],
+  "CVE-2024-3400": [
+   {
+    "id": "CWE-20",
+    "name": "Improper Input Validation"
+   },
+   {
+    "id": "CWE-77",
+    "name": "Improper Neutralization of Special Elements used in a Command ('Command Injection')"
+   }
+  ],
+  "CVE-2024-38475": [
+   {
+    "id": "CWE-116",
+    "name": "Improper Encoding or Escaping of Output"
+   }
+  ],
+  "CVE-2024-39717": [
+   {
+    "id": "CWE-434",
+    "name": "Unrestricted Upload of File with Dangerous Type"
+   }
+  ],
+  "CVE-2024-40711": [
+   {
+    "id": "CWE-502",
+    "name": "Deserialization of Untrusted Data"
+   }
+  ],
+  "CVE-2024-41710": [
+   {
+    "id": "CWE-88",
+    "name": "Improper Neutralization of Argument Delimiters in a Command ('Argument Injection')"
+   }
+  ],
+  "CVE-2024-4577": [
+   {
+    "id": "CWE-78",
+    "name": "Improper Neutralization of Special Elements used in an OS Command ('OS Command Injection')"
+   }
+  ],
+  "CVE-2024-52046": [
+   {
+    "id": "CWE-502",
+    "name": "Deserialization of Untrusted Data"
+   }
+  ],
+  "CVE-2024-53375": [
+   {
+    "id": "CWE-78",
+    "name": "Improper Neutralization of Special Elements used in an OS Command ('OS Command Injection')"
+   }
+  ],
+  "CVE-2024-55591": [
+   {
+    "id": "CWE-288",
+    "name": "Execute unauthorized code or commands"
+   }
+  ],
+  "CVE-2024-57049": [],
+  "CVE-2024-58351": [
+   {
+    "id": "CWE-94",
+    "name": "Improper Control of Generation of Code ('Code Injection')"
+   }
+  ],
+  "CVE-2024-6387": [
+   {
+    "id": "CWE-364",
+    "name": "Signal Handler Race Condition"
+   }
+  ],
+  "CVE-2024-9474": [
+   {
+    "id": "CWE-78",
+    "name": "Improper Neutralization of Special Elements used in an OS Command ('OS Command Injection')"
+   }
+  ],
+  "CVE-2025-14847": [
+   {
+    "id": "CWE-130",
+    "name": "Improper Handling of Length Parameter Inconsistency"
+   }
+  ],
+  "CVE-2025-24472": [
+   {
+    "id": "CWE-288",
+    "name": "Execute unauthorized code or commands"
+   }
+  ],
+  "CVE-2025-26633": [
+   {
+    "id": "CWE-707",
+    "name": "Improper Neutralization"
+   }
+  ],
+  "CVE-2025-3248": [
+   {
+    "id": "CWE-306",
+    "name": "Missing Authentication for Critical Function"
+   }
+  ],
+  "CVE-2025-32819": [
+   {
+    "id": "CWE-552",
+    "name": "Files or Directories Accessible to External Parties"
+   }
+  ],
+  "CVE-2025-54236": [
+   {
+    "id": "CWE-20",
+    "name": "Improper Input Validation (CWE-20)"
+   }
+  ],
+  "CVE-2025-54249": [
+   {
+    "id": "CWE-918",
+    "name": "Server-Side Request Forgery (SSRF) (CWE-918)"
+   }
+  ],
+  "CVE-2025-55182": [
+   {
+    "id": "CWE-502",
+    "name": "Deserialization of Untrusted Data"
+   }
+  ],
+  "CVE-2025-5777": [
+   {
+    "id": "CWE-125",
+    "name": "Out-of-bounds Read"
+   }
+  ],
+  "CVE-2025-59287": [
+   {
+    "id": "CWE-502",
+    "name": "Deserialization of Untrusted Data"
+   }
+  ],
+  "CVE-2025-61882": [
+   {
+    "id": "CWE-287",
+    "name": "Improper Authentication"
+   }
+  ],
+  "CVE-2025-6543": [
+   {
+    "id": "CWE-119",
+    "name": "Improper Restriction of Operations within the Bounds of a Memory Buffer"
+   }
+  ],
+  "CVE-2025-68613": [
+   {
+    "id": "CWE-913",
+    "name": "Improper Control of Dynamically-Managed Code Resources"
+   }
+  ],
+  "CVE-2025-68668": [
+   {
+    "id": "CWE-693",
+    "name": "Protection Mechanism Failure"
+   }
+  ],
+  "CVE-2025-70795": [
+   {
+    "id": "CWE-269",
+    "name": "Improper Privilege Management"
+   }
+  ],
+  "CVE-2025-8875": [
+   {
+    "id": "CWE-502",
+    "name": "Deserialization of Untrusted Data"
+   }
+  ],
+  "CVE-2025-8876": [
+   {
+    "id": "CWE-20",
+    "name": "Improper Input Validation"
+   }
+  ],
+  "CVE-2026-0257": [
+   {
+    "id": "CWE-565",
+    "name": "Reliance on Cookies without Validation and Integrity Checking"
+   }
+  ],
+  "CVE-2026-101767": [
+   {
+    "id": "CWE-287",
+    "name": "Improper Authentication"
+   },
+   {
+    "id": "CWE-306",
+    "name": "Missing Authentication for Critical Function"
+   }
+  ],
+  "CVE-2026-102703": [
+   {
+    "id": "CWE-704",
+    "name": "Incorrect Type Conversion or Cast"
+   }
+  ],
+  "CVE-2026-102704": [
+   {
+    "id": "CWE-693",
+    "name": "Protection Mechanism Failure"
+   }
+  ],
+  "CVE-2026-102764": [
+   {
+    "id": "CWE-290",
+    "name": "Authentication bypass by spoofing"
+   }
+  ],
+  "CVE-2026-102895": [
+   {
+    "id": "CWE-287",
+    "name": "Improper Authentication"
+   },
+   {
+    "id": "CWE-290",
+    "name": "Authentication Bypass by Spoofing"
+   },
+   {
+    "id": "CWE-346",
+    "name": "Origin Validation Error"
+   }
+  ],
+  "CVE-2026-104085": [
+   {
+    "id": "CWE-78",
+    "name": "Improper Neutralization of Special Elements used in an OS Command ('OS Command Injection')"
+   }
+  ],
+  "CVE-2026-104350": [
+   {
+    "id": "CWE-79",
+    "name": "Cross-site Scripting (Reflected XSS) (CWE-79)"
+   }
+  ],
+  "CVE-2026-104351": [
+   {
+    "id": "CWE-94",
+    "name": "Improper Control of Generation of Code ('Code Injection') (CWE-94)"
+   }
+  ],
+  "CVE-2026-104353": [
+   {
+    "id": "CWE-78",
+    "name": "Improper Neutralization of Special Elements used in an OS Command ('OS Command Injection') (CWE-78)"
+   }
+  ],
+  "CVE-2026-104354": [
+   {
+    "id": "CWE-89",
+    "name": "Improper Neutralization of Special Elements used in an SQL Command ('SQL Injection') (CWE-89)"
+   }
+  ],
+  "CVE-2026-105133": [
+   {
+    "id": "CWE-287",
+    "name": "Improper Authentication"
+   }
+  ],
+  "CVE-2026-105134": [
+   {
+    "id": "CWE-77",
+    "name": "Command Injection"
+   },
+   {
+    "id": "CWE-78",
+    "name": "OS Command Injection"
+   }
+  ],
+  "CVE-2026-105437": [
+   {
+    "id": "CWE-122",
+    "name": "Heap-based Buffer Overflow"
+   }
+  ],
+  "CVE-2026-105482": [
+   {
+    "id": "CWE-284",
+    "name": "Improper Access Control - Generic"
+   }
+  ],
+  "CVE-2026-105483": [
+   {
+    "id": "CWE-295",
+    "name": "Improper Certificate Validation"
+   }
+  ],
+  "CVE-2026-105779": [
+   {
+    "id": "CWE-89",
+    "name": "Improper Neutralization of Special Elements used in an SQL Command ('SQL Injection') (CWE-89)"
+   }
+  ],
+  "CVE-2026-105780": [
+   {
+    "id": "CWE-863",
+    "name": "Incorrect Authorization (CWE-863)"
+   }
+  ],
+  "CVE-2026-105781": [
+   {
+    "id": "CWE-89",
+    "name": "Improper Neutralization of Special Elements used in an SQL Command ('SQL Injection') (CWE-89)"
+   }
+  ],
+  "CVE-2026-106069": [
+   {
+    "id": "CWE-295",
+    "name": "Improper Certificate Validation"
+   }
+  ],
+  "CVE-2026-107154": [
+   {
+    "id": "CWE-291",
+    "name": "Reliance on IP address for authentication"
+   }
+  ],
+  "CVE-2026-107155": [
+   {
+    "id": "CWE-942",
+    "name": "Permissive cross-domain security policy with untrusted domains"
+   }
+  ],
+  "CVE-2026-107441": [
+   {
+    "id": "CWE-787",
+    "name": "Out-of-bounds write"
+   }
+  ],
+  "CVE-2026-108186": [
+   {
+    "id": "CWE-20",
+    "name": "Improper input validation"
+   }
+  ],
+  "CVE-2026-108187": [
+   {
+    "id": "CWE-346",
+    "name": "Origin Validation Error"
+   }
+  ],
+  "CVE-2026-108263": [
+   {
+    "id": "CWE-1392",
+    "name": "Use of Default Credentials"
+   },
+   {
+    "id": "CWE-306",
+    "name": "Missing Authentication for Critical Function"
+   },
+   {
+    "id": "CWE-653",
+    "name": "Improper Isolation or Compartmentalization"
+   },
+   {
+    "id": "CWE-863",
+    "name": "Incorrect Authorization"
+   },
+   {
+    "id": "CWE-95",
+    "name": "Improper Neutralization of Directives in Dynamically Evaluated Code ('Eval Injection')"
+   }
+  ],
+  "CVE-2026-109437": [
+   {
+    "id": "CWE-1188",
+    "name": "Initialization of a Resource with an Insecure Default"
+   },
+   {
+    "id": "CWE-306",
+    "name": "Missing Authentication for Critical Function"
+   }
+  ],
+  "CVE-2026-109440": [
+   {
+    "id": "CWE-1427",
+    "name": "Improper Neutralization of Input Used for LLM Prompting"
+   }
+  ],
+  "CVE-2026-109442": [
+   {
+    "id": "CWE-306",
+    "name": "Missing Authentication for Critical Function"
+   }
+  ],
+  "CVE-2026-109443": [
+   {
+    "id": "CWE-653",
+    "name": "Improper Isolation or Compartmentalization"
+   }
+  ],
+  "CVE-2026-109444": [
+   {
+    "id": "CWE-862",
+    "name": "Missing Authorization"
+   }
+  ],
+  "CVE-2026-109518": [
+   {
+    "id": "CWE-367",
+    "name": "Time-of-check time-of-use (TOCTOU) race condition"
+   },
+   {
+    "id": "CWE-62",
+    "name": "UNIX hard link"
+   }
+  ],
+  "CVE-2026-109593": [
+   {
+    "id": "CWE-636",
+    "name": "Not Failing Securely"
+   }
+  ],
+  "CVE-2026-109594": [
+   {
+    "id": "CWE-89",
+    "name": "Improper neutralization of special elements used in an SQL command ('SQL injection')"
+   }
+  ],
+  "CVE-2026-109618": [
+   {
+    "id": "CWE-1325",
+    "name": "Improperly controlled sequential memory allocation"
+   },
+   {
+    "id": "CWE-1419",
+    "name": "Incorrect Initialization of Resource"
+   },
+   {
+    "id": "CWE-416",
+    "name": "Use after free"
+   },
+   {
+    "id": "CWE-755",
+    "name": "Improper Handling of Exceptional Conditions"
+   },
+   {
+    "id": "CWE-824",
+    "name": "Access of uninitialized pointer"
+   }
+  ],
+  "CVE-2026-109619": [
+   {
+    "id": "CWE-1325",
+    "name": "Improperly controlled sequential memory allocation"
+   },
+   {
+    "id": "CWE-1419",
+    "name": "Incorrect Initialization of Resource"
+   },
+   {
+    "id": "CWE-416",
+    "name": "Use after free"
+   },
+   {
+    "id": "CWE-755",
+    "name": "Improper Handling of Exceptional Conditions"
+   },
+   {
+    "id": "CWE-824",
+    "name": "Access of uninitialized pointer"
+   }
+  ],
+  "CVE-2026-109795": [
+   {
+    "id": "CWE-94",
+    "name": "Improper Control of Generation of Code"
+   }
+  ],
+  "CVE-2026-109803": [
+   {
+    "id": "CWE-94",
+    "name": "Improper Control of Generation of Code"
+   }
+  ],
+  "CVE-2026-110264": [
+   {
+    "id": "CWE-190",
+    "name": "Integer Overflow or Wraparound"
+   }
+  ],
+  "CVE-2026-111105": [
+   {
+    "id": "CWE-197",
+    "name": "Numeric Truncation Error"
+   }
+  ],
+  "CVE-2026-111497": [
+   {
+    "id": "CWE-252",
+    "name": "Unchecked Return Value"
+   },
+   {
+    "id": "CWE-787",
+    "name": "Out-of-bounds Write"
+   }
+  ],
+  "CVE-2026-111560": [
+   {
+    "id": "CWE-78",
+    "name": "Improper neutralization of special elements used in an OS command ('OS command injection')"
+   }
+  ],
+  "CVE-2026-111760": [
+   {
+    "id": "CWE-59",
+    "name": "Improper Link Resolution Before File Access"
+   }
+  ],
+  "CVE-2026-111793": [
+   {
+    "id": "CWE-669",
+    "name": "Incorrect Resource Transfer Between Spheres"
+   }
+  ],
+  "CVE-2026-112393": [
+   {
+    "id": "CWE-122",
+    "name": "Heap-based Buffer Overflow"
+   }
+  ],
+  "CVE-2026-112403": [
+   {
+    "id": "CWE-122",
+    "name": "Heap-based Buffer Overflow"
+   }
+  ],
+  "CVE-2026-112900": [
+   {
+    "id": "CWE-78",
+    "name": "Improper Neutralization of Special Elements used in an OS Command ('OS Command Injection')"
+   },
+   {
+    "id": "CWE-88",
+    "name": "Improper Neutralization of Argument Delimiters in a Command ('Argument Injection')"
+   }
+  ],
+  "CVE-2026-112967": [
+   {
+    "id": "CWE-122",
+    "name": "Heap-based Buffer Overflow"
+   }
+  ],
+  "CVE-2026-113072": [
+   {
+    "id": "CWE-416",
+    "name": "Use after free"
+   }
+  ],
+  "CVE-2026-113271": [
+   {
+    "id": "CWE-416",
+    "name": "Use after free"
+   }
+  ],
+  "CVE-2026-113279": [
+   {
+    "id": "CWE-416",
+    "name": "Use after free"
+   }
+  ],
+  "CVE-2026-113280": [
+   {
+    "id": "CWE-416",
+    "name": "Use after free"
+   }
+  ],
+  "CVE-2026-113303": [
+   {
+    "id": "CWE-416",
+    "name": "Use after free"
+   }
+  ],
+  "CVE-2026-113341": [
+   {
+    "id": "CWE-416",
+    "name": "Use after free"
+   }
+  ],
+  "CVE-2026-113380": [
+   {
+    "id": "CWE-754",
+    "name": "Improper Check for Unusual or Exceptional Conditions"
+   }
+  ],
+  "CVE-2026-113408": [
+   {
+    "id": "CWE-22",
+    "name": "Improper Limitation of a Pathname to a Restricted Directory ('Path Traversal')"
+   }
+  ],
+  "CVE-2026-113960": [
+   {
+    "id": "CWE-284",
+    "name": "Improper Access Control"
+   }
+  ],
+  "CVE-2026-113961": [
+   {
+    "id": "CWE-863",
+    "name": "Incorrect Authorization"
+   }
+  ],
+  "CVE-2026-114466": [
+   {
+    "id": "CWE-1220",
+    "name": "Insufficient Granularity of Access Control"
+   }
+  ],
+  "CVE-2026-114467": [
+   {
+    "id": "CWE-787",
+    "name": "Out-of-bounds Write"
+   }
+  ],
+  "CVE-2026-114469": [
+   {
+    "id": "CWE-125",
+    "name": "Out-of-bounds Read"
+   }
+  ],
+  "CVE-2026-114625": [
+   {
+    "id": "CWE-89",
+    "name": "Improper Neutralization of Special Elements used in an SQL Command ('SQL Injection')"
+   }
+  ],
+  "CVE-2026-115560": [],
+  "CVE-2026-115881": [],
+  "CVE-2026-115884": [],
+  "CVE-2026-115889": [
+   {
+    "id": "CWE-197",
+    "name": "Numeric Truncation Error"
+   },
+   {
+    "id": "CWE-843",
+    "name": "Access of Resource Using Incompatible Type ('Type Confusion')"
+   }
+  ],
+  "CVE-2026-115893": [
+   {
+    "id": "CWE-691",
+    "name": "Insufficient Control Flow Management"
+   }
+  ],
+  "CVE-2026-11645": [
+   {
+    "id": "CWE-125",
+    "name": "Out-of-bounds Read"
+   },
+   {
+    "id": "CWE-787",
+    "name": "Out-of-bounds Write"
+   }
+  ],
+  "CVE-2026-116606": [
+   {
+    "id": "CWE-288",
+    "name": "Authentication bypass using an alternate path or channel"
+   }
+  ],
+  "CVE-2026-116779": [
+   {
+    "id": "CWE-749",
+    "name": "Exposed Dangerous Method or Function"
+   },
+   {
+    "id": "CWE-77",
+    "name": "Improper Neutralization of Special Elements used in a Command ('Command Injection')"
+   },
+   {
+    "id": "CWE-78",
+    "name": "Improper Neutralization of Special Elements used in an OS Command ('OS Command Injection')"
+   }
+  ],
+  "CVE-2026-116928": [
+   {
+    "id": "CWE-787",
+    "name": "Out-of-bounds Write"
+   }
+  ],
+  "CVE-2026-118383": [
+   {
+    "id": "CWE-416",
+    "name": "Use After Free"
+   }
+  ],
+  "CVE-2026-119741": [
+   {
+    "id": "CWE-407",
+    "name": "Inefficient Algorithmic Complexity"
+   }
+  ],
+  "CVE-2026-119952": [
+   {
+    "id": "CWE-208",
+    "name": "Observable Timing Discrepancy"
+   }
+  ],
+  "CVE-2026-119958": [
+   {
+    "id": "CWE-787",
+    "name": "Out-of-bounds Write"
+   }
+  ],
+  "CVE-2026-119977": [
+   {
+    "id": "CWE-367",
+    "name": "Time-of-check Time-of-use (TOCTOU) Race Condition"
+   }
+  ],
+  "CVE-2026-119990": [
+   {
+    "id": "CWE-306",
+    "name": "Missing Authentication for Critical Function"
+   }
+  ],
+  "CVE-2026-12001": [
+   {
+    "id": "CWE-798",
+    "name": "Use of Hard-coded Credentials"
+   }
+  ],
+  "CVE-2026-120017": [
+   {
+    "id": "CWE-347",
+    "name": "Improper Verification of Cryptographic Signature"
+   }
+  ],
+  "CVE-2026-121035": [
+   {
+    "id": "CWE-416",
+    "name": "Use after free"
+   }
+  ],
+  "CVE-2026-121126": [
+   {
+    "id": "CWE-416",
+    "name": "Use after free"
+   }
+  ],
+  "CVE-2026-121156": [
+   {
+    "id": "CWE-122",
+    "name": "Buffer overflow"
+   }
+  ],
+  "CVE-2026-121203": [
+   {
+    "id": "CWE-416",
+    "name": "Use after free"
+   }
+  ],
+  "CVE-2026-121229": [
+   {
+    "id": "CWE-119",
+    "name": "Memory corruption"
+   }
+  ],
+  "CVE-2026-121246": [
+   {
+    "id": "CWE-416",
+    "name": "Use after free"
+   }
+  ],
+  "CVE-2026-121247": [
+   {
+    "id": "CWE-122",
+    "name": "Buffer overflow"
+   }
+  ],
+  "CVE-2026-121638": [],
+  "CVE-2026-121639": [],
+  "CVE-2026-121640": [],
+  "CVE-2026-123158": [
+   {
+    "id": "CWE-394",
+    "name": "Unexpected Status Code or Return Value"
+   }
+  ],
+  "CVE-2026-123218": [],
+  "CVE-2026-124194": [
+   {
+    "id": "CWE-356",
+    "name": "Product UI does not Warn User of Unsafe Actions"
+   }
+  ],
+  "CVE-2026-125350": [
+   {
+    "id": "CWE-416",
+    "name": "Use after free"
+   }
+  ],
+  "CVE-2026-125878": [
+   {
+    "id": "CWE-79",
+    "name": "Improper neutralization of input during web page generation ('cross-site scripting')"
+   }
+  ],
+  "CVE-2026-125879": [
+   {
+    "id": "CWE-266",
+    "name": "Incorrect privilege assignment"
+   }
+  ],
+  "CVE-2026-125880": [
+   {
+    "id": "CWE-644",
+    "name": "Improper neutralization of HTTP headers for scripting syntax"
+   }
+  ],
+  "CVE-2026-125881": [
+   {
+    "id": "CWE-918",
+    "name": "Server-Side request forgery (SSRF)"
+   }
+  ],
+  "CVE-2026-125882": [
+   {
+    "id": "CWE-23",
+    "name": "Relative path traversal"
+   }
+  ],
+  "CVE-2026-125883": [
+   {
+    "id": "CWE-611",
+    "name": "Improper restriction of XML external entity reference"
+   }
+  ],
+  "CVE-2026-13639": [
+   {
+    "id": "CWE-331",
+    "name": "Insufficient Entropy"
+   }
+  ],
+  "CVE-2026-13673": [
+   {
+    "id": "CWE-732",
+    "name": "Incorrect Permission Assignment for Critical Resource"
+   }
+  ],
+  "CVE-2026-13684": [
+   {
+    "id": "CWE-116",
+    "name": "Improper Encoding or Escaping of Output"
+   }
+  ],
+  "CVE-2026-16305": [
+   {
+    "id": "CWE-269",
+    "name": "Improper Privilege Management"
+   },
+   {
+    "id": "CWE-276",
+    "name": "Incorrect Default Permissions"
+   },
+   {
+    "id": "CWE-732",
+    "name": "Incorrect Permission Assignment for Critical Resource"
+   }
+  ],
+  "CVE-2026-16306": [
+   {
+    "id": "CWE-470",
+    "name": "Use of Externally-Controlled Input to Select Classes or Code ('Unsafe Reflection')"
+   },
+   {
+    "id": "CWE-94",
+    "name": "Improper Control of Generation of Code ('Code Injection')"
+   }
+  ],
+  "CVE-2026-16812": [
+   {
+    "id": "CWE-78",
+    "name": "Improper Neutralization of Special Elements used in an OS Command ('OS Command Injection')"
+   }
+  ],
+  "CVE-2026-19868": [
+   {
+    "id": "CWE-308",
+    "name": "Use of single-factor authentication"
+   }
+  ],
+  "CVE-2026-2003": [
+   {
+    "id": "CWE-1287",
+    "name": "Improper Validation of Specified Type of Input"
+   }
+  ],
+  "CVE-2026-2004": [
+   {
+    "id": "CWE-1287",
+    "name": "Improper Validation of Specified Type of Input"
+   }
+  ],
+  "CVE-2026-20043": [
+   {
+    "id": "CWE-787",
+    "name": "Out-of-bounds Write"
+   }
+  ],
+  "CVE-2026-2005": [
+   {
+    "id": "CWE-120",
+    "name": "Buffer Copy without Checking Size of Input ('Classic Buffer Overflow')"
+   },
+   {
+    "id": "CWE-122",
+    "name": "Heap-based Buffer Overflow"
+   }
+  ],
+  "CVE-2026-2006": [
+   {
+    "id": "CWE-1285",
+    "name": "Improper Validation of Specified Index, Position, or Offset in Input"
+   },
+   {
+    "id": "CWE-129",
+    "name": "Improper Validation of Array Index"
+   }
+  ],
+  "CVE-2026-20127": [
+   {
+    "id": "CWE-287",
+    "name": "Improper Authentication"
+   }
+  ],
+  "CVE-2026-20131": [
+   {
+    "id": "CWE-502",
+    "name": "Deserialization of Untrusted Data"
+   }
+  ],
+  "CVE-2026-20182": [
+   {
+    "id": "CWE-287",
+    "name": "Improper Authentication"
+   }
+  ],
+  "CVE-2026-20236": [
+   {
+    "id": "CWE-682",
+    "name": "Incorrect Calculation"
+   }
+  ],
+  "CVE-2026-20291": [
+   {
+    "id": "CWE-269",
+    "name": "Improper Privilege Management"
+   }
+  ],
+  "CVE-2026-20320": [
+   {
+    "id": "CWE-611",
+    "name": "Improper Restriction of XML External Entity Reference"
+   }
+  ],
+  "CVE-2026-20356": [
+   {
+    "id": "CWE-400",
+    "name": "Uncontrolled Resource Consumption"
+   }
+  ],
+  "CVE-2026-21858": [
+   {
+    "id": "CWE-20",
+    "name": "Improper Input Validation"
+   }
+  ],
+  "CVE-2026-21877": [
+   {
+    "id": "CWE-434",
+    "name": "Unrestricted Upload of File with Dangerous Type"
+   },
+   {
+    "id": "CWE-94",
+    "name": "Improper Control of Generation of Code ('Code Injection')"
+   }
+  ],
+  "CVE-2026-2441": [
+   {
+    "id": "CWE-416",
+    "name": "Use after free"
+   }
+  ],
+  "CVE-2026-25243": [
+   {
+    "id": "CWE-122",
+    "name": "Heap-based Buffer Overflow"
+   }
+  ],
+  "CVE-2026-25725": [
+   {
+    "id": "CWE-501",
+    "name": "Trust Boundary Violation"
+   },
+   {
+    "id": "CWE-668",
+    "name": "Exposure of Resource to Wrong Sphere"
+   }
+  ],
+  "CVE-2026-28328": [
+   {
+    "id": "CWE-863",
+    "name": "Incorrect Authorization"
+   }
+  ],
+  "CVE-2026-3055": [
+   {
+    "id": "CWE-125",
+    "name": "Out-of-bounds Read"
+   }
+  ],
+  "CVE-2026-33096": [
+   {
+    "id": "CWE-125",
+    "name": "Out-of-bounds Read"
+   }
+  ],
+  "CVE-2026-35273": [
+   {
+    "id": "CWE-306",
+    "name": "Missing Authentication for Critical Function"
+   }
+  ],
+  "CVE-2026-3854": [
+   {
+    "id": "CWE-77",
+    "name": "Improper Neutralization of Special Elements used in a Command ('Command Injection')"
+   }
+  ],
+  "CVE-2026-3909": [
+   {
+    "id": "CWE-787",
+    "name": "Out of bounds write"
+   }
+  ],
+  "CVE-2026-3910": [
+   {
+    "id": "CWE-119",
+    "name": "Improper Restriction of Operations within the Bounds of a Memory Buffer"
+   }
+  ],
+  "CVE-2026-39861": [
+   {
+    "id": "CWE-22",
+    "name": "Improper Limitation of a Pathname to a Restricted Directory ('Path Traversal')"
+   },
+   {
+    "id": "CWE-61",
+    "name": "UNIX Symbolic Link (Symlink) Following"
+   }
+  ],
+  "CVE-2026-39987": [
+   {
+    "id": "CWE-306",
+    "name": "Missing Authentication for Critical Function"
+   }
+  ],
+  "CVE-2026-41225": [
+   {
+    "id": "CWE-648",
+    "name": "Incorrect Use of Privileged APIs"
+   }
+  ],
+  "CVE-2026-41709": [
+   {
+    "id": "CWE-778",
+    "name": "Insufficient logging"
+   }
+  ],
+  "CVE-2026-41940": [
+   {
+    "id": "CWE-306",
+    "name": "Missing Authentication for Critical Function"
+   }
+  ],
+  "CVE-2026-42208": [
+   {
+    "id": "CWE-89",
+    "name": "Improper Neutralization of Special Elements used in an SQL Command ('SQL Injection')"
+   }
+  ],
+  "CVE-2026-42589": [
+   {
+    "id": "CWE-78",
+    "name": "Improper Neutralization of Special Elements used in an OS Command ('OS Command Injection')"
+   }
+  ],
+  "CVE-2026-44748": [
+   {
+    "id": "CWE-347",
+    "name": "Improper Verification of Cryptographic Signature"
+   }
+  ],
+  "CVE-2026-45492": [
+   {
+    "id": "CWE-20",
+    "name": "Improper Input Validation"
+   }
+  ],
+  "CVE-2026-45494": [
+   {
+    "id": "CWE-79",
+    "name": "Improper Neutralization of Input During Web Page Generation ('Cross-site Scripting')"
+   }
+  ],
+  "CVE-2026-45495": [
+   {
+    "id": "CWE-119",
+    "name": "Improper Restriction of Operations within the Bounds of a Memory Buffer"
+   },
+   {
+    "id": "CWE-20",
+    "name": "Improper Input Validation"
+   },
+   {
+    "id": "CWE-35",
+    "name": "Path Traversal: '.../...//'"
+   },
+   {
+    "id": "CWE-94",
+    "name": "Improper Control of Generation of Code ('Code Injection')"
+   }
+  ],
+  "CVE-2026-46300": [
+   {
+    "id": "CWE-123",
+    "name": "Write-what-where Condition"
+   },
+   {
+    "id": "CWE-456",
+    "name": "Missing Initialization of a Variable"
+   }
+  ],
+  "CVE-2026-46817": [
+   {
+    "id": "CWE-269",
+    "name": "Improper Privilege Management"
+   },
+   {
+    "id": "CWE-287",
+    "name": "Improper Authentication"
+   },
+   {
+    "id": "CWE-306",
+    "name": "Missing Authentication for Critical Function"
+   }
+  ],
+  "CVE-2026-48356": [
+   {
+    "id": "CWE-434",
+    "name": "Unrestricted Upload of File with Dangerous Type (CWE-434)"
+   }
+  ],
+  "CVE-2026-48360": [
+   {
+    "id": "CWE-94",
+    "name": "Improper Control of Generation of Code ('Code Injection') (CWE-94)"
+   }
+  ],
+  "CVE-2026-48558": [
+   {
+    "id": "CWE-347",
+    "name": "Improper Verification of Cryptographic Signature"
+   }
+  ],
+  "CVE-2026-49950": [
+   {
+    "id": "CWE-502",
+    "name": "Deserialization of Untrusted Data"
+   }
+  ],
+  "CVE-2026-5281": [
+   {
+    "id": "CWE-416",
+    "name": "Use after free"
+   }
+  ],
+  "CVE-2026-53412": [
+   {
+    "id": "CWE-20",
+    "name": "Improper input validation"
+   }
+  ],
+  "CVE-2026-58062": [
+   {
+    "id": "CWE-295",
+    "name": "Improper Certificate Validation"
+   }
+  ],
+  "CVE-2026-58868": [
+   {
+    "id": "CWE-787",
+    "name": "Out-of-bounds Write"
+   }
+  ],
+  "CVE-2026-58882": [
+   {
+    "id": "CWE-190",
+    "name": "Integer Overflow or Wraparound"
+   }
+  ],
+  "CVE-2026-6205": [
+   {
+    "id": "CWE-73",
+    "name": "External Control of File Name or Path"
+   }
+  ],
+  "CVE-2026-62910": [
+   {
+    "id": "CWE-99",
+    "name": "Improper Control of Resource Identifiers ('Resource Injection')"
+   }
+  ],
+  "CVE-2026-62911": [
+   {
+    "id": "CWE-294",
+    "name": "Authentication Bypass by Capture-replay"
+   }
+  ],
+  "CVE-2026-62912": [
+   {
+    "id": "CWE-502",
+    "name": "Deserialization of Untrusted Data"
+   }
+  ],
+  "CVE-2026-62913": [
+   {
+    "id": "CWE-122",
+    "name": "Heap-based Buffer Overflow"
+   }
+  ],
+  "CVE-2026-62914": [
+   {
+    "id": "CWE-79",
+    "name": "Improper Neutralization of Input During Web Page Generation ('Cross-site Scripting')"
+   }
+  ],
+  "CVE-2026-62915": [
+   {
+    "id": "CWE-862",
+    "name": "Missing Authorization"
+   }
+  ],
+  "CVE-2026-6471": [
+   {
+    "id": "CWE-862",
+    "name": "Missing Authorization"
+   }
+  ],
+  "CVE-2026-65182": [
+   {
+    "id": "CWE-284",
+    "name": "Improper Access Control"
+   },
+   {
+    "id": "CWE-863",
+    "name": "Incorrect Authorization"
+   }
+  ],
+  "CVE-2026-65339": [
+   {
+    "id": "CWE-693",
+    "name": "Protection Mechanism Failure"
+   }
+  ],
+  "CVE-2026-65637": [
+   {
+    "id": "CWE-20",
+    "name": "Improper Input Validation"
+   }
+  ],
+  "CVE-2026-65813": [
+   {
+    "id": "CWE-918",
+    "name": "Server-Side Request Forgery (SSRF)"
+   }
+  ],
+  "CVE-2026-65905": [
+   {
+    "id": "CWE-294",
+    "name": "Authentication Bypass by Capture-replay"
+   }
+  ],
+  "CVE-2026-68525": [
+   {
+    "id": "CWE-863",
+    "name": "Incorrect Authorization"
+   }
+  ],
+  "CVE-2026-68820": [
+   {
+    "id": "CWE-416",
+    "name": "Use After Free"
+   }
+  ],
+  "CVE-2026-75128": [
+   {
+    "id": "CWE-306",
+    "name": "Missing Authentication for Critical Function"
+   }
+  ],
+  "CVE-2026-75595": [
+   {
+    "id": "CWE-754",
+    "name": "Improper Check for Unusual or Exceptional Conditions"
+   }
+  ],
+  "CVE-2026-75754": [
+   {
+    "id": "CWE-306",
+    "name": "Missing authentication for critical function"
+   },
+   {
+    "id": "CWE-798",
+    "name": "Use of Hard-coded Credentials"
+   },
+   {
+    "id": "CWE-918",
+    "name": "Server-Side request forgery (SSRF)"
+   }
+  ],
+  "CVE-2026-76299": [
+   {
+    "id": "CWE-284",
+    "name": "The software does not restrict or incorrectly restricts access to a resource from an unauthorized actor."
+   }
+  ],
+  "CVE-2026-76302": [
+   {
+    "id": "CWE-707",
+    "name": "The product does not ensure or incorrectly ensures that structured messages or data are well-formed and that certain security properties at met before being read from an upstream component or sent to a downstream component."
+   }
+  ],
+  "CVE-2026-76407": [
+   {
+    "id": "CWE-284",
+    "name": "The software does not restrict or incorrectly restricts access to a resource from an unauthorized actor."
+   }
+  ],
+  "CVE-2026-76418": [
+   {
+    "id": "CWE-690",
+    "name": "Unchecked Return Value to NULL Pointer Dereference"
+   }
+  ],
+  "CVE-2026-76466": [
+   {
+    "id": "CWE-798",
+    "name": "Use of Hard-coded Credentials"
+   }
+  ],
+  "CVE-2026-76473": [
+   {
+    "id": "CWE-74",
+    "name": "Improper Neutralization of Special Elements in Output Used by a Downstream Component ('Injection')"
+   }
+  ],
+  "CVE-2026-76474": [
+   {
+    "id": "CWE-287",
+    "name": "Improper Authentication"
+   }
+  ],
+  "CVE-2026-76475": [
+   {
+    "id": "CWE-79",
+    "name": "Improper Neutralization of Input During Web Page Generation ('Cross-site Scripting')"
+   }
+  ],
+  "CVE-2026-76476": [
+   {
+    "id": "CWE-20",
+    "name": "Improper Input Validation"
+   }
+  ],
+  "CVE-2026-76477": [
+   {
+    "id": "CWE-89",
+    "name": "Improper Neutralization of Special Elements used in an SQL Command ('SQL Injection')"
+   }
+  ],
+  "CVE-2026-76478": [
+   {
+    "id": "CWE-284",
+    "name": "Improper Access Control"
+   }
+  ],
+  "CVE-2026-76479": [
+   {
+    "id": "CWE-22",
+    "name": "Improper Limitation of a Pathname to a Restricted Directory ('Path Traversal')"
+   }
+  ],
+  "CVE-2026-76481": [
+   {
+    "id": "CWE-703",
+    "name": "Improper Check or Handling of Exceptional Conditions"
+   }
+  ],
+  "CVE-2026-76506": [
+   {
+    "id": "CWE-22",
+    "name": "Improper Limitation of a Pathname to a Restricted Directory ('Path Traversal')"
+   }
+  ],
+  "CVE-2026-76531": [
+   {
+    "id": "CWE-552",
+    "name": "The product makes files or directories accessible to unauthorized actors, even though they should not be."
+   }
+  ],
+  "CVE-2026-76964": [
+   {
+    "id": "CWE-1287",
+    "name": "Improper Validation of Specified Type of Input"
+   }
+  ],
+  "CVE-2026-76965": [
+   {
+    "id": "CWE-749",
+    "name": "Exposed Dangerous Method or Function"
+   }
+  ],
+  "CVE-2026-77185": [
+   {
+    "id": "CWE-305",
+    "name": "Authentication Bypass by Primary Weakness"
+   }
+  ],
+  "CVE-2026-77521": [
+   {
+    "id": "CWE-250",
+    "name": "Execution with Unnecessary Privileges"
+   },
+   {
+    "id": "CWE-749",
+    "name": "Exposed Dangerous Method or Function"
+   },
+   {
+    "id": "CWE-78",
+    "name": "Improper Neutralization of Special Elements used in an OS Command ('OS Command Injection')"
+   }
+  ],
+  "CVE-2026-77926": [
+   {
+    "id": "CWE-749",
+    "name": "Exposed Dangerous Method or Function"
+   }
+  ],
+  "CVE-2026-77930": [
+   {
+    "id": "CWE-862",
+    "name": "Missing Authorization"
+   }
+  ],
+  "CVE-2026-77932": [
+   {
+    "id": "CWE-306",
+    "name": "Missing Authentication for Critical Function"
+   }
+  ],
+  "CVE-2026-77933": [
+   {
+    "id": "CWE-1392",
+    "name": "Use of Default Credentials"
+   }
+  ],
+  "CVE-2026-77934": [
+   {
+    "id": "CWE-1188",
+    "name": "Initialization of a Resource with an Insecure Default"
+   }
+  ],
+  "CVE-2026-77936": [
+   {
+    "id": "CWE-1188",
+    "name": "Initialization of a Resource with an Insecure Default"
+   }
+  ],
+  "CVE-2026-77937": [
+   {
+    "id": "CWE-639",
+    "name": "Authorization Bypass Through User-Controlled Key"
+   }
+  ],
+  "CVE-2026-79844": [
+   {
+    "id": "CWE-288",
+    "name": "Authentication Bypass Using an Alternate Path or Channel"
+   }
+  ],
+  "CVE-2026-79895": [
+   {
+    "id": "CWE-400",
+    "name": "Uncontrolled Resource Consumption"
+   }
+  ],
+  "CVE-2026-79955": [
+   {
+    "id": "CWE-119",
+    "name": "Improper Restriction of Operations within the Bounds of a Memory Buffer"
+   }
+  ],
+  "CVE-2026-79956": [
+   {
+    "id": "CWE-77",
+    "name": "Improper Neutralization of Special Elements used in a Command ('Command Injection')"
+   }
+  ],
+  "CVE-2026-80097": [
+   {
+    "id": "CWE-287",
+    "name": "Improper Authentication"
+   }
+  ],
+  "CVE-2026-82308": [
+   {
+    "id": "CWE-122",
+    "name": "Heap-based buffer overflow"
+   }
+  ],
+  "CVE-2026-82814": [
+   {
+    "id": "CWE-502",
+    "name": "Deserialization of Untrusted Data"
+   }
+  ],
+  "CVE-2026-83844": [
+   {
+    "id": "CWE-125",
+    "name": "Out-of-bounds Read"
+   }
+  ],
+  "CVE-2026-85046": [
+   {
+    "id": "CWE-843",
+    "name": "Type confusion"
+   }
+  ],
+  "CVE-2026-86934": [
+   {
+    "id": "CWE-639",
+    "name": "Authorization Bypass Through User-Controlled Key"
+   }
+  ],
+  "CVE-2026-86950": [
+   {
+    "id": "CWE-787",
+    "name": "Out-of-bounds Write"
+   }
+  ],
+  "CVE-2026-86987": [
+   {
+    "id": "CWE-862",
+    "name": "Missing Authorization"
+   }
+  ],
+  "CVE-2026-86990": [
+   {
+    "id": "CWE-284",
+    "name": "Improper Access Control"
+   }
+  ],
+  "CVE-2026-87491": [
+   {
+    "id": "CWE-787",
+    "name": "Out of bounds write"
+   }
+  ],
+  "CVE-2026-88772": [
+   {
+    "id": "CWE-119",
+    "name": "Improper Restriction of Operations within the Bounds of a Memory Buffer"
+   }
+  ],
+  "CVE-2026-89078": [
+   {
+    "id": "CWE-415",
+    "name": "Double Free"
+   }
+  ],
+  "CVE-2026-89103": [
+   {
+    "id": "CWE-863",
+    "name": "Incorrect Authorization"
+   }
+  ],
+  "CVE-2026-89126": [
+   {
+    "id": "CWE-122",
+    "name": "Heap-based Buffer Overflow"
+   }
+  ],
+  "CVE-2026-91000": [
+   {
+    "id": "CWE-306",
+    "name": "Missing authentication for critical function"
+   }
+  ],
+  "CVE-2026-91403": [
+   {
+    "id": "CWE-327",
+    "name": "Use of a Broken or Risky Cryptographic Algorithm"
+   }
+  ],
+  "CVE-2026-93348": [
+   {
+    "id": "CWE-94",
+    "name": "Improper Control of Generation of Code ('Code Injection')"
+   }
+  ],
+  "CVE-2026-93577": [
+   {
+    "id": "CWE-190",
+    "name": "Integer Overflow or Wraparound"
+   }
+  ],
+  "CVE-2026-95704": [
+   {
+    "id": "CWE-284",
+    "name": "Improper Access Control"
+   }
+  ],
+  "CVE-2026-95721": [
+   {
+    "id": "CWE-119",
+    "name": "Improper Restriction of Operations within the Bounds of a Memory Buffer"
+   }
+  ],
+  "CVE-2026-95962": [
+   {
+    "id": "CWE-416",
+    "name": "Use After Free"
+   }
+  ],
+  "CVE-2026-96652": [
+   {
+    "id": "CWE-918",
+    "name": "Server-Side Request Forgery (SSRF)"
+   }
+  ],
+  "CVE-2026-96654": [
+   {
+    "id": "CWE-84",
+    "name": "Improper Neutralization of Encoded URI Schemes in a Web Page"
+   }
+  ],
+  "CVE-2026-96655": [
+   {
+    "id": "CWE-918",
+    "name": "Server-Side Request Forgery (SSRF)"
+   }
+  ],
+  "CVE-2026-96656": [
+   {
+    "id": "CWE-73",
+    "name": "External Control of File Name or Path"
+   }
+  ],
+  "CVE-2026-97229": [
+   {
+    "id": "CWE-190",
+    "name": "Integer Overflow or Wraparound"
+   }
+  ],
+  "CVE-2026-97406": [
+   {
+    "id": "CWE-306",
+    "name": "Missing Authentication for Critical Function"
+   },
+   {
+    "id": "CWE-863",
+    "name": "Incorrect Authorization"
+   }
+  ],
+  "CVE-2026-97631": [
+   {
+    "id": "CWE-120",
+    "name": "Buffer Copy without Checking Size of Input ('Classic Buffer Overflow')"
+   },
+   {
+    "id": "CWE-131",
+    "name": "Incorrect calculation of buffer size"
+   },
+   {
+    "id": "CWE-787",
+    "name": "Out-of-bounds write"
+   }
+  ],
+  "CVE-2026-97693": [
+   {
+    "id": "CWE-284",
+    "name": "Improper Access Control"
+   },
+   {
+    "id": "CWE-522",
+    "name": "Insufficiently Protected Credentials"
+   },
+   {
+    "id": "CWE-77",
+    "name": "Improper Neutralization of Special Elements used in a Command ('Command Injection')"
+   }
+  ],
+  "CVE-2026-98432": []
+ }
+}
