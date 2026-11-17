@@ -326,6 +326,8 @@ render.yaml 已包含 Blueprint 設定；推送 main 後自動部署。
 
 | 文件 | 內容 |
 | --- | --- |
+| docs/tech-blueprint.md | 技術白皮書：從 0 開始的完整說明（市場、架構、技術逐項、原理、評估、文獻） |
+| docs/architecture.svg / .png / .drawio | 資料流程圖（向量／點陣／可編輯） |
 | docs/evaluation.md | 唯一有效的評估結果（自動產生） |
 | docs/annotation-guide.md | 標註指南、爭議類型判定表、κ 流程 |
 | docs/scrape-feasibility.md | 各來源可回溯深度與語料擴充決策 |
