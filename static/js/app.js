@@ -581,7 +581,7 @@
                   <ol class="steps">${stepsHtml(item.action_plan)}</ol>
                   ${item.action_plan?.length ? '' : '<p class="text-[11.5px] text-[color:var(--faint)]">此篇為產品／財報類消息，經分類後排除於 P1–P3 與平均分數之外。</p>'}
                 </div>
-                <div class="rounded-xl border border-[#1b2739] bg-[#08101b]/70 p-3">
+                <div class="rounded-xl border border-[#2b3c5a] bg-[#0a1220]/70 p-3">
                   <div class="kicker mb-2">Signal</div>
                   <dl class="space-y-1.5 text-[11px]">
                     <div class="flex justify-between gap-3"><dt class="text-[color:var(--faint)]">來源</dt><dd class="mono text-[color:var(--ink-soft)]">${esc(item.source)}</dd></div>
@@ -623,9 +623,9 @@
             }</div>
             <div class="mt-1 flex items-center gap-2 text-[10px] text-[color:var(--faint)]">
               <span class="mono">#${esc(item.id)}</span>
-              <span class="h-2 w-px bg-[#27384f]"></span>
+              <span class="h-2 w-px bg-[#2e405f]"></span>
               <span>${esc(item.category_label)}</span>
-              <span class="mono rounded border border-[#27384f] px-1">C${esc(item.cluster ?? '—')}</span>
+              <span class="mono rounded border border-[#2e405f] px-1">C${esc(item.cluster ?? '—')}</span>
               <span class="mono text-[color:var(--muted)]">${esc(item.published_at)}</span>
               ${item.region === 'global' && item.taiwan_cve_hits > 0
                 ? `<span class="badge" data-tone="local" title="此情資提到的 CVE 也有台灣來源報導">本地通報 ×${esc(item.taiwan_cve_hits)}</span>`
@@ -1023,7 +1023,7 @@
       .map((adjustment) => {
         const positive = adjustment.points > 0;
         const negative = adjustment.points < 0;
-        const color = positive ? '#fb7185' : negative ? '#34d399' : '#8b9ab2';
+        const color = positive ? '#fb7185' : negative ? '#34d399' : '#7d8fae';
         const sign = positive ? '+' : '';
         return `<span class="badge" style="color:${color};border-color:${color}44;background:${color}14">
           ${esc(adjustment.label)}${adjustment.points ? ` ${sign}${esc(adjustment.points)}` : ''}
@@ -1299,7 +1299,7 @@
 
   function gapRow(item) {
     const tr = document.createElement('tr');
-    tr.className = 'border-t border-[#1b2739]/70';
+    tr.className = 'border-t border-[#2b3c5a]/70';
     tr.appendChild(patchCell(item.cve, 'px-4 py-2.5 mono text-[11.5px] text-amber-200'));
     tr.appendChild(patchCell(item.added || '—', 'px-2 py-2.5 mono text-[10.5px] text-[color:var(--faint)]'));
 
@@ -1615,7 +1615,7 @@
     const fragment = document.createDocumentFragment();
     shown.forEach((item) => {
       const tr = document.createElement('tr');
-      tr.className = 'border-t border-[#1b2739]/70';
+      tr.className = 'border-t border-[#2b3c5a]/70';
 
       const cve = document.createElement('td');
       cve.className = 'px-4 py-2.5 mono text-[11.5px] text-cyan-200';

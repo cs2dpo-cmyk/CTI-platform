@@ -16,9 +16,9 @@ const CTICharts = (() => {
     p3: '#22d3ee',
     other: '#94a3b8',
     grid: 'rgba(39, 56, 79, 0.55)',
-    tick: '#8b9ab2',
+    tick: '#7d8fae',
     axisTitle: '#cbd5e1',
-    ink: '#e9eef7',
+    ink: '#dbe6f5',
   };
 
   const META_KEY_COLOR = {
@@ -45,7 +45,7 @@ const CTICharts = (() => {
     Chart.defaults.plugins.tooltip.borderColor = 'rgba(60, 82, 110, 0.9)';
     Chart.defaults.plugins.tooltip.borderWidth = 1;
     Chart.defaults.plugins.tooltip.titleColor = '#f3f7fd';
-    Chart.defaults.plugins.tooltip.bodyColor = '#c3cede';
+    Chart.defaults.plugins.tooltip.bodyColor = '#b9c8dc';
     Chart.defaults.plugins.tooltip.padding = 10;
     Chart.defaults.plugins.tooltip.cornerRadius = 8;
     Chart.defaults.plugins.tooltip.displayColors = false;
@@ -100,10 +100,10 @@ const CTICharts = (() => {
     const dataset = {
       data,
       backgroundColor: colors,
-      borderColor: '#0a111c',
+      borderColor: '#111a2b',
       borderWidth: 3,
       hoverOffset: 8,
-      hoverBorderColor: '#0a111c',
+      hoverBorderColor: '#111a2b',
       spacing: 1,
     };
 

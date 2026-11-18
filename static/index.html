@@ -19,7 +19,7 @@
             mono: ['"JetBrains Mono"', 'ui-monospace', 'monospace'],
           },
           colors: {
-            ink: { 950: '#060a11', 900: '#0c1320', 800: '#101a2a', 700: '#1b2739' },
+            ink: { 950: '#0b1220', 900: '#111a2b', 800: '#16223a', 700: '#2b3c5a' },
             accent: { cyan: '#22d3ee', teal: '#2dd4bf', violet: '#a78bfa' },
           },
         },
@@ -34,7 +34,7 @@
     rel="stylesheet"
   />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.6/dist/chart.umd.min.js" defer></script>
-  <link rel="stylesheet" href="/static/css/styles.css?v=20261117i" />
+  <link rel="stylesheet" href="/static/css/styles.css?v=20261118b" />
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23060a11'/%3E%3Cpath d='M16 5l9 4v7c0 5.5-3.8 10-9 11-5.2-1-9-5.5-9-11V9l9-4z' fill='none' stroke='%2322d3ee' stroke-width='2'/%3E%3C/svg%3E" />
 </head>
 
@@ -70,7 +70,7 @@
   </svg>
 
   <!-- ===================== Top bar ===================== -->
-  <header class="sticky top-0 z-50 border-b border-[#1b2739]/90 bg-[#060a11]/78 backdrop-blur-xl">
+  <header class="sticky top-0 z-50 border-b border-[#2b3c5a]/90 bg-[#0b1220]/78 backdrop-blur-xl">
     <div class="mx-auto flex h-16 max-w-[1440px] items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
       <div class="flex min-w-0 items-center gap-3">
         <div class="icon-chip h-9 w-9 rounded-[11px]" aria-hidden="true">
@@ -137,32 +137,32 @@
           </div>
           <div class="flex flex-wrap items-center gap-x-5 gap-y-2 pt-1 text-[11px] text-[color:var(--faint)]">
             <span class="mono">TF-IDF · 1,000 dims</span>
-            <span class="h-3 w-px bg-[#27384f]"></span>
+            <span class="h-3 w-px bg-[#2e405f]"></span>
             <span class="mono">逐篇規則分類</span>
-            <span class="h-3 w-px bg-[#27384f]"></span>
+            <span class="h-3 w-px bg-[#2e405f]"></span>
             <span class="mono">分類 held-out 73%</span>
-            <span class="h-3 w-px bg-[#27384f]"></span>
+            <span class="h-3 w-px bg-[#2e405f]"></span>
             <span class="mono">FastAPI + SQLite</span>
           </div>
         </div>
 
         <div class="grid grid-cols-2 gap-2.5 self-center">
-          <div class="rounded-xl border border-[#1b2739] bg-[#0a111c]/70 p-3">
+          <div class="rounded-[6px] border border-[var(--line)] bg-[var(--panel)] p-3">
             <div class="kicker">P1 回應 SLA</div>
             <div class="mt-1.5 font-mono text-lg font-semibold text-rose-300">24<span class="ml-1 text-[11px] text-[color:var(--faint)]">hrs</span></div>
             <p class="mt-1 text-[11px] text-[color:var(--faint)]">零日 / 勒索軟體</p>
           </div>
-          <div class="rounded-xl border border-[#1b2739] bg-[#0a111c]/70 p-3">
+          <div class="rounded-[6px] border border-[var(--line)] bg-[var(--panel)] p-3">
             <div class="kicker">情資語料</div>
             <div class="mt-1.5 font-mono text-lg font-semibold text-cyan-300" id="heroCorpus">788<span class="ml-1 text-[11px] text-[color:var(--faint)]">篇</span></div>
             <p class="mt-1 text-[11px] text-[color:var(--faint)]">TWCERT · iThome · THN</p>
           </div>
-          <div class="rounded-xl border border-[#1b2739] bg-[#0a111c]/70 p-3">
+          <div class="rounded-[6px] border border-[var(--line)] bg-[var(--panel)] p-3">
             <div class="kicker">風險模型</div>
             <div class="mt-1.5 font-mono text-lg font-semibold text-teal-300">5<span class="ml-1 text-[11px] text-[color:var(--faint)]">factors</span></div>
             <p class="mt-1 text-[11px] text-[color:var(--faint)]">加權可解釋評分</p>
           </div>
-          <div class="rounded-xl border border-[#1b2739] bg-[#0a111c]/70 p-3">
+          <div class="rounded-[6px] border border-[var(--line)] bg-[var(--panel)] p-3">
             <div class="kicker">資料庫</div>
             <div class="mt-1.5 flex items-center gap-1.5 font-mono text-lg font-semibold text-violet-300">
               <span class="live-dot" aria-hidden="true"></span>SQLite
@@ -229,7 +229,7 @@
             </div>
           </div>
           <div class="mt-4" id="metaLegend"></div>
-          <div class="mt-3 border-t border-[#1b2739] pt-3">
+          <div class="mt-3 border-t border-[#2b3c5a] pt-3">
             <p class="kicker mb-2" id="clusterCaption">叢集明細</p>
             <div class="flex flex-wrap gap-1.5" id="categoryStrip" aria-label="四類原始分類統計"></div>
           </div>
@@ -435,7 +435,7 @@
             </div>
           </div>
 
-          <div class="flex flex-wrap items-center justify-between gap-3 border-t border-[#1b2739] pt-4">
+          <div class="flex flex-wrap items-center justify-between gap-3 border-t border-[#2b3c5a] pt-4">
             <div class="flex items-center gap-2 text-[11px] text-[color:var(--faint)]">
               <svg class="ico ico-sm text-cyan-400"><use href="#i-flow" /></svg>
               <span class="mono">POST /api/v1/assess</span>
@@ -492,7 +492,7 @@
 
             <div id="resultPath" class="flex flex-wrap items-center gap-1.5"></div>
 
-            <p class="rounded-lg border border-[#1b2739] bg-[#08101b]/80 p-2.5 text-[11.5px] leading-relaxed text-[color:var(--muted)]" id="resultSummary">—</p>
+            <p class="rounded-[4px] border border-[var(--line)] bg-[var(--panel-inset)] p-2.5 text-[11.5px] leading-relaxed text-[color:var(--muted)]" id="resultSummary">—</p>
 
             <div>
               <div class="mb-1 flex items-center justify-between">
@@ -574,13 +574,13 @@
         </div>
       </div>
 
-      <div class="flex flex-wrap items-center gap-2 border-b border-[#1b2739] px-4 py-2.5 sm:px-5">
+      <div class="flex flex-wrap items-center gap-2 border-b border-[#2b3c5a] px-4 py-2.5 sm:px-5">
         <span class="kicker mr-1">Priority</span>
         <button class="chip" data-priority="" aria-pressed="true">全部 <span class="chip-count" id="cntAll">—</span></button>
         <button class="chip" data-priority="P1" aria-pressed="false">P1 <span class="chip-count" id="cntP1">—</span></button>
         <button class="chip" data-priority="P2" aria-pressed="false">P2 <span class="chip-count" id="cntP2">—</span></button>
         <button class="chip" data-priority="P3" aria-pressed="false">P3 <span class="chip-count" id="cntP3">—</span></button>
-        <span class="mx-1 hidden h-4 w-px bg-[#27384f] sm:block"></span>
+        <span class="mx-1 hidden h-4 w-px bg-[#2e405f] sm:block"></span>
         <span class="kicker mr-1">Region</span>
         <button class="chip" data-region="" aria-pressed="true">全部</button>
         <button class="chip" data-region="taiwan" aria-pressed="false">台灣</button>
@@ -605,7 +605,7 @@
         </table>
       </div>
 
-      <div class="flex flex-wrap items-center justify-between gap-3 border-t border-[#1b2739] px-4 py-3 text-[11px] text-[color:var(--faint)] sm:px-5">
+      <div class="flex flex-wrap items-center justify-between gap-3 border-t border-[#2b3c5a] px-4 py-3 text-[11px] text-[color:var(--faint)] sm:px-5">
         <span>顯示 <strong class="mono text-white" id="feedCount">0</strong> / <span class="mono" id="feedTotal">0</span> 筆情資</span>
         <div class="flex items-center gap-2">
           <button class="btn btn-ghost" id="prevPageBtn" type="button" disabled>上一頁</button>
@@ -632,7 +632,7 @@
           <div class="flex flex-wrap items-center gap-2" id="patchSummary"></div>
         </div>
       </div>
-      <div class="flex flex-wrap items-center gap-1.5 border-t border-[#1b2739]/70 px-4 py-2" id="weaknessFilter" role="group" aria-label="依弱點類型篩選"></div>
+      <div class="flex flex-wrap items-center gap-1.5 border-t border-[#2b3c5a]/70 px-4 py-2" id="weaknessFilter" role="group" aria-label="依弱點類型篩選"></div>
       <div class="overflow-x-auto">
         <table class="w-full text-left text-[12.5px]">
           <thead>
@@ -652,7 +652,7 @@
           </tbody>
         </table>
       </div>
-      <div class="flex flex-wrap items-center justify-between gap-2 border-t border-[#1b2739]/70 px-4 py-2.5">
+      <div class="flex flex-wrap items-center justify-between gap-2 border-t border-[#2b3c5a]/70 px-4 py-2.5">
         <div class="flex flex-wrap items-center gap-2" id="patchFilters" hidden>
           <input class="input w-[168px]" id="patchSearch" type="search" placeholder="搜尋 CVE…" aria-label="搜尋 CVE" />
           <div class="flex items-center gap-1" role="group" aria-label="依優先級篩選">
@@ -708,7 +708,7 @@
           </tbody>
         </table>
       </div>
-      <p class="border-t border-[#1b2739]/70 px-4 py-2.5 text-[10.5px] leading-relaxed text-[color:var(--faint)]" id="gapNote"></p>
+      <p class="border-t border-[#2b3c5a]/70 px-4 py-2.5 text-[10.5px] leading-relaxed text-[color:var(--faint)]" id="gapNote"></p>
     </section>
 
     <!-- ===================== Insights ===================== -->
@@ -716,7 +716,7 @@
 
   </main>
 
-  <footer class="mt-8 border-t border-[#1b2739]/80 bg-[#060a11]/70">
+  <footer class="mt-8 border-t border-[#2b3c5a]/80 bg-[#0b1220]/70">
     <div class="mx-auto flex max-w-[1440px] flex-col items-center justify-between gap-3 px-4 py-6 text-center sm:flex-row sm:px-6 sm:text-left lg:px-8">
       <div class="space-y-1">
         <p class="mono text-[10.5px] text-[color:var(--faint)]">
@@ -736,8 +736,8 @@
 
   <div class="toast-stack" id="toastStack" aria-live="polite" aria-atomic="false"></div>
 
-  <script src="/static/js/charts.js?v=20261117i" defer></script>
-  <script src="/static/js/app.js?v=20261117i" defer></script>
-  <script src="/static/js/rain.js?v=20261117i" defer></script>
+  <script src="/static/js/charts.js?v=20261118b" defer></script>
+  <script src="/static/js/app.js?v=20261118b" defer></script>
+  <script src="/static/js/rain.js?v=20261118b" defer></script>
 </body>
 </html>

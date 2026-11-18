@@ -200,11 +200,11 @@ assert($('#apiStatus').textContent.includes('已連線'), 'API status pill updat
   assert(items[0].fontColor === '#2dd4bf', `Taiwan legend text colour (got ${items[0].fontColor})`);
   assert(items[1].fontColor === '#60a5fa', `Global legend text colour (got ${items[1].fontColor})`);
   assert(
-    bar.options.scales.x.ticks.color === '#8b9ab2',
+    bar.options.scales.x.ticks.color === '#7d8fae',
     `x tick colour is the muted axis tone (got ${bar.options.scales.x.ticks.color})`
   );
   assert(
-    bar.options.scales.y.ticks.color === '#8b9ab2',
+    bar.options.scales.y.ticks.color === '#7d8fae',
     `y tick colour is the muted axis tone (got ${bar.options.scales.y.ticks.color})`
   );
 
