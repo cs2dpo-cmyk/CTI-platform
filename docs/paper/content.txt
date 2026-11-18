@@ -46,7 +46,7 @@
 | 排序 AUC（本系統／EPSS／CVSS） | 0.853／0.827／0.561 |
 | precision@10 | 1.00 |
 
-@IMG docs/paper/fig2.png|11.0
+@IMG docs/paper/fig2.png|12.5
 @ICAP 圖2 不同排序方法之 KEV 命中能力比較（交叉驗證 AUC，資料來源：本專題）
 
 #1 3. 系統創新性與技術亮點（權重 15%）
