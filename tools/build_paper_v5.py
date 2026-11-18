@@ -12,7 +12,7 @@ SRC = r"C:/dev/cti-platform/docs/paper/content.txt"
 OUT = r"C:/dev/cti-platform/docs/AMITAC2026_CTI專題論文_v5.docx"
 CN, EN = "標楷體", "Times New Roman"
 BODY_PT = 11
-LINE = 1.08
+LINE = 1.02
 TEXT_W = 15.5
 
 def set_run(run, size=BODY_PT, bold=False):
@@ -27,7 +27,7 @@ def set_run(run, size=BODY_PT, bold=False):
         rFonts.set(qn(a), EN)
     rFonts.set(qn("w:eastAsia"), CN)
 
-def para(doc, text="", size=BODY_PT, bold=False, align=None, before=0, after=1, line=LINE):
+def para(doc, text="", size=BODY_PT, bold=False, align=None, before=0, after=0, line=LINE):
     p = doc.add_paragraph()
     if align is not None:
         p.alignment = align
@@ -39,11 +39,11 @@ def para(doc, text="", size=BODY_PT, bold=False, align=None, before=0, after=1, 
 
 def heading(doc, level, text):
     if level == 1:
-        para(doc, text, size=14, bold=True, align=WD_ALIGN_PARAGRAPH.LEFT, before=8, after=4)
+        para(doc, text, size=14, bold=True, align=WD_ALIGN_PARAGRAPH.LEFT, before=6, after=3)
     else:
         para(doc, text, size=12, bold=True, align=WD_ALIGN_PARAGRAPH.LEFT, before=10, after=4)
 
-def cell_text(cell, text, size=10, bold=False):
+def cell_text(cell, text, size=9.5, bold=False):
     cell.text = ""
     p = cell.paragraphs[0]
     p.paragraph_format.space_before = Pt(1); p.paragraph_format.space_after = Pt(1)
@@ -72,7 +72,7 @@ def add_table(doc, caption, rows):
     for i, row in enumerate(rows):
         for j, val in enumerate(row):
             c = table.cell(i, j); c.width = Cm(col_w[j])
-            cell_text(c, val, size=10, bold=(i == 0))
+            cell_text(c, val, size=9.5, bold=(i == 0))
     para(doc, "", size=BODY_PT, after=6)
 
 lines = open(SRC, encoding="utf-8").read().split("\n")
@@ -114,6 +114,12 @@ while i < len(lines):
         i += 1; continue
     if ln.startswith("#1 "):
         text = ln[3:]
+        if text.startswith("參考文獻"):
+            # page_break_before on the heading itself: an empty break paragraph
+            # would sit alone on its own page and push the references to a new one.
+            p = para(doc, text, size=14, bold=True, align=WD_ALIGN_PARAGRAPH.LEFT, before=0, after=6)
+            p.paragraph_format.page_break_before = True
+            i += 1; continue
         heading(doc, 1, text); i += 1; continue
     if ln.startswith("#2 "):
         heading(doc, 2, ln[3:]); i += 1; continue
@@ -126,12 +132,21 @@ while i < len(lines):
         add_table(doc, caption, rows)
         continue
     if ln.startswith("@IMG "):
-        path = ln[5:].strip(); i += 1; cap = ""
+        spec = ln[5:].strip(); i += 1; cap = ""
+        width_cm = 15.0
+        if "|" in spec:
+            path, w = spec.split("|", 1)
+            try:
+                width_cm = float(w)
+            except ValueError:
+                width_cm = 15.0
+        else:
+            path = spec
         if i < len(lines) and lines[i].startswith("@ICAP "):
             cap = lines[i][6:].strip(); i += 1
         p = doc.add_paragraph(); p.alignment = WD_ALIGN_PARAGRAPH.CENTER
         p.paragraph_format.space_before = Pt(8)
-        p.add_run().add_picture(path, width=Cm(8.4))
+        p.add_run().add_picture(path, width=Cm(width_cm))
         para(doc, cap, size=10, bold=True, align=WD_ALIGN_PARAGRAPH.CENTER, before=2, after=10)
         continue
     para(doc, ln, size=BODY_PT, after=4)
