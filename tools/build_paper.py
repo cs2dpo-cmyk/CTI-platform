@@ -9,7 +9,7 @@ from docx.oxml.ns import qn
 from docx.oxml import OxmlElement
 
 SRC = r"C:/dev/cti-platform/docs/paper/content.txt"
-OUT = r"C:/dev/cti-platform/docs/AMITAC2026_CTI專題論文.docx"
+OUT = r"C:/dev/cti-platform/docs/AMITAC2026_CTI專題論文_v2.docx"
 
 CN = "標楷體"
 EN = "Times New Roman"
@@ -81,6 +81,8 @@ def add_table(doc, caption, rows, full_width=False):
     col_w = [width_cm / n_cols] * n_cols
     if full_width and n_cols == 5:
         col_w = [2.2, 3.0, 3.0, 3.4, 4.4]
+    if n_cols == 1:
+        col_w = [16.0]
     for i, row in enumerate(rows):
         for j, val in enumerate(row):
             c = table.cell(i, j)
@@ -148,7 +150,7 @@ while i < len(lines):
             cells = [c.strip() for c in lines[i].strip().strip("|").split("|")]
             rows.append(cells)
             i += 1
-        full = len(rows[0]) >= 5 if rows else False
+        full = (len(rows[0]) <= 1 or len(rows[0]) >= 5) if rows else False
         add_table(doc, caption, rows, full_width=full)
         para(doc, "", size=10)
         continue
