@@ -1,0 +1,20 @@
+{
+  "version": 3,
+  "projectType": "pro",
+  "runtimeVersion": 1,
+  "entry": "src/project.tsx",
+  "width": 1920,
+  "height": 1080,
+  "duration": 60,
+  "fps": 30,
+  "audio": [
+    {
+      "src": "assets/sfx.wav",
+      "start": 0,
+      "duration": 60,
+      "volume": 0,
+      "fadeIn": 0,
+      "fadeOut": 0.4
+    }
+  ]
+}

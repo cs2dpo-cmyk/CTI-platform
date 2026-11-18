@@ -1,0 +1,27 @@
+{
+  "version": 2,
+  "projectType": "standard",
+  "revision": 14,
+  "settings": {
+    "width": 1920,
+    "height": 1080,
+    "duration": 60,
+    "fps": 30
+  },
+  "audio": [
+    {
+      "src": "assets/sfx.wav",
+      "start": 0,
+      "duration": 60,
+      "volume": 0,
+      "fadeIn": 0,
+      "fadeOut": 0.4
+    }
+  ],
+  "title": "mh-cti60",
+  "markerSequence": 5,
+  "markerTypes": {
+    "#169cff": "",
+    "#df783e": ""
+  }
+}

@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="zh-Hant"><head><meta charset="utf-8"><title>前段風格三選一 · front variants</title>
+<style>html,body{margin:0;background:#07080c;overflow:hidden}canvas{width:100vw;height:100vh;object-fit:contain;background:#07080c}</style>
+</head><body>
+<canvas id="scene" width="1920" height="1080"></canvas>
+<script>
+const W=1920,H=1080;
+const C={bg:"#0f1418",ink:"#e8ecef",mute:"#8f9aa5",dim:"#5a6570",hi:"#f1b25c",red:"#e05a4f",bar:"#5d7fa3",line:"#3a4550"};
+const F={sans:"\"Noto Sans TC\",\"Microsoft JhengHei\",sans-serif",mono:"\"IBM Plex Mono\",\"Cascadia Mono\",monospace"};
+const clamp=(x,a,b)=>Math.max(a,Math.min(b,x));
+const lerp=(a,b,t)=>a+(b-a)*t;
+const ss=(a,b,x)=>{const t=clamp((x-a)/(b-a),0,1);return t*t*(3-2*t);};
+const eOut=t=>1-Math.pow(1-clamp(t,0,1),3);
+const TAU=Math.PI*2;
+function rng(seed){let a=seed>>>0;return()=>{a=(a+0x6D2B79F5)>>>0;let t=a;t=Math.imul(t^(t>>>15),t|1);t^=t+Math.imul(t^(t>>>7),t|61);return((t^(t>>>14))>>>0)/4294967296;};}
+const canvas=document.getElementById("scene");
+const ctx=canvas.getContext("2d");
+function text(s,x,y,o){o=o||{};ctx.save();ctx.globalAlpha*=(o.alpha===undefined?1:o.alpha);ctx.fillStyle=o.color||C.ink;ctx.font=(o.weight||500)+" "+(o.size||28)+"px "+(o.font||F.sans);ctx.textAlign=o.align||"left";ctx.textBaseline="alphabetic";if(o.space&&ctx.letterSpacing!==undefined)ctx.letterSpacing=o.space+"px";ctx.fillText(s,x,y);ctx.restore();}
+
+const P=[["情資太多","每天數百則，只能憑印象挑"],
+         ["不知道先修哪一個","CVSS 高，不代表會被利用"],
+         ["期限沒有依據","合規要 24 小時／7 天／30 天"],
+         ["在地情資被漏掉","國際工具不讀 TWCERT 與台灣新聞"]];
+const A=[["自動抽出、去重、排序","788 → 783 → 288 CVE"],
+         ["KEV ＋ EPSS 決定先後","AUC 0.853 vs 0.561"],
+         ["每級附觸發路徑與期限","24 小時／7 天／30 天"],
+         ["納入台灣來源並標記","164 篇台灣來源"]];
+
+/* ================= A：科幻全息掃描（L44） ================= */
+const AR=(()=>{const r=rng(4242);const o=[];for(let i=0;i<230;i++){o.push({ang:r()*TAU,rad:Math.sqrt(r()),at:0.45+5.4*Math.pow(i/230,0.7)});}return o;})();
+const RX=610,RY=520,RR=300;
+function A_radar(t,alpha,glowAll){
+  for(let k=1;k<=5;k++){ctx.strokeStyle="rgba(93,127,163,"+(0.06+0.035*k)+")";ctx.lineWidth=1;ctx.beginPath();ctx.arc(RX,RY,RR*k/5,0,TAU);ctx.stroke();}
+  for(let k=0;k<12;k++){const ang=k*TAU/12;ctx.strokeStyle="rgba(93,127,163,.07)";ctx.beginPath();ctx.moveTo(RX,RY);ctx.lineTo(RX+Math.cos(ang)*RR,RY+Math.sin(ang)*RR);ctx.stroke();}
+  const sweeps=t*1.15;
+  const g=ctx.createRadialGradient(RX,RY,0,RX,RY,RR);
+  g.addColorStop(0,"rgba(241,178,92,.18)");g.addColorStop(1,"rgba(241,178,92,0)");
+  ctx.save();ctx.globalAlpha=alpha;ctx.fillStyle=g;ctx.beginPath();ctx.moveTo(RX,RY);ctx.arc(RX,RY,RR,sweeps-0.55,sweeps);ctx.closePath();ctx.fill();
+  ctx.strokeStyle="rgba(241,178,92,.5)";ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(RX,RY);ctx.lineTo(RX+Math.cos(sweeps)*RR,RY+Math.sin(sweeps)*RR);ctx.stroke();ctx.restore();
+  AR.forEach(p=>{const age=t-p.at;if(age<0)return;const x=RX+Math.cos(p.ang)*RR*p.rad,y=RY+Math.sin(p.ang)*RR*p.rad;const e=eOut(clamp(age/0.4,0,1));
+    if(age<0.7){ctx.save();const R=4+age*26;const gg=ctx.createRadialGradient(x,y,0,x,y,R);gg.addColorStop(0,"rgba(224,90,79,"+(0.4*(1-age/0.7))+")");gg.addColorStop(1,"rgba(224,90,79,0)");ctx.fillStyle=gg;ctx.beginPath();ctx.arc(x,y,R,0,TAU);ctx.fill();ctx.restore();}
+    ctx.fillStyle="rgba(224,90,79,"+(0.5+0.5*e)+")";ctx.beginPath();ctx.arc(x,y,2.1*e+1,0,TAU);ctx.fill();});
+}
+function V1_open(t){const a=ss(0,0.5,t)*(1-ss(6.4,7.0,t));if(a<=0)return;ctx.save();ctx.globalAlpha=a;A_radar(t,a);
+  text("全球資安通報，沒有一刻停下來",140,150,{size:42,weight:600});
+  text("SCHEMATIC · 示意動畫，非實際統計",140,196,{size:21,color:C.dim,font:F.mono,space:2});
+  const ea=ss(4.6,5.4,t);if(ea>0){const items=[["788 篇","情資語料"],["783 個","去重後事件"],["35 個月","連續涵蓋"]];
+    items.forEach((it,i)=>{const x=140+i*300;text(it[0],x,760,{size:40,color:i===0?C.hi:C.ink,font:F.mono,weight:600,alpha:ea});text(it[1],x,798,{size:20,color:C.mute,alpha:ea});});}
+  ctx.restore();}
+function V1_pain(t){const a=ss(0,0.5,t)*(1-ss(6.9,7.5,t));if(a<=0)return;ctx.save();ctx.globalAlpha=a;A_radar(t*0.6+4,a,true);
+  text("企業每天都在面對的四件事",1000,150,{size:38,weight:600});text("THE PAIN",1000,192,{size:20,color:C.dim,font:F.mono,space:2});
+  P.forEach((p,i)=>{const e=eOut((t-0.7-i*1.7)/0.7);if(e<=0)return;const y=300+i*140;ctx.save();ctx.globalAlpha=a*e;
+    ctx.strokeStyle=C.hi;ctx.lineWidth=2;const L=22;
+    [[1000,y-34,1,1],[1700,y-34,-1,1],[1000,y+30,1,-1],[1700,y+30,-1,-1]].forEach(c=>{ctx.beginPath();ctx.moveTo(c[0],c[1]+L*c[3]);ctx.lineTo(c[0],c[1]);ctx.lineTo(c[0]+L*c[2],c[1]);ctx.stroke();});
+    text("0"+(i+1),1016,y-8,{size:17,color:C.hi,font:F.mono,space:1});
+    text(p[0],1016,y+22,{size:32,weight:600});
+    text(p[1],1016,y+58,{size:21,color:C.mute});ctx.restore();});
+  ctx.restore();}
+function V1_ans(t){const a=ss(0,0.5,t)*(1-ss(8.4,9.0,t));if(a<=0)return;ctx.save();ctx.globalAlpha=a;A_radar(t*0.6+4,a);
+  text("我們的專題，實際解決什麼問題",1000,150,{size:38,weight:600});text("PAIN → ANSWER",1000,192,{size:20,color:C.dim,font:F.mono,space:2});
+  A.forEach((v,i)=>{const e=eOut((t-0.7-i*2.0)/0.8);if(e<=0)return;const y=300+i*140;ctx.save();ctx.globalAlpha=a*e;
+    text(P[i][0],1000,y-6,{size:20,color:C.dim});text("→",1000,y+34,{size:22,color:C.hi});
+    text(v[0],1046,y+34,{size:30,weight:600});text(v[1],1700,y+34,{size:23,color:C.hi,font:F.mono,align:"right"});
+    ctx.strokeStyle=C.line;ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(1000,y+56);ctx.lineTo(1700,y+56);ctx.stroke();ctx.restore();});
+  ctx.restore();}
+
+/* ================= B：CRT 終端 + 信號故障（L39/G2） ================= */
+const GLY=["CVE-2026","KEV","EPSS","CVSS","P1","SLA","CWE","0.853","788","783","TWCERT","iThome"];
+const COLS=(()=>{const r=rng(777);const o=[];for(let i=0;i<64;i++){o.push({x:30+i*30,y0:r()*H,sp:40+r()*90,ph:r()});}return o;})();
+function CRT_bg(t,alpha,dim){ctx.save();ctx.globalAlpha=alpha;
+  ctx.fillStyle="#05080a";ctx.fillRect(0,0,W,H);
+  const r=rng(99);
+  COLS.forEach(c=>{const off=(t*c.sp+c.y0)%(H+300)-150;for(let k=0;k<14;k++){const y=off+k*42;if(y<-40||y>H+40)continue;
+    const g=GLY[Math.floor(r()*GLY.length)];const a2=(0.05+0.22*Math.abs(Math.sin(t*1.7+k*0.7)))*(dim?0.35:1);
+    ctx.fillStyle="rgba(120,190,160,"+a2+")";ctx.font="20px "+F.mono;ctx.fillText(g,c.x,y);}});
+  ctx.fillStyle="rgba(0,0,0,.16)";for(let y=0;y<H;y+=4)ctx.fillRect(0,y,W,2);
+  const vg=ctx.createRadialGradient(W/2,H/2,300,W/2,H/2,1100);vg.addColorStop(0,"rgba(0,0,0,0)");vg.addColorStop(1,"rgba(0,0,0,.75)");ctx.fillStyle=vg;ctx.fillRect(0,0,W,H);
+  ctx.restore();}
+function glitch(at){ if(at<0.0)return false; return (at%2.6)<0.14; }
+function V2_open(t){const a=ss(0,0.4,t)*(1-ss(6.4,7.0,t));if(a<=0)return;CRT_bg(t,a,false);ctx.save();ctx.globalAlpha=a;
+  const n=Math.floor(clamp((t-0.3)/1.6,0,1)*24);
+  const line="> initializing threat stream ...";
+  text(line.slice(0,n),140,300,{size:26,color:"#8fd8b8",font:F.mono});
+  if(t>2.0){text("全球資安通報，沒有一刻停下來",140,420,{size:48,weight:600});}
+  if(t>2.6){text("SCHEMATIC · 示意動畫，非實際統計",140,470,{size:21,color:C.dim,font:F.mono,space:2});}
+  if(t>3.4){const items=[["788 篇","情資語料"],["783 個","去重後事件"],["35 個月","連續涵蓋"]];const ea=ss(3.4,4.2,t);
+    items.forEach((it,i)=>{const x=140+i*300;text(it[0],x,600,{size:44,color:i===0?C.hi:"#8fd8b8",font:F.mono,weight:600,alpha:ea});text(it[1],x,640,{size:20,color:C.mute,alpha:ea});});}
+  if(glitch(t)){ctx.fillStyle="rgba(224,90,79,.20)";ctx.fillRect(0,330+Math.sin(t*40)*200,W,26);}
+  ctx.restore();}
+function V2_pain(t){const a=ss(0,0.4,t)*(1-ss(6.9,7.5,t));if(a<=0)return;CRT_bg(t,a,true);ctx.save();ctx.globalAlpha=a;
+  ctx.strokeStyle="rgba(143,216,184,.35)";ctx.lineWidth=2;ctx.strokeRect(120,180,1680,720);
+  text("terminal — pain",140,230,{size:20,color:"#6f8f86",font:F.mono});
+  text("$ audit --team-size 3",140,300,{size:26,color:"#8fd8b8",font:F.mono});
+  P.forEach((p,i)=>{const e=eOut((t-0.9-i*1.6)/0.7);if(e<=0)return;const y=380+i*120;
+    text("[WARN]",140,y,{size:26,color:C.red,font:F.mono,alpha:e});
+    text(p[0],290,y,{size:34,weight:600,alpha:e});
+    text(p[1],290,y+38,{size:21,color:C.mute,alpha:e});});
+  const bl=(t*2)%1;text("█",140,880,{size:26,color:"#8fd8b8",font:F.mono,alpha:bl>0.5?1:0});
+  if(glitch(t)){ctx.fillStyle="rgba(143,216,184,.16)";ctx.fillRect(0,300+Math.cos(t*30)*260,W,20);}
+  ctx.restore();}
+function V2_ans(t){const a=ss(0,0.4,t)*(1-ss(8.4,9.0,t));if(a<=0)return;CRT_bg(t,a,true);ctx.save();ctx.globalAlpha=a;
+  ctx.strokeStyle="rgba(241,178,92,.35)";ctx.lineWidth=2;ctx.strokeRect(120,180,1680,720);
+  text("terminal — resolve",140,230,{size:20,color:"#c9a271",font:F.mono});
+  text("$ resolve --strategy kev+epss",140,300,{size:26,color:C.hi,font:F.mono});
+  A.forEach((v,i)=>{const e=eOut((t-0.9-i*1.9)/0.7);if(e<=0)return;const y=380+i*120;
+    text("[ OK ]",140,y,{size:26,color:C.hi,font:F.mono,alpha:e});
+    text(v[0],290,y,{size:34,weight:600,alpha:e});
+    text(v[1],290,y+38,{size:22,color:C.hi,font:F.mono,alpha:e});});
+  const e2=ss(8.0,8.6,t);if(e2>0)text("4 / 4 resolved",140,880,{size:26,color:C.hi,font:F.mono,alpha:e2});
+  ctx.restore();}
+
+/* ================= C：粒子聚形（B3） ================= */
+const NP=2200;
+const PT=(()=>{const r=rng(2026);const o=[];for(let i=0;i<NP;i++){const th=r()*TAU,ph=Math.acos(2*r()-1);
+  o.push({sx:r()*W,sy:r()*H,th:th,ph:ph,sp:0.6+r()*1.4,jx:(r()-0.5),jy:(r()-0.5),sz:1+r()*1.6,row:i%4,r:r()});}return o;})();
+function globePos(p,rot){const th=p.th+rot;const x=Math.cos(th)*Math.sin(p.ph),y=Math.cos(p.ph),z=Math.sin(th)*Math.sin(p.ph);
+  return {x:960+x*300*(0.6+0.4*((z+1)/2)),y:470+y*300,c:0.4+0.6*((z+1)/2)};}
+const TOWERX=[420,760,1100,1440];
+function V3_open(t){const a=ss(0,0.4,t)*(1-ss(6.4,7.0,t));if(a<=0)return;ctx.save();ctx.globalAlpha=a;
+  const form=eOut(clamp(t/2.6,0,1));const burst=ss(3.2,6.6,t);const rot=t*0.5;
+  ctx.globalCompositeOperation="lighter";
+  PT.forEach((p,i)=>{const g=globePos(p,rot);const x0=p.sx,y0=p.sy;
+    let x=lerp(x0,g.x,form),y=lerp(y0,g.y,form);
+    if(burst>0){const ang=p.th*3;x+=Math.cos(ang)*burst*260*(0.4+p.jx);y-=burst*220*(0.3+p.jy);}
+    const red=burst>0.15;
+    ctx.fillStyle=red?("rgba(224,90,79,"+(0.25+0.5*burst)+")"):("rgba(120,160,200,"+(0.18+0.35*g.c)+")");
+    ctx.fillRect(x,y,p.sz,p.sz);});
+  ctx.globalCompositeOperation="source-over";
+  text("全球資安通報，沒有一刻停下來",140,150,{size:42,weight:600});
+  text("SCHEMATIC · 示意動畫，非實際統計",140,196,{size:21,color:C.dim,font:F.mono,space:2});
+  const ea=ss(4.6,5.4,t);if(ea>0){const items=[["788 篇","情資語料"],["783 個","去重事件"],["35 個月","連續涵蓋"]];
+    items.forEach((it,i)=>{const x=140+i*300;text(it[0],x,900,{size:40,color:i===0?C.hi:C.ink,font:F.mono,weight:600,alpha:ea});text(it[1],x,938,{size:20,color:C.mute,alpha:ea});});}
+  ctx.restore();}
+function V3_pain(t){const a=ss(0,0.4,t)*(1-ss(6.9,7.5,t));if(a<=0)return;ctx.save();ctx.globalAlpha=a;
+  ctx.globalCompositeOperation="lighter";
+  PT.forEach((p,i)=>{const grow=eOut(clamp((t-0.2-p.row*0.35)/1.6,0,1));
+    const bx=TOWERX[p.row],base=820,h=(180+p.row*110)*grow;
+    const x=bx+(p.jx*76)*(1-grow*0.15),y=base-p.r*h;
+    const wob=Math.sin(t*2.2+p.ph*5)*3;
+    ctx.fillStyle="rgba("+(120+p.row*28)+",158,198,"+(0.32+0.48*p.r)+")";
+    ctx.fillRect(x+wob,y,p.sz*1.7,p.sz*1.7);});
+  ctx.globalCompositeOperation="source-over";
+  text("企業每天都在面對的四件事",140,150,{size:40,weight:600});text("THE PAIN",140,194,{size:20,color:C.dim,font:F.mono,space:2});
+  TOWERX.forEach(bx=>{ctx.fillStyle="rgba(93,127,163,.14)";ctx.fillRect(bx-90,818,180,3);});
+  P.forEach((p,i)=>{const e=eOut((t-0.9-i*1.5)/0.7);if(e<=0)return;const x=TOWERX[i]-70;
+    text(p[0],x,880,{size:24,weight:600,alpha:e});text(p[1],x,912,{size:18,color:C.mute,alpha:e});});
+  ctx.restore();}
+function V3_ans(t){const a=ss(0,0.4,t)*(1-ss(8.4,9.0,t));if(a<=0)return;ctx.save();ctx.globalAlpha=a;
+  const col=eOut(clamp((t-0.4)/2.2,0,1));
+  ctx.globalCompositeOperation="lighter";
+  PT.forEach((p,i)=>{const bx=TOWERX[p.row],base=820,h=(120+p.row*95);
+    const tx=660+p.r*250,ty=320+p.row*150;
+    const x=lerp(bx+p.jx*46,tx,col),y=lerp(base-p.r*h,ty,p.r*col);
+    ctx.fillStyle="rgba(241,178,92,"+(0.18+0.45*col)+")";ctx.fillRect(x,y,p.sz*1.5,p.sz*1.5);});
+  ctx.globalCompositeOperation="source-over";
+  text("我們的專題，實際解決什麼問題",140,150,{size:40,weight:600});text("PAIN → ANSWER",140,194,{size:20,color:C.dim,font:F.mono,space:2});
+  A.forEach((v,i)=>{const e=eOut((t-1.2-i*1.7)/0.7);if(e<=0)return;const y=330+i*150;
+    text(v[0],1000,y,{size:32,weight:600,alpha:e});
+    text(v[1],1000,y+40,{size:22,color:C.hi,font:F.mono,alpha:e});});
+  ctx.restore();}
+
+/* ================= 主繪製 ================= */
+const V=(new URLSearchParams(location.search).get("v")||"A").toUpperCase();
+const MAP3={A:[V1_open,V1_pain,V1_ans],B:[V2_open,V2_pain,V2_ans],C:[V3_open,V3_pain,V3_ans]};
+const SC=MAP3[V]||MAP3.A;
+function draw(t){
+  ctx.setTransform(1,0,0,1,0,0);ctx.globalAlpha=1;ctx.globalCompositeOperation="source-over";
+  ctx.fillStyle=V==="B"?"#05080a":C.bg;ctx.fillRect(0,0,W,H);
+  if(V!=="B"){const g=ctx.createRadialGradient(W*0.5,H*0.42,120,W*0.5,H*0.42,1100);g.addColorStop(0,"rgba(40,46,66,.26)");g.addColorStop(1,"rgba(15,20,24,0)");ctx.fillStyle=g;ctx.fillRect(0,0,W,H);}
+  if(t<7)SC[0](t);else if(t<14.5)SC[1](t-7);else SC[2](t-14.5);
+  ctx.globalAlpha=1;ctx.fillStyle="rgba(15,20,24,.85)";ctx.fillRect(0,H-6,W*clamp(t/23.5,0,1),6);
+}
+window.renderAt=draw;
+const q=new URLSearchParams(location.search);
+if(q.has("t"))draw(Number(q.get("t"))||0);
+else if(q.has("export"))draw(0);
+else{const st=performance.now();(function loop(now){draw(((now-st)/1000)%23.5);requestAnimationFrame(loop);})(0);}
+</script></body></html>

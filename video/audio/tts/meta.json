@@ -1,0 +1,66 @@
+[
+ {
+  "i": 1,
+  "start": 0.6,
+  "end": 6.9,
+  "text": "每天，全球都有新的資安通報。",
+  "mp3": "C:\\dev\\cti-platform\\video\\audio\\tts\\line01.mp3",
+  "dur": 3.768004535147392
+ },
+ {
+  "i": 2,
+  "start": 7.4,
+  "end": 14.3,
+  "text": "但團隊只有兩三個人，新聞每天幾百則。",
+  "mp3": "C:\\dev\\cti-platform\\video\\audio\\tts\\line02.mp3",
+  "dur": 4.608004535147392
+ },
+ {
+  "i": 3,
+  "start": 14.7,
+  "end": 23.2,
+  "text": "所以我們把它讀完、排好，再告訴你為什麼。",
+  "mp3": "C:\\dev\\cti-platform\\video\\audio\\tts\\line03.mp3",
+  "dur": 5.04
+ },
+ {
+  "i": 4,
+  "start": 23.7,
+  "end": 31.8,
+  "text": "先抓取，再分類、去重，接上 EPSS 與 KEV。",
+  "mp3": "C:\\dev\\cti-platform\\video\\audio\\tts\\line04.mp3",
+  "dur": 5.304013605442177
+ },
+ {
+  "i": 5,
+  "start": 32.2,
+  "end": 36.3,
+  "text": "783 個事件，分成四類。",
+  "mp3": "C:\\dev\\cti-platform\\video\\audio\\tts\\line05.mp3",
+  "dur": 3.768004535147392
+ },
+ {
+  "i": 6,
+  "start": 36.8,
+  "end": 48.2,
+  "text": "同樣 273 個 CVE，按 CVSS 排，跟按我們排，結果完全不同。",
+  "mp3": "C:\\dev\\cti-platform\\video\\audio\\tts\\line06.mp3",
+  "dur": 7.056009070294785
+ },
+ {
+  "i": 7,
+  "start": 48.8,
+  "end": 54.3,
+  "text": "P1 給你 24 小時，P2 七天，P3 三十天。",
+  "mp3": "C:\\dev\\cti-platform\\video\\audio\\tts\\line07.mp3",
+  "dur": 5.3520181405895695
+ },
+ {
+  "i": 8,
+  "start": 54.7,
+  "end": 59.7,
+  "text": "把情資，變成做得到的處置順序。",
+  "mp3": "C:\\dev\\cti-platform\\video\\audio\\tts\\line08.mp3",
+  "dur": 3.96
+ }
+]

@@ -1,0 +1,14 @@
+{
+  "name": "mh-composition",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@motionharness/sdk": "0.1.8",
+    "react": "19.2.8",
+    "react-dom": "19.2.8"
+  },
+  "devDependencies": {
+    "@types/react": "19.2.14",
+    "typescript": "5.9.3"
+  }
+}

@@ -1,0 +1,329 @@
+{
+  "version": 2,
+  "compositionId": "cti-film",
+  "revision": 82,
+  "rootInstanceId": "1a1b78ca-764b-4651-97ab-d6dbc2d53ba2",
+  "settings": {
+    "width": 1920,
+    "height": 1080,
+    "fps": 30,
+    "duration": 76
+  },
+  "instances": {
+    "1a1b78ca-764b-4651-97ab-d6dbc2d53ba2": {
+      "componentId": "cti-film",
+      "values": {
+        "card": {
+          "$instance": "1238f60c-fef6-4d11-a7ee-fbc0d0b5f7db"
+        },
+        "title": {
+          "$instance": "c7270a4c-181c-410f-b5d2-58017a7b59cd"
+        }
+      },
+      "tracks": {},
+      "timing": {
+        "start": 0
+      },
+      "sounds": [
+        {
+          "$instance": "a4d6e6fc-65a4-43c2-8ed6-304950499bf3"
+        },
+        {
+          "$instance": "b00a4e67-6957-49f9-afce-d279aaf095f5"
+        }
+      ]
+    },
+    "1238f60c-fef6-4d11-a7ee-fbc0d0b5f7db": {
+      "componentId": "pipeline-card",
+      "values": {
+        "number": "01",
+        "heading": "定時抓取",
+        "sub": "iThome・TWCERT/CC・NVD",
+        "fill": "#131a20",
+        "border": "#3a4550",
+        "ink": "#e8ecef",
+        "x": 130,
+        "y": 520,
+        "scaleX": 1,
+        "scaleY": 1,
+        "rotation": 0,
+        "skew": 0,
+        "anchorX": 148,
+        "anchorY": 100,
+        "opacity": 1
+      },
+      "tracks": {
+        "y": {
+          "keyframes": [
+            {
+              "time": 0,
+              "value": 546,
+              "id": "addd4d2b-6afe-4ad3-ac5b-23e6d138e59f",
+              "easing": "linear"
+            },
+            {
+              "time": 0.776,
+              "value": 520,
+              "easing": "ease-out",
+              "id": "1d20aaec-6e54-440a-b2dd-f8c6287c75c8"
+            }
+          ]
+        },
+        "opacity": {
+          "keyframes": [
+            {
+              "time": 0,
+              "value": 0,
+              "id": "1a70f089-4244-4f54-91c6-1874e5bb766b",
+              "easing": "linear"
+            },
+            {
+              "time": 0.776,
+              "value": 1,
+              "id": "0b963d47-694f-4430-b871-f169b376fbff",
+              "easing": "linear"
+            },
+            {
+              "time": 10.86,
+              "value": 1,
+              "id": "8dd97bb4-40df-4c31-a53b-b6e06fa20d57",
+              "easing": "linear"
+            },
+            {
+              "time": 11.36,
+              "value": 0,
+              "id": "8daf70ff-64b2-469f-8247-f9bda64aa59c",
+              "easing": "linear"
+            },
+            {
+              "time": 48,
+              "value": 0,
+              "id": "13798ce4-3ba4-4178-9523-aaf7e15be46d",
+              "easing": "linear"
+            }
+          ]
+        }
+      },
+      "timing": {
+        "start": 31.31,
+        "duration": 48.69
+      },
+      "name": "流程卡片（定時抓取）"
+    },
+    "c7270a4c-181c-410f-b5d2-58017a7b59cd": {
+      "componentId": "end-title",
+      "values": {
+        "text": "CTI 資安風險決策支援平台",
+        "color": "#e8ecef",
+        "x": 460,
+        "y": 432,
+        "scaleX": 1,
+        "scaleY": 1,
+        "rotation": 0,
+        "skew": 0,
+        "anchorX": 500,
+        "anchorY": 48,
+        "opacity": 1
+      },
+      "tracks": {
+        "y": {
+          "keyframes": [
+            {
+              "time": 0.78,
+              "value": 448,
+              "id": "4391bf31-9fef-4bf5-9678-ef245bf1cd47",
+              "easing": "linear"
+            },
+            {
+              "time": 2.12,
+              "value": 432,
+              "easing": "ease-out",
+              "id": "be650e78-eb10-41db-9758-e7ec61a1f798"
+            }
+          ]
+        },
+        "opacity": {
+          "keyframes": [
+            {
+              "time": 0,
+              "value": 0,
+              "id": "77278d41-74c9-426c-ac04-78a269efd21b",
+              "easing": "linear"
+            },
+            {
+              "time": 1.01,
+              "value": 1,
+              "id": "15036a28-31ef-403d-8d11-02bb51455669",
+              "easing": "linear"
+            }
+          ]
+        }
+      },
+      "timing": {
+        "start": 70.5
+      },
+      "name": "收尾標題"
+    },
+    "a4d6e6fc-65a4-43c2-8ed6-304950499bf3": {
+      "componentId": "mh.audio",
+      "values": {
+        "asset": {
+          "$asset": "bbfc170605a939357d64161ad62d0ac75a258e7ab5a11cb0b469ed43a876c5eb",
+          "kind": "audio",
+          "name": "narration.wav"
+        },
+        "volumeDb": 0,
+        "pan": 0,
+        "muted": false,
+        "startFrom": 0,
+        "fadeIn": 0,
+        "fadeOut": 0,
+        "playbackRate": 1,
+        "loop": false,
+        "hold": false,
+        "holdAt": 0,
+        "stream": 0,
+        "pitchMode": "resample"
+      },
+      "tracks": {},
+      "timing": {
+        "start": 0,
+        "duration": 76
+      },
+      "name": "narration.wav"
+    },
+    "b00a4e67-6957-49f9-afce-d279aaf095f5": {
+      "componentId": "mh.audio",
+      "values": {
+        "asset": {
+          "$asset": "3c1354042bc0bc2c4ccce4f598cca130a2eab19a7a9ba80a10a33c650ec7e103",
+          "kind": "audio",
+          "name": "sfx.wav"
+        },
+        "volumeDb": 0,
+        "pan": 0,
+        "muted": false,
+        "startFrom": 0,
+        "fadeIn": 0,
+        "fadeOut": 0,
+        "playbackRate": 1,
+        "loop": false,
+        "hold": false,
+        "holdAt": 0,
+        "stream": 0,
+        "pitchMode": "resample"
+      },
+      "tracks": {},
+      "timing": {
+        "start": 0,
+        "duration": 76
+      },
+      "name": "sfx.wav"
+    }
+  },
+  "assetLibrary": {
+    "d3d4c111ace4bedba91ab4bbfb1e82f89a36cbc3d225d1bfe7ef27733cb0e9af": {
+      "reference": {
+        "$asset": "d3d4c111ace4bedba91ab4bbfb1e82f89a36cbc3d225d1bfe7ef27733cb0e9af",
+        "kind": "audio",
+        "name": "sfx.wav"
+      },
+      "label": "sfx.wav",
+      "tags": []
+    },
+    "54d396e5ec03bae9c84efc4a774507c5a5046c0c57b6b7a764793bb852b3caca": {
+      "reference": {
+        "$asset": "54d396e5ec03bae9c84efc4a774507c5a5046c0c57b6b7a764793bb852b3caca",
+        "kind": "audio",
+        "name": "sfx.wav"
+      },
+      "label": "sfx.wav",
+      "tags": []
+    },
+    "8237b5f02f2ab066960af838e3cdc6d24c37b2ebb19311aeffde2894e8400106": {
+      "reference": {
+        "$asset": "8237b5f02f2ab066960af838e3cdc6d24c37b2ebb19311aeffde2894e8400106",
+        "kind": "audio",
+        "name": "sfx.wav"
+      },
+      "label": "sfx.wav",
+      "tags": []
+    },
+    "a0cff8c66c97496e747ba06b2f08c4f843ff5688848557702efe647235d50661": {
+      "reference": {
+        "$asset": "a0cff8c66c97496e747ba06b2f08c4f843ff5688848557702efe647235d50661",
+        "kind": "audio",
+        "name": "narration.wav"
+      },
+      "label": "narration.wav",
+      "tags": []
+    },
+    "d4992c9214fadc7fa643e471afb87c2d60da3f0f0c964dc4aba36b26833e353c": {
+      "reference": {
+        "$asset": "d4992c9214fadc7fa643e471afb87c2d60da3f0f0c964dc4aba36b26833e353c",
+        "kind": "audio",
+        "name": "narration.wav"
+      },
+      "label": "narration.wav",
+      "tags": []
+    },
+    "d85348bb6aedf2cd5200c230bfc3d5f11d060e3be5827c3bdafae65bef323b58": {
+      "reference": {
+        "$asset": "d85348bb6aedf2cd5200c230bfc3d5f11d060e3be5827c3bdafae65bef323b58",
+        "kind": "audio",
+        "name": "sfx.wav"
+      },
+      "label": "sfx.wav",
+      "tags": []
+    },
+    "a8165a7403ef01a4f9ff764849df153ad8d3dec359b0075b687d65ab67e5abd3": {
+      "reference": {
+        "$asset": "a8165a7403ef01a4f9ff764849df153ad8d3dec359b0075b687d65ab67e5abd3",
+        "kind": "audio",
+        "name": "narration.wav"
+      },
+      "label": "narration.wav",
+      "tags": []
+    },
+    "185fb6646c09c96b6dfd4b6535abcb5f555fac134ade9453719108235eb67eaf": {
+      "reference": {
+        "$asset": "185fb6646c09c96b6dfd4b6535abcb5f555fac134ade9453719108235eb67eaf",
+        "kind": "audio",
+        "name": "narration.wav"
+      },
+      "label": "narration.wav",
+      "tags": []
+    },
+    "5265daee513b8c32ea18e7d9824aafb41572f6c71b6dbf1f1b9ff4b37d7575fa": {
+      "reference": {
+        "$asset": "5265daee513b8c32ea18e7d9824aafb41572f6c71b6dbf1f1b9ff4b37d7575fa",
+        "kind": "audio",
+        "name": "sfx.wav"
+      },
+      "label": "sfx.wav",
+      "tags": []
+    },
+    "bbfc170605a939357d64161ad62d0ac75a258e7ab5a11cb0b469ed43a876c5eb": {
+      "reference": {
+        "$asset": "bbfc170605a939357d64161ad62d0ac75a258e7ab5a11cb0b469ed43a876c5eb",
+        "kind": "audio",
+        "name": "narration.wav"
+      },
+      "label": "narration.wav",
+      "tags": []
+    },
+    "3c1354042bc0bc2c4ccce4f598cca130a2eab19a7a9ba80a10a33c650ec7e103": {
+      "reference": {
+        "$asset": "3c1354042bc0bc2c4ccce4f598cca130a2eab19a7a9ba80a10a33c650ec7e103",
+        "kind": "audio",
+        "name": "sfx.wav"
+      },
+      "label": "sfx.wav",
+      "tags": []
+    }
+  },
+  "markerSequence": 27,
+  "markerTypes": {
+    "#169cff": ""
+  }
+}
