@@ -413,11 +413,12 @@ body::after {
   cursor: pointer;
   font: inherit;
 }
+/* The current tab is state, not decoration: an amber rule marks it and the
+   filled pill is gone, so amber stays the only saturated mark in the header. */
 .tab-btn[aria-selected="true"] {
-  color: #dbe6f5;
-  background: var(--panel-raised);
-  border: 1px solid var(--line-strong);
-  border-radius: var(--radius-sm);
+  color: var(--ink);
+  background: transparent;
+  box-shadow: inset 0 -2px 0 var(--amber);
 }
 /* Score rail: shows where the score falls between the P3/P2/P1 thresholds,
    which the ring alone cannot explain. */
