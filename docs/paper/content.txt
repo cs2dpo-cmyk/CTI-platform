@@ -17,7 +17,7 @@
 #2 2.1 系統架構與技術棧
 系統採五層架構（圖1）：資料來源層整合三家新聞源；語料層以 SQLite 儲存、去重並完成 TF-IDF 分群；對照層將 CVE 與四份官方快照及資產清單比對；決策層執行規則分類、評分與優先級推算；介面層以 FastAPI 提供八個端點，前端為原生 JavaScript 與 Chart.js。分層使錯誤可定位到層級，後端部署於 Render。
 
-@IMG docs/paper/fig1.png|14.2
+@IMG docs/paper/fig1.png|15.0
 @ICAP 圖1 系統架構與資料流（作者繪製）
 
 #2 2.2 語料建置與分層取樣
@@ -46,7 +46,7 @@
 | 排序 AUC（本系統／EPSS／CVSS） | 0.853／0.827／0.561 |
 | precision@10 | 1.00 |
 
-@IMG docs/paper/fig2.png|12.5
+@IMG docs/paper/fig2.png|12.0
 @ICAP 圖2 不同排序方法之 KEV 命中能力比較（交叉驗證 AUC，資料來源：本專題）
 
 #1 3. 系統創新性與技術亮點（權重 15%）

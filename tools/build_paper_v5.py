@@ -12,7 +12,7 @@ SRC = r"C:/dev/cti-platform/docs/paper/content.txt"
 OUT = r"C:/dev/cti-platform/docs/AMITAC2026_CTI專題論文_v5.docx"
 CN, EN = "標楷體", "Times New Roman"
 BODY_PT = 11
-LINE = 1.02
+LINE = 1.0
 TEXT_W = 15.5
 
 def set_run(run, size=BODY_PT, bold=False):
