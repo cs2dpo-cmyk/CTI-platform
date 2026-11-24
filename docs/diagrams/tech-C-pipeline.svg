@@ -1,0 +1,94 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="3840" height="2160" viewBox="0 0 3840 2160" font-family="Microsoft JhengHei, Noto Sans TC, sans-serif">
+<rect width="3840" height="2160" fill="#0b1220"/>
+<text x="140" y="150" fill="#dbe6f5" font-size="62" font-weight="700">C｜資料管線</text>
+<text x="144" y="200" fill="#7d8fae" font-size="34">從新聞到修補工單：每一步用什麼技術</text>
+<rect x="140" y="700" width="520" height="400" rx="22" fill="#111a2b" stroke="#2b3c5a" stroke-width="3"/>
+<rect x="140" y="718" width="8" height="364" rx="4" fill="#2dd4bf"/>
+<text x="170" y="770" fill="#2dd4bf" font-size="38" font-weight="700">① 新聞抓取</text>
+<text x="170" y="826" fill="#dbe6f5" font-size="34">The Hacker News</text>
+<text x="170" y="874" fill="#dbe6f5" font-size="34">TWCERT/CC</text>
+<text x="170" y="922" fill="#dbe6f5" font-size="34">iThome</text>
+<rect x="140" y="1120" width="207" height="58" rx="14" fill="#16223a" stroke="#2b3c5a" stroke-width="2"/>
+<text x="162" y="1160" fill="#2dd4bf" font-family="Consolas, monospace" font-size="34">requests</text>
+<rect x="140" y="1188" width="309" height="58" rx="14" fill="#16223a" stroke="#2b3c5a" stroke-width="2"/>
+<text x="162" y="1228" fill="#2dd4bf" font-family="Consolas, monospace" font-size="34">BeautifulSoup</text>
+<line x1="672" y1="900" x2="736" y2="900" stroke="#7d8fae" stroke-width="5"/>
+<polygon points="736,900 720,890 720,910" fill="#7d8fae"/>
+<rect x="748" y="700" width="520" height="400" rx="22" fill="#111a2b" stroke="#2b3c5a" stroke-width="3"/>
+<rect x="748" y="718" width="8" height="364" rx="4" fill="#2dd4bf"/>
+<text x="778" y="770" fill="#2dd4bf" font-size="38" font-weight="700">② 分層取樣</text>
+<text x="778" y="826" fill="#dbe6f5" font-size="34">每月 15 篇國際</text>
+<text x="778" y="874" fill="#dbe6f5" font-size="34">＋5 篇台灣</text>
+<text x="778" y="922" fill="#dbe6f5" font-size="34">鋪滿 35 個月</text>
+<rect x="748" y="1120" width="166" height="58" rx="14" fill="#16223a" stroke="#2b3c5a" stroke-width="2"/>
+<text x="770" y="1160" fill="#2dd4bf" font-family="Consolas, monospace" font-size="34">Python</text>
+<rect x="748" y="1188" width="194" height="58" rx="14" fill="#16223a" stroke="#2b3c5a" stroke-width="2"/>
+<text x="770" y="1228" fill="#2dd4bf" font-family="Consolas, monospace" font-size="34">CSV 建置</text>
+<line x1="1280" y1="900" x2="1344" y2="900" stroke="#7d8fae" stroke-width="5"/>
+<polygon points="1344,900 1328,890 1328,910" fill="#7d8fae"/>
+<rect x="1356" y="700" width="520" height="400" rx="22" fill="#111a2b" stroke="#2b3c5a" stroke-width="3"/>
+<rect x="1356" y="718" width="8" height="364" rx="4" fill="#f59e0b"/>
+<text x="1386" y="770" fill="#f59e0b" font-size="38" font-weight="700">③ 語料庫</text>
+<text x="1386" y="826" fill="#dbe6f5" font-size="34">788 篇 → 783 事件</text>
+<text x="1386" y="874" fill="#dbe6f5" font-size="34">TF-IDF 向量化</text>
+<text x="1386" y="922" fill="#dbe6f5" font-size="34">K-Means 主題分群</text>
+<rect x="1356" y="1120" width="166" height="58" rx="14" fill="#16223a" stroke="#2b3c5a" stroke-width="2"/>
+<text x="1378" y="1160" fill="#f59e0b" font-family="Consolas, monospace" font-size="34">TF-IDF</text>
+<rect x="1356" y="1188" width="186" height="58" rx="14" fill="#16223a" stroke="#2b3c5a" stroke-width="2"/>
+<text x="1378" y="1228" fill="#f59e0b" font-family="Consolas, monospace" font-size="34">K-Means</text>
+<rect x="1356" y="1256" width="166" height="58" rx="14" fill="#16223a" stroke="#2b3c5a" stroke-width="2"/>
+<text x="1378" y="1296" fill="#f59e0b" font-family="Consolas, monospace" font-size="34">SQLite</text>
+<line x1="1888" y1="900" x2="1952" y2="900" stroke="#7d8fae" stroke-width="5"/>
+<polygon points="1952,900 1936,890 1936,910" fill="#7d8fae"/>
+<rect x="1964" y="700" width="520" height="400" rx="22" fill="#111a2b" stroke="#2b3c5a" stroke-width="3"/>
+<rect x="1964" y="718" width="8" height="364" rx="4" fill="#f59e0b"/>
+<text x="1994" y="770" fill="#f59e0b" font-size="38" font-weight="700">④ CVE 對照</text>
+<text x="1994" y="826" fill="#dbe6f5" font-size="34">288 個 CVE</text>
+<text x="1994" y="874" fill="#dbe6f5" font-size="34">KEV／EPSS／CVSS／CWE</text>
+<text x="1994" y="922" fill="#dbe6f5" font-size="34">快照 data_as_of</text>
+<rect x="1964" y="1120" width="217" height="58" rx="14" fill="#16223a" stroke="#2b3c5a" stroke-width="2"/>
+<text x="1986" y="1160" fill="#f59e0b" font-family="Consolas, monospace" font-size="34">正規表示式</text>
+<rect x="1964" y="1188" width="235" height="58" rx="14" fill="#16223a" stroke="#2b3c5a" stroke-width="2"/>
+<text x="1986" y="1228" fill="#f59e0b" font-family="Consolas, monospace" font-size="34">jieba 斷詞</text>
+<rect x="1964" y="1256" width="215" height="58" rx="14" fill="#16223a" stroke="#2b3c5a" stroke-width="2"/>
+<text x="1986" y="1296" fill="#f59e0b" font-family="Consolas, monospace" font-size="34">JSON 快照</text>
+<line x1="2496" y1="900" x2="2560" y2="900" stroke="#7d8fae" stroke-width="5"/>
+<polygon points="2560,900 2544,890 2544,910" fill="#7d8fae"/>
+<rect x="2572" y="700" width="520" height="400" rx="22" fill="#111a2b" stroke="#2b3c5a" stroke-width="3"/>
+<rect x="2572" y="718" width="8" height="364" rx="4" fill="#f59e0b"/>
+<text x="2602" y="770" fill="#f59e0b" font-size="38" font-weight="700">⑤ 評分與優先級</text>
+<text x="2602" y="826" fill="#dbe6f5" font-size="34">四因子 50／30／12／8</text>
+<text x="2602" y="874" fill="#dbe6f5" font-size="34">五因子即時評估</text>
+<text x="2602" y="922" fill="#dbe6f5" font-size="34">P1–P3 ＋ SLA</text>
+<rect x="2572" y="1120" width="217" height="58" rx="14" fill="#16223a" stroke="#2b3c5a" stroke-width="2"/>
+<text x="2594" y="1160" fill="#f59e0b" font-family="Consolas, monospace" font-size="34">可解釋加權</text>
+<rect x="2572" y="1188" width="215" height="58" rx="14" fill="#16223a" stroke="#2b3c5a" stroke-width="2"/>
+<text x="2594" y="1228" fill="#f59e0b" font-family="Consolas, monospace" font-size="34">SSVC 概念</text>
+<line x1="3104" y1="900" x2="3168" y2="900" stroke="#7d8fae" stroke-width="5"/>
+<polygon points="3168,900 3152,890 3152,910" fill="#7d8fae"/>
+<rect x="3180" y="700" width="520" height="400" rx="22" fill="#111a2b" stroke="#2b3c5a" stroke-width="3"/>
+<rect x="3180" y="718" width="8" height="364" rx="4" fill="#a78bfa"/>
+<text x="3210" y="770" fill="#a78bfa" font-size="38" font-weight="700">⑥ 工單／儀表板</text>
+<text x="3210" y="826" fill="#dbe6f5" font-size="34">匯出 CSV 工單</text>
+<text x="3210" y="874" fill="#dbe6f5" font-size="34">4 個工作區</text>
+<text x="3210" y="922" fill="#dbe6f5" font-size="34">8 個 API 端點</text>
+<rect x="3180" y="1120" width="186" height="58" rx="14" fill="#16223a" stroke="#2b3c5a" stroke-width="2"/>
+<text x="3202" y="1160" fill="#a78bfa" font-family="Consolas, monospace" font-size="34">FastAPI</text>
+<rect x="3180" y="1188" width="207" height="58" rx="14" fill="#16223a" stroke="#2b3c5a" stroke-width="2"/>
+<text x="3202" y="1228" fill="#a78bfa" font-family="Consolas, monospace" font-size="34">Chart.js</text>
+<rect x="3180" y="1256" width="166" height="58" rx="14" fill="#16223a" stroke="#2b3c5a" stroke-width="2"/>
+<text x="3202" y="1296" fill="#a78bfa" font-family="Consolas, monospace" font-size="34">Render</text>
+<rect x="140" y="1640" width="1120" height="240" rx="22" fill="#111a2b" stroke="#2b3c5a" stroke-width="3"/>
+<rect x="140" y="1658" width="8" height="204" rx="4" fill="#2dd4bf"/>
+<text x="174" y="1730" fill="#2dd4bf" font-family="Consolas, monospace" font-size="78" font-weight="700">788</text>
+<text x="174" y="1806" fill="#dbe6f5" font-size="34">篇情資語料</text>
+<rect x="1320" y="1640" width="1120" height="240" rx="22" fill="#111a2b" stroke="#2b3c5a" stroke-width="3"/>
+<rect x="1320" y="1658" width="8" height="204" rx="4" fill="#f59e0b"/>
+<text x="1354" y="1730" fill="#f59e0b" font-family="Consolas, monospace" font-size="78" font-weight="700">288</text>
+<text x="1354" y="1806" fill="#dbe6f5" font-size="34">個 CVE</text>
+<rect x="2500" y="1640" width="1120" height="240" rx="22" fill="#111a2b" stroke="#2b3c5a" stroke-width="3"/>
+<rect x="2500" y="1658" width="8" height="204" rx="4" fill="#a78bfa"/>
+<text x="2534" y="1730" fill="#a78bfa" font-family="Consolas, monospace" font-size="78" font-weight="700">0.853</text>
+<text x="2534" y="1806" fill="#dbe6f5" font-size="34">排序 AUC</text>
+<text x="140" y="2062" fill="#7d8fae" font-family="Consolas, monospace" font-size="34">分類準確率 73%（κ 0.818）｜ precision@10 = 1.00 ｜ SLA：24 小時／7 天／30 天</text>
+</svg>

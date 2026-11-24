@@ -1,0 +1,84 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="3840" height="2160" viewBox="0 0 3840 2160" font-family="Microsoft JhengHei, Noto Sans TC, sans-serif">
+<rect width="3840" height="2160" fill="#0b1220"/>
+<text x="140" y="150" fill="#dbe6f5" font-size="62" font-weight="700">B｜技術分層架構</text>
+<text x="144" y="200" fill="#7d8fae" font-size="34">資料 → 情資對照 → 分析 → 服務 → 介面（每層可獨立驗證）</text>
+<rect x="140" y="250" width="2920" height="250" rx="22" fill="#111a2b" stroke="#2b3c5a" stroke-width="3"/>
+<rect x="140" y="266" width="8" height="218" rx="4" fill="#2dd4bf"/>
+<text x="168" y="322" fill="#2dd4bf" font-size="40" font-weight="700">介面層</text>
+<text x="168" y="368" fill="#7d8fae" font-family="Consolas, monospace" font-size="34">UI</text>
+<rect x="560" y="290" width="337" height="60" rx="14" fill="#16223a" stroke="#2b3c5a" stroke-width="2"/>
+<text x="582" y="332" fill="#dbe6f5" font-family="Consolas, monospace" font-size="34">原生 JavaScript</text>
+<rect x="913" y="290" width="329" height="60" rx="14" fill="#16223a" stroke="#2b3c5a" stroke-width="2"/>
+<text x="935" y="332" fill="#dbe6f5" font-family="Consolas, monospace" font-size="34">Chart.js 4.4.6</text>
+<rect x="1258" y="290" width="288" height="60" rx="14" fill="#16223a" stroke="#2b3c5a" stroke-width="2"/>
+<text x="1280" y="332" fill="#dbe6f5" font-family="Consolas, monospace" font-size="34">Tailwind CDN</text>
+<rect x="1562" y="290" width="188" height="60" rx="14" fill="#16223a" stroke="#2b3c5a" stroke-width="2"/>
+<text x="1584" y="332" fill="#dbe6f5" font-family="Consolas, monospace" font-size="34">4 工作區</text>
+<rect x="140" y="534" width="2920" height="250" rx="22" fill="#111a2b" stroke="#2b3c5a" stroke-width="3"/>
+<rect x="140" y="550" width="8" height="218" rx="4" fill="#f59e0b"/>
+<text x="168" y="606" fill="#f59e0b" font-size="40" font-weight="700">服務層</text>
+<text x="168" y="652" fill="#7d8fae" font-family="Consolas, monospace" font-size="34">API</text>
+<rect x="560" y="574" width="309" height="60" rx="14" fill="#16223a" stroke="#2b3c5a" stroke-width="2"/>
+<text x="582" y="616" fill="#dbe6f5" font-family="Consolas, monospace" font-size="34">FastAPI 0.162</text>
+<rect x="885" y="574" width="288" height="60" rx="14" fill="#16223a" stroke="#2b3c5a" stroke-width="2"/>
+<text x="907" y="616" fill="#dbe6f5" font-family="Consolas, monospace" font-size="34">Uvicorn 0.54</text>
+<rect x="1189" y="574" width="309" height="60" rx="14" fill="#16223a" stroke="#2b3c5a" stroke-width="2"/>
+<text x="1211" y="616" fill="#dbe6f5" font-family="Consolas, monospace" font-size="34">Pydantic 2.14</text>
+<rect x="1514" y="574" width="311" height="60" rx="14" fill="#16223a" stroke="#2b3c5a" stroke-width="2"/>
+<text x="1536" y="616" fill="#dbe6f5" font-family="Consolas, monospace" font-size="34">8 個 REST 端點</text>
+<rect x="1841" y="574" width="309" height="60" rx="14" fill="#16223a" stroke="#2b3c5a" stroke-width="2"/>
+<text x="1863" y="616" fill="#dbe6f5" font-family="Consolas, monospace" font-size="34">OpenAPI /docs</text>
+<rect x="140" y="818" width="2920" height="250" rx="22" fill="#111a2b" stroke="#2b3c5a" stroke-width="3"/>
+<rect x="140" y="834" width="8" height="218" rx="4" fill="#f59e0b"/>
+<text x="168" y="890" fill="#f59e0b" font-size="40" font-weight="700">分析層</text>
+<text x="168" y="936" fill="#7d8fae" font-family="Consolas, monospace" font-size="34">DECIDE</text>
+<rect x="560" y="858" width="313" height="60" rx="14" fill="#16223a" stroke="#2b3c5a" stroke-width="2"/>
+<text x="582" y="900" fill="#dbe6f5" font-family="Consolas, monospace" font-size="34">規則式分類 4 類</text>
+<rect x="889" y="858" width="217" height="60" rx="14" fill="#16223a" stroke="#2b3c5a" stroke-width="2"/>
+<text x="911" y="900" fill="#dbe6f5" font-family="Consolas, monospace" font-size="34">可解釋評分</text>
+<rect x="1122" y="858" width="413" height="60" rx="14" fill="#16223a" stroke="#2b3c5a" stroke-width="2"/>
+<text x="1144" y="900" fill="#dbe6f5" font-family="Consolas, monospace" font-size="34">SSVC → P1–P3＋SLA</text>
+<rect x="1551" y="858" width="221" height="60" rx="14" fill="#16223a" stroke="#2b3c5a" stroke-width="2"/>
+<text x="1573" y="900" fill="#dbe6f5" font-family="Consolas, monospace" font-size="34">CWE 12 類</text>
+<rect x="1788" y="858" width="296" height="60" rx="14" fill="#16223a" stroke="#2b3c5a" stroke-width="2"/>
+<text x="1810" y="900" fill="#dbe6f5" font-family="Consolas, monospace" font-size="34">Playbook 劇本</text>
+<rect x="140" y="1102" width="2920" height="250" rx="22" fill="#111a2b" stroke="#2b3c5a" stroke-width="3"/>
+<rect x="140" y="1118" width="8" height="218" rx="4" fill="#2dd4bf"/>
+<text x="168" y="1174" fill="#2dd4bf" font-size="40" font-weight="700">情資對照層</text>
+<text x="168" y="1220" fill="#7d8fae" font-family="Consolas, monospace" font-size="34">ENRICH</text>
+<rect x="560" y="1142" width="207" height="60" rx="14" fill="#16223a" stroke="#2b3c5a" stroke-width="2"/>
+<text x="582" y="1184" fill="#dbe6f5" font-family="Consolas, monospace" font-size="34">CISA KEV</text>
+<rect x="783" y="1142" width="248" height="60" rx="14" fill="#16223a" stroke="#2b3c5a" stroke-width="2"/>
+<text x="805" y="1184" fill="#dbe6f5" font-family="Consolas, monospace" font-size="34">FIRST EPSS</text>
+<rect x="1047" y="1142" width="207" height="60" rx="14" fill="#16223a" stroke="#2b3c5a" stroke-width="2"/>
+<text x="1069" y="1184" fill="#dbe6f5" font-family="Consolas, monospace" font-size="34">CVSS 3.1</text>
+<rect x="1270" y="1142" width="227" height="60" rx="14" fill="#16223a" stroke="#2b3c5a" stroke-width="2"/>
+<text x="1292" y="1184" fill="#dbe6f5" font-family="Consolas, monospace" font-size="34">MITRE CWE</text>
+<rect x="1513" y="1142" width="182" height="60" rx="14" fill="#16223a" stroke="#2b3c5a" stroke-width="2"/>
+<text x="1535" y="1184" fill="#dbe6f5" font-family="Consolas, monospace" font-size="34">曝險推斷</text>
+<rect x="140" y="1386" width="2920" height="250" rx="22" fill="#111a2b" stroke="#2b3c5a" stroke-width="3"/>
+<rect x="140" y="1402" width="8" height="218" rx="4" fill="#a78bfa"/>
+<text x="168" y="1458" fill="#a78bfa" font-size="40" font-weight="700">資料層</text>
+<text x="168" y="1504" fill="#7d8fae" font-family="Consolas, monospace" font-size="34">STORE</text>
+<rect x="560" y="1426" width="166" height="60" rx="14" fill="#16223a" stroke="#2b3c5a" stroke-width="2"/>
+<text x="582" y="1468" fill="#dbe6f5" font-family="Consolas, monospace" font-size="34">SQLite</text>
+<rect x="742" y="1426" width="329" height="60" rx="14" fill="#16223a" stroke="#2b3c5a" stroke-width="2"/>
+<text x="764" y="1468" fill="#dbe6f5" font-family="Consolas, monospace" font-size="34">SQLAlchemy 2.1</text>
+<rect x="1087" y="1426" width="311" height="60" rx="14" fill="#16223a" stroke="#2b3c5a" stroke-width="2"/>
+<text x="1109" y="1468" fill="#dbe6f5" font-family="Consolas, monospace" font-size="34">788 篇語料 CSV</text>
+<rect x="1414" y="1426" width="248" height="60" rx="14" fill="#16223a" stroke="#2b3c5a" stroke-width="2"/>
+<text x="1436" y="1468" fill="#dbe6f5" font-family="Consolas, monospace" font-size="34">assets.csv</text>
+<rect x="3130" y="250" width="570" height="1334" rx="22" fill="#111a2b" stroke="#2b3c5a" stroke-width="3"/>
+<text x="3158" y="300" fill="#f59e0b" font-size="40" font-weight="700">部署與工具鏈</text>
+<text x="3158" y="370" fill="#dbe6f5" font-size="34">GitHub｜版本控制</text>
+<text x="3158" y="428" fill="#dbe6f5" font-size="34">Render｜雲端自動部署</text>
+<text x="3158" y="486" fill="#dbe6f5" font-size="34">pytest 105 項</text>
+<text x="3158" y="544" fill="#dbe6f5" font-size="34">jsdom smoke 79 項</text>
+<text x="3158" y="602" fill="#dbe6f5" font-size="34">快照工具：EPSS／KEV</text>
+<text x="3158" y="660" fill="#dbe6f5" font-size="34">截圖：puppeteer</text>
+<text x="3158" y="718" fill="#dbe6f5" font-size="34">文件：python-docx</text>
+<rect x="140" y="1660" width="2920" height="230" rx="22" fill="none" stroke="#a78bfa" stroke-width="3" stroke-dasharray="16 12"/>
+<text x="170" y="1720" fill="#a78bfa" font-size="36" font-weight="700">future work（尚未實作）</text>
+<text x="170" y="1782" fill="#dbe6f5" font-size="34">LLM 摘要與處置建議｜CMDB 資產串接｜Jira／ServiceNow 工單輸出</text>
+<text x="140" y="2062" fill="#7d8fae" font-family="Consolas, monospace" font-size="34">8 個 REST 端點 ｜ SQLite 單檔資料庫 ｜ Render 自動部署</text>
+</svg>

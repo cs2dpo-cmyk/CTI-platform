@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="3840" height="2160" viewBox="0 0 3840 2160" font-family="Microsoft JhengHei, Noto Sans TC, sans-serif">
+<rect width="3840" height="2160" fill="#0b1220"/>
+<text x="140" y="150" fill="#dbe6f5" font-size="62" font-weight="700">A｜技術心智圖</text>
+<text x="144" y="200" fill="#7d8fae" font-size="34">CTI 資安風險決策支援平台 · 2026 AMITAC</text>
+<rect x="1540" y="970" width="760" height="220" rx="22" fill="#16223a" stroke="#f59e0b" stroke-width="4"/>
+<text x="1730" y="1070" fill="#dbe6f5" font-size="50" font-weight="700">CTI 資安風險決策支援平台</text>
+<text x="1790" y="1130" fill="#7d8fae" font-size="32">CISO Dashboard · 可解釋決策</text>
+<rect x="220" y="300" width="900" height="470" rx="22" fill="#111a2b" stroke="#2b3c5a" stroke-width="3"/>
+<rect x="220" y="318" width="8" height="434" rx="4" fill="#2dd4bf"/>
+<text x="250" y="370" fill="#2dd4bf" font-size="46" font-weight="700">資料來源</text>
+<text x="250" y="426" fill="#dbe6f5" font-size="34">The Hacker News｜每月 250 篇</text>
+<text x="250" y="474" fill="#dbe6f5" font-size="34">TWCERT/CC｜台灣政府 CERT</text>
+<text x="250" y="522" fill="#dbe6f5" font-size="34">iThome｜台灣科技媒體</text>
+<text x="250" y="570" fill="#dbe6f5" font-size="34">分層取樣｜每月 15＋5 篇</text>
+<text x="250" y="618" fill="#dbe6f5" font-size="34">語料｜788 篇／35 個月</text>
+<rect x="220" y="845" width="900" height="470" rx="22" fill="#111a2b" stroke="#2b3c5a" stroke-width="3"/>
+<rect x="220" y="863" width="8" height="434" rx="4" fill="#f59e0b"/>
+<text x="250" y="915" fill="#f59e0b" font-size="46" font-weight="700">外部情資</text>
+<text x="250" y="971" fill="#dbe6f5" font-size="34">CISA KEV｜已遭利用 1,779</text>
+<text x="250" y="1019" fill="#dbe6f5" font-size="34">FIRST EPSS｜利用機率 911</text>
+<text x="250" y="1067" fill="#dbe6f5" font-size="34">CVSS 3.1｜嚴重度 704</text>
+<text x="250" y="1115" fill="#dbe6f5" font-size="34">MITRE CWE｜弱點類型 287</text>
+<text x="250" y="1163" fill="#dbe6f5" font-size="34">快照版本｜data_as_of</text>
+<rect x="220" y="1390" width="900" height="470" rx="22" fill="#111a2b" stroke="#2b3c5a" stroke-width="3"/>
+<rect x="220" y="1408" width="8" height="434" rx="4" fill="#2dd4bf"/>
+<text x="250" y="1460" fill="#2dd4bf" font-size="46" font-weight="700">後端服務</text>
+<text x="250" y="1516" fill="#dbe6f5" font-size="34">Python 3｜FastAPI 0.162</text>
+<text x="250" y="1564" fill="#dbe6f5" font-size="34">Uvicorn 0.54｜8 個 REST 端點</text>
+<text x="250" y="1612" fill="#dbe6f5" font-size="34">Pydantic 2.14｜資料驗證</text>
+<text x="250" y="1660" fill="#dbe6f5" font-size="34">SQLAlchemy 2.1｜ORM 對映</text>
+<text x="250" y="1708" fill="#dbe6f5" font-size="34">SQLite｜單檔資料庫</text>
+<rect x="2720" y="300" width="900" height="470" rx="22" fill="#111a2b" stroke="#2b3c5a" stroke-width="3"/>
+<rect x="2720" y="318" width="8" height="434" rx="4" fill="#2dd4bf"/>
+<text x="2750" y="370" fill="#2dd4bf" font-size="46" font-weight="700">分析演算法</text>
+<text x="2750" y="426" fill="#dbe6f5" font-size="34">TF-IDF｜特徵向量化</text>
+<text x="2750" y="474" fill="#dbe6f5" font-size="34">K-Means｜主題分群</text>
+<text x="2750" y="522" fill="#dbe6f5" font-size="34">規則式分類｜4 類（κ 0.818）</text>
+<text x="2750" y="570" fill="#dbe6f5" font-size="34">CVE 抽取｜正規式＋斷詞容錯</text>
+<text x="2750" y="618" fill="#dbe6f5" font-size="34">星狀分群｜去重 788→783</text>
+<rect x="2720" y="845" width="900" height="470" rx="22" fill="#111a2b" stroke="#2b3c5a" stroke-width="3"/>
+<rect x="2720" y="863" width="8" height="434" rx="4" fill="#2dd4bf"/>
+<text x="2750" y="915" fill="#2dd4bf" font-size="46" font-weight="700">前端介面</text>
+<text x="2750" y="971" fill="#dbe6f5" font-size="34">原生 JavaScript｜無框架</text>
+<text x="2750" y="1019" fill="#dbe6f5" font-size="34">Chart.js 4.4.6｜互動圖表</text>
+<text x="2750" y="1067" fill="#dbe6f5" font-size="34">Tailwind CDN｜樣式系統</text>
+<text x="2750" y="1115" fill="#dbe6f5" font-size="34">4 工作區｜總覽/修補/評估/情資</text>
+<rect x="2720" y="1390" width="900" height="470" rx="22" fill="#111a2b" stroke="#2b3c5a" stroke-width="3"/>
+<rect x="2720" y="1408" width="8" height="434" rx="4" fill="#a78bfa"/>
+<text x="2750" y="1460" fill="#a78bfa" font-size="46" font-weight="700">評估與工程</text>
+<text x="2750" y="1516" fill="#dbe6f5" font-size="34">雙人標註｜Cohen's κ 0.818</text>
+<text x="2750" y="1564" fill="#dbe6f5" font-size="34">AUC 回測｜以 KEV 為標準</text>
+<text x="2750" y="1612" fill="#dbe6f5" font-size="34">時間切分回測｜測試窗口 273 筆</text>
+<text x="2750" y="1660" fill="#dbe6f5" font-size="34">pytest 105｜smoke 79</text>
+<text x="2750" y="1708" fill="#dbe6f5" font-size="34">GitHub → Render 自動部署</text>
+<text x="140" y="2062" fill="#7d8fae" font-family="Consolas, monospace" font-size="34">788 篇語料 ｜ 783 件事件 ｜ 288 個 CVE ｜ 排序 AUC 0.853</text>
+</svg>
