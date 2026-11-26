@@ -1,0 +1,5 @@
+2026/11/24-16:35:10.428 d924 Creating DB C:\dev\cti-platform\video\flow\.edge3\Default\EdgeCoupons/coupons_data.db since it was missing.
+2026/11/24-16:35:10.437 d924 Reusing MANIFEST C:\dev\cti-platform\video\flow\.edge3\Default\EdgeCoupons/coupons_data.db/MANIFEST-000001
+2026/11/24-16:35:12.826 e830 Level-0 table #5: started
+2026/11/24-16:35:12.831 e830 Level-0 table #5: 683284 bytes OK
+2026/11/24-16:35:12.833 e830 Delete type=0 #3

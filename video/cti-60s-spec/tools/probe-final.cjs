@@ -1,0 +1,12 @@
+const cp = require("node:child_process");
+const fs = require("node:fs");
+const path = require("node:path");
+const root = path.resolve(__dirname, "..");
+const ffmpeg = path.join(root, "node_modules", "@remotion", "compositor-win32-x64-msvc", "ffmpeg.exe");
+const log = path.join(root, "out", "probe-final.log");
+const fd = fs.openSync(log, "w");
+cp.spawnSync(ffmpeg, ["-hide_banner", "-i", path.join(root, "out", "film.mp4")], { stdio: ["ignore", fd, fd] });
+const t = fs.readFileSync(log, "utf8");
+console.log(t.split("\n").filter((l) => /Duration|Stream/.test(l)).join("\n"));
+const st = fs.statSync(path.join(root, "out", "film.mp4"));
+console.log("size " + (st.size / 1048576).toFixed(1) + " MB");

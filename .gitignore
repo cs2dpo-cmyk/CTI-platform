@@ -1,16 +1,91 @@
+# ---------------------------------------------------------------------------
+# cti-platform
+#
+# 原則：媒體與成品文件不進 repo；程式、資料、測試、部署設定才進。
+#
+# 注意：.gitignore 只對「還沒被追蹤」的檔案有效。已經 commit 過的檔案
+#       即使列在這裡，git 仍會繼續追蹤它，要用 git rm --cached 才會離開
+#       repo（指令見檔尾）。
+# ---------------------------------------------------------------------------
+
+# --- 媒體：影片 -------------------------------------------------------------
+*.mp4
+*.mov
+*.m4v
+*.mkv
+*.webm
+*.avi
+*.wmv
+*.flv
+
+# --- 媒體：音訊 -------------------------------------------------------------
+*.wav
+
+# --- 文件：草稿、簡報、報告、字幕 -------------------------------------------
+*.md
+!README.md
+!docs/README.md
+*.docx
+*.doc
+*.pdf
+*.srt
+*.vtt
+*.ass
+
+# --- 影音工程產物（重算可得，別進 repo）-------------------------------------
+video/**/out/
+video/**/frames/
+video/**/build/
+video/**/node_modules/
+video/**/.tmp/
+video/**/.npm-cache/
+video/**/public/captures/
+video/**/stills/
+video/**/check/
+
+# --- Python -----------------------------------------------------------------
 __pycache__/
 *.py[cod]
 *.egg-info/
 .venv/
 .pylibs/
 .pytest_cache/
+pytest-cache-files-*/
+.mypy_cache/
+.ruff_cache/
+
+# --- 資料庫與快取 -----------------------------------------------------------
 data/*.db
-data/.cache/
 data/*.db-journal
 data/*.db-wal
 data/*.db-shm
-.env
-.DS_Store
+data/.cache/
+
+# --- Node -------------------------------------------------------------------
 node_modules/
+.npm-cache/
+
+# --- 環境、暫存、系統 -------------------------------------------------------
+.env
+.env.*
+!.env.example
 .tmp/
 shots/
+*.log
+.DS_Store
+Thumbs.db
+
+# ---------------------------------------------------------------------------
+# 已經被追蹤的檔案不會因為上面幾行而離開 repo。要一次清掉已 commit 的
+# 媒體與文件，用（--cached 只動索引，不刪本機檔案）：
+#
+#   git rm --cached -r --ignore-unmatch \
+#     "*.mp4" "*.mov" "*.m4v" "*.mkv" "*.webm" \
+#     "*.md" "*.docx" "*.doc" "*.pdf" "*.srt" "*.vtt" "*.ass"
+#   git checkout -- README.md        # 這一行只在你連 README 都要清掉時才需要
+#
+# 注意 *.md 會掃到 README.md 與 docs/*.md；若那幾份要留在 GitHub，
+# 先把本檔的 !README.md / !docs/README.md 例外保留著，改用逐檔移除：
+#
+#   git rm --cached video/narration-script.md docs/demo-video-brief.md ...
+# ---------------------------------------------------------------------------

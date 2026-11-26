@@ -1,0 +1,770 @@
+{
+  "meta": {
+    "name": "cti-ciso-dashboard-60s",
+    "version": "3.0.0",
+    "language": "zh-TW",
+    "status": "confirmed-pending-prompt-calibration",
+    "createdAt": "2026-11-25",
+    "note": "分鏡與抓頁規格已確認；prompt.md 待 Feishu 提示詞規範校準後產出"
+  },
+  "product": {
+    "name": "CTI 資安風險決策支援平台 · CISO Dashboard",
+    "url": "https://cti-risk-platform.onrender.com/",
+    "localSource": "C:/dev/cti-platform",
+    "entryHtml": "C:/dev/cti-platform/static/index.html",
+    "lang": "zh-TW",
+    "theme": "dark",
+    "api": {
+      "assess": "POST /api/v1/assess",
+      "prefix": "/api/v1"
+    }
+  },
+  "video": {
+    "width": 1920,
+    "height": 1080,
+    "aspect": "16:9",
+    "fps": 30,
+    "durationSec": 60,
+    "totalFrames": 1800,
+    "bpm": 120,
+    "totalBeats": 120,
+    "framesPerBeat": 15,
+    "codec": "H.264",
+    "crf": [
+      18,
+      20
+    ]
+  },
+  "palette": {
+    "bg": "#0b1220",
+    "surface": "#111a2b",
+    "surfaceRaised": "#16223a",
+    "line": "#2b3c5a",
+    "ink": "#dbe6f5",
+    "inkSoft": "#b9c8dc",
+    "muted": "#7d8fae",
+    "accent": "#22d3ee",
+    "semanticOnly": {
+      "p1": "#f87171",
+      "p2": "#f59e0b",
+      "p3": "#34d399"
+    },
+    "rule": "semanticOnly 沿用站上既有語意色，僅用於 P1/P2/P3 徽章與門檻線，不算新增顏色"
+  },
+  "fonts": {
+    "display": "Inter",
+    "body": "Inter",
+    "cjk": "Noto Sans TC",
+    "mono": "JetBrains Mono",
+    "scalePx": [
+      72,
+      44,
+      28,
+      20,
+      15,
+      12
+    ],
+    "lineHeight": 1.25,
+    "note": "中英混排視為同一族，不得引入第三種字體"
+  },
+  "grid": {
+    "marginX": 120,
+    "marginY": 96,
+    "columns": 12,
+    "gutter": 24
+  },
+  "texture": {
+    "grainOverlay": 0.2,
+    "vignette": {
+      "from": "0.4H",
+      "to": "1.05H"
+    },
+    "glow": {
+      "color": "#22d3ee",
+      "maxRadiusPx": 24,
+      "screenWideGlow": false
+    }
+  },
+  "camera": {
+    "maxZoom": 1.4,
+    "captureDeviceScaleFactor": 2,
+    "pushFrames": [
+      12,
+      15
+    ],
+    "ease": "inOutExpo",
+    "rule": "element lands first, camera starts 0.5 beat later; never both at the same beat",
+    "scrollAllowed": false
+  },
+  "rhythm": {
+    "entranceFrames": {
+      "short": 15,
+      "hero": 23
+    },
+    "entranceEase": "outExpo",
+    "exitFrames": 8,
+    "exitEase": "inExpo",
+    "staggerFrames": 4,
+    "cursorFrames": [
+      15,
+      22
+    ],
+    "cursorEase": "inOutExpo",
+    "cutRule": "integer or half beat only, never off-beat"
+  },
+  "shots": [
+    {
+      "id": "S01",
+      "title": "字標入場",
+      "startBeat": 0,
+      "endBeat": 4,
+      "startFrame": 0,
+      "endFrame": 60,
+      "startSec": 0,
+      "endSec": 2,
+      "camera": {
+        "from": 1,
+        "to": 1.08
+      },
+      "entrance": "lift + light frame",
+      "card": "opening/brand-ink-open",
+      "copy": "CTI 資安風險決策支援平台 / CISO Dashboard · 從情資到決策",
+      "selectors": []
+    },
+    {
+      "id": "S02",
+      "title": "總覽① KPI 帶",
+      "startBeat": 4,
+      "endBeat": 18,
+      "startFrame": 60,
+      "endFrame": 270,
+      "startSec": 2,
+      "endSec": 9,
+      "camera": {
+        "from": 1,
+        "to": 1.28,
+        "pushAtBeat": 6,
+        "pushFrames": 12
+      },
+      "entrance": "4 tiles stagger 1/2 beat, translateZ + rotateX -12°, 3-frame overshoot",
+      "card": "opening/spotlight-hero-card",
+      "copy": "全球預警 × 在地落地 / 解析情資樣本 / 最大 Meta-Category / 平均風險分數",
+      "valueRule": "數值一律以抓頁實測回填",
+      "selectors": [
+        "section#overview .panel"
+      ]
+    },
+    {
+      "id": "S03",
+      "title": "總覽② 威脅主題分群",
+      "startBeat": 18,
+      "endBeat": 32,
+      "startFrame": 270,
+      "endFrame": 480,
+      "startSec": 9,
+      "endSec": 16,
+      "camera": {
+        "from": 1,
+        "to": 1.26,
+        "pushFrames": 15,
+        "pullBackFrames": 8
+      },
+      "entrance": "fan-out + spring bounce, 4-frame stagger, damping 0.55",
+      "card": "ui-entrance/radial-wave",
+      "copy": "K-Means 把情資分成 N 群",
+      "valueRule": "N 以畫面實測回填",
+      "selectors": [
+        "section#overview .panel:has-text('威脅主題分群')"
+      ]
+    },
+    {
+      "id": "S04",
+      "title": "總覽③ P1–P3 決策矩陣",
+      "startBeat": 32,
+      "endBeat": 40,
+      "startFrame": 480,
+      "endFrame": 600,
+      "startSec": 16,
+      "endSec": 20,
+      "camera": {
+        "from": 1.26,
+        "to": 1.34,
+        "pushFrames": 10
+      },
+      "entrance": "per-cell rotateY 90°→0, 3-frame stagger (domino)",
+      "card": "ui-entrance/wall-reveal-moves",
+      "copy": "P3 < 66 · P2 66–79 · P1 ≥ 80",
+      "selectors": [
+        "section#matrix"
+      ]
+    },
+    {
+      "id": "S05",
+      "title": "切頁 → 修補清單",
+      "startBeat": 40,
+      "endBeat": 44,
+      "startFrame": 600,
+      "endFrame": 660,
+      "startSec": 20,
+      "endSec": 22,
+      "camera": {
+        "from": 1.34,
+        "to": 1,
+        "pullBackFrames": 8
+      },
+      "entrance": "mask wipe",
+      "card": "transition/wipe-transitions",
+      "copy": "",
+      "selectors": [
+        "button[data-tab=patch]"
+      ]
+    },
+    {
+      "id": "S06",
+      "title": "修補① 修補優先級（EPSS + KEV）",
+      "startBeat": 44,
+      "endBeat": 54,
+      "startFrame": 660,
+      "endFrame": 810,
+      "startSec": 22,
+      "endSec": 27,
+      "camera": {
+        "from": 1,
+        "to": 1.3,
+        "pushFrames": 15
+      },
+      "entrance": "sort-as-deal: decompose rows into cards → re-rank P1/P2/P3 → 3-card fan → snap flat",
+      "card": "ui-entrance/deck-deal-flyin + data/gauge-readout-moves + effects/impact-feedback",
+      "copy": "EPSS × KEV 決定順序，不是 CVSS",
+      "selectors": [
+        "section#patchSection",
+        "tbody#patchBody tr",
+        "thead th:has-text('EPSS')",
+        "thead th:has-text('KEV')"
+      ],
+      "stages": [
+        {
+          "beats": 1,
+          "what": "rows → thin cards, perspective 1200px, rotateX 24°"
+        },
+        {
+          "beats": 2,
+          "what": "re-rank P1→P2→P3, spring damping 0.6"
+        },
+        {
+          "beats": 1,
+          "what": "P1 x3 fan; EPSS counter rolls to real value; KEV red dot impact"
+        },
+        {
+          "beats": 1,
+          "what": "snap flat back to table shape, order changed"
+        },
+        {
+          "beats": 5,
+          "what": "hold; camera 1.22→1.30; first 3 rows light up 1 beat each"
+        }
+      ]
+    },
+    {
+      "id": "S07",
+      "title": "查看全部 → 全量 CVE 掃過",
+      "startBeat": 54,
+      "endBeat": 66,
+      "startFrame": 810,
+      "endFrame": 990,
+      "startSec": 27,
+      "endSec": 33,
+      "camera": {
+        "from": 1.3,
+        "to": 1.1,
+        "then": 1.18
+      },
+      "entrance": "rendered vertical strip translation + motion blur (not real scroll)",
+      "card": "rhythm/speed-ramp-freeze",
+      "copy": "筆數以畫面實測回填（預期 631）",
+      "selectors": [
+        "button#patchViewAll",
+        "tbody#patchBody"
+      ],
+      "strip": {
+        "segments": 20,
+        "microPauseEveryBeats": 4
+      }
+    },
+    {
+      "id": "S08",
+      "title": "修補② 已知被利用但未收錄",
+      "startBeat": 66,
+      "endBeat": 74,
+      "startFrame": 990,
+      "endFrame": 1110,
+      "startSec": 33,
+      "endSec": 37,
+      "camera": {
+        "from": 1,
+        "to": 1.2
+      },
+      "entrance": "irregular grid offset (translateY 12–28px random per row, 8 frames)",
+      "card": "ui-entrance/wall-reveal-moves (variant)",
+      "copy": "還沒進 KEV 名單的，已經在打你",
+      "selectors": [
+        "section#gapSection"
+      ],
+      "forbid": [
+        "click #gapExpand"
+      ]
+    },
+    {
+      "id": "S09",
+      "title": "CVE 接力 → 即時評估",
+      "startBeat": 74,
+      "endBeat": 78,
+      "startFrame": 1110,
+      "endFrame": 1170,
+      "startSec": 37,
+      "endSec": 39,
+      "camera": {
+        "from": 1.2,
+        "to": 1.15,
+        "via": 1
+      },
+      "entrance": "row selector → string detaches → bezier flight into #cveId → old page recedes -120px depth → new page enters +80px",
+      "card": "ui-entrance/bezier-source-converge-merge + camera/depth-layer-moves",
+      "copy": "CVE-2026-111497",
+      "selectors": [
+        "tbody#patchBody tr:has-text('CVE-2026-111497')",
+        "#cveId"
+      ]
+    },
+    {
+      "id": "S10",
+      "title": "即時評估：11 欄位",
+      "startBeat": 78,
+      "endBeat": 106,
+      "startFrame": 1170,
+      "endFrame": 1590,
+      "startSec": 39,
+      "endSec": 53,
+      "camera": {
+        "steps": [
+          {
+            "from": 1.15,
+            "to": 1.2
+          },
+          {
+            "from": 1.2,
+            "to": 1.26
+          },
+          {
+            "from": 1.26,
+            "to": 1.32
+          },
+          {
+            "from": 1.32,
+            "to": 1.4,
+            "when": "during CVSS drag"
+          }
+        ]
+      },
+      "entrance": "cursor inOutExpo 15–22 frames; real browser hover state",
+      "card": "camera/cursor-flyover + effects/scanline-annotate-focus",
+      "copy": "僅欄位標籤，無旁白字幕",
+      "fields": [
+        "F01",
+        "F02",
+        "F03",
+        "F04",
+        "F05",
+        "F06",
+        "F07",
+        "F08",
+        "F09",
+        "F10",
+        "F11",
+        "F12"
+      ]
+    },
+    {
+      "id": "S11",
+      "title": "評估結果：抬升 + 由上到下高亮",
+      "startBeat": 106,
+      "endBeat": 116,
+      "startFrame": 1590,
+      "endFrame": 1740,
+      "startSec": 53,
+      "endSec": 58,
+      "camera": {
+        "from": 1,
+        "to": 1.3,
+        "pushFrames": 15
+      },
+      "entrance": "panel 3D lift + light band sweeps 7 stops",
+      "card": "effects/scanline-assemble-flyin",
+      "copy": "99.0 · P1 · SLA 以畫面實測回填",
+      "highlightStops": [
+        "#scoreValue",
+        "#priorityBadge",
+        "#resultHeadline",
+        "#resultLevel + #resultSla",
+        "#resultSummary",
+        "#factorList",
+        "#resultPlan"
+      ],
+      "selectors": [
+        "#assessResult"
+      ]
+    },
+    {
+      "id": "S12",
+      "title": "收尾",
+      "startBeat": 116,
+      "endBeat": 120,
+      "startFrame": 1740,
+      "endFrame": 1800,
+      "startSec": 58,
+      "endSec": 60,
+      "camera": {
+        "from": 1.3,
+        "to": 1
+      },
+      "entrance": "collapse to wordmark",
+      "card": "outro/logo-shrink-wordmark-lockup",
+      "copy": "先修 P1，其餘排程 / cti-risk-platform.onrender.com",
+      "selectors": []
+    }
+  ],
+  "formFields": [
+    {
+      "id": "F01",
+      "beats": [
+        78,
+        81
+      ],
+      "label": "資產類型",
+      "control": "select",
+      "selector": "#assetType",
+      "value": "對外網站 / API 服務",
+      "payload": "web_app",
+      "interaction": "click + hover + select"
+    },
+    {
+      "id": "F02",
+      "beats": [
+        81,
+        84
+      ],
+      "label": "威脅來源",
+      "control": "select",
+      "selector": "#threatSource",
+      "value": "國家級 APT 持續滲透",
+      "payload": "apt",
+      "interaction": "click + hover + select"
+    },
+    {
+      "id": "F03",
+      "beats": [
+        84,
+        87
+      ],
+      "label": "情資類別",
+      "control": "select",
+      "selector": "#category",
+      "value": "系統漏洞與修補對策",
+      "payload": "VULN",
+      "interaction": "click + hover + select",
+      "note": "站上是「對策」不是「策略」"
+    },
+    {
+      "id": "F04",
+      "beats": [
+        87,
+        90
+      ],
+      "label": "曝險",
+      "control": "select",
+      "selector": "#exposure",
+      "value": "公開網際網路",
+      "payload": "public",
+      "interaction": "click + hover + select",
+      "note": "選項是「公開」不是「公共」"
+    },
+    {
+      "id": "F05",
+      "beats": [
+        90,
+        92
+      ],
+      "label": "情資地區",
+      "control": "button-group",
+      "selector": "section#assess button (text=國際來源)",
+      "value": "國際來源",
+      "payload": "international",
+      "interaction": "click",
+      "note": "非下拉，無 id，需文字比對"
+    },
+    {
+      "id": "F06",
+      "beats": [
+        92,
+        95
+      ],
+      "label": "CVE 編號",
+      "control": "text",
+      "selector": "#cveId",
+      "value": "CVE-2026-111497",
+      "payload": "CVE-2026-111497",
+      "interaction": "carry-over from S09 + typewriter"
+    },
+    {
+      "id": "F07",
+      "beats": [
+        95,
+        98
+      ],
+      "label": "CVSS 分數",
+      "control": "range",
+      "selector": "#cvss",
+      "value": 9.8,
+      "payload": 9.8,
+      "interaction": "pointer drag from 7.5 to 9.8",
+      "note": "需確認 #cvssEnabled 為勾選（納入評分）"
+    },
+    {
+      "id": "F08",
+      "beats": [
+        98,
+        100
+      ],
+      "label": "利用成熟度",
+      "control": "select",
+      "selector": "#exploitStatus",
+      "value": "已在野利用",
+      "payload": "active",
+      "interaction": "click + hover + select",
+      "note": "選項是「已在野利用」"
+    },
+    {
+      "id": "F09",
+      "beats": [
+        100,
+        102
+      ],
+      "label": "資料敏感度",
+      "control": "button-group",
+      "selector": "section#assess button (text=高（個資 / 營業秘密）)",
+      "value": "高（個資 / 營業秘密）",
+      "payload": "high",
+      "interaction": "click"
+    },
+    {
+      "id": "F10",
+      "beats": null,
+      "label": "已佈建控制項",
+      "control": "toggles",
+      "selector": "section#assess (controls group)",
+      "value": [],
+      "payload": [],
+      "interaction": "skip",
+      "note": "6 個 toggle 全不勾，畫面呈現 0 折減"
+    },
+    {
+      "id": "F11",
+      "beats": [
+        102,
+        105
+      ],
+      "label": "資產名稱",
+      "control": "text",
+      "selector": "#assetName",
+      "value": "tw-fintech-prod-api-01",
+      "payload": "tw-fintech-prod-api-01",
+      "interaction": "typewriter"
+    },
+    {
+      "id": "F12",
+      "beats": [
+        105,
+        106
+      ],
+      "label": "執行風險評估",
+      "control": "submit",
+      "selector": "#assessBtn",
+      "value": null,
+      "payload": null,
+      "interaction": "click + wait for result"
+    }
+  ],
+  "expectedResult": {
+    "cve": "CVE-2026-111497",
+    "measuredLocally": {
+      "score": 99,
+      "priority": "P1",
+      "epss": 0.82641,
+      "kev": true,
+      "corpusHits": 9,
+      "regionHits": 0,
+      "adjustment": {
+        "label": "資料敏感度：high",
+        "points": 4
+      }
+    },
+    "rule": "線上實例資料集版本可能不同，以抓到的實際值回填鏡 11 文案並在 SPEC 註記"
+  },
+  "capture": {
+    "tool": "playwright",
+    "viewport": {
+      "width": 1920,
+      "height": 1080
+    },
+    "deviceScaleFactor": 2,
+    "warmup": {
+      "method": "GET /",
+      "expectStatus": 200,
+      "maxWaitSec": 120,
+      "note": "render.com 冷啟動 30–90 s，必須預熱"
+    },
+    "waitRules": [
+      "tbody#patchBody tr 數量 > 3 才截圖",
+      "#kpiAvgScore 非空才截圖",
+      "每次操作後等 150 ms 讓 CSS transition 完成",
+      "表格與 KPI 皆為 JS 非同步渲染，禁止固定 sleep 取代 waitFor"
+    ],
+    "output": [
+      "bboxes.json",
+      "overview-*.png",
+      "patch-*.png",
+      "gap-*.png",
+      "assess-*.png",
+      "result-*.png"
+    ],
+    "cursorNote": "Playwright 截圖不含 OS 游標；游標為 Remotion 渲染層，座標取自 bboxes.json；hover 高亮是真實渲染",
+    "steps": [
+      {
+        "n": 1,
+        "beat": null,
+        "action": "warmup",
+        "target": "/",
+        "waitFor": "HTTP 200"
+      },
+      {
+        "n": 2,
+        "beat": 4,
+        "action": "goto + settle",
+        "target": "/",
+        "waitFor": "#kpiAvgScore 有值",
+        "shot": "overview-base.png"
+      },
+      {
+        "n": 3,
+        "beat": 6,
+        "action": "element screenshots",
+        "target": "section#overview .panel x4 + 威脅主題分群 + section#matrix",
+        "shot": "overview-{i}.png"
+      },
+      {
+        "n": 4,
+        "beat": 7,
+        "action": "record bboxes",
+        "target": "所有後續目標元素",
+        "shot": "bboxes.json"
+      },
+      {
+        "n": 5,
+        "beat": 40,
+        "action": "click tab",
+        "target": "button[data-tab=patch]",
+        "waitFor": "tbody#patchBody tr > 3",
+        "shot": "patch-base.png"
+      },
+      {
+        "n": 6,
+        "beat": 54,
+        "action": "hover + click",
+        "target": "#patchViewAll",
+        "waitFor": "tr >= 300 或 3 s 穩定",
+        "shot": "patch-expanded.png"
+      },
+      {
+        "n": 7,
+        "beat": 56,
+        "action": "strip capture",
+        "target": "tbody#patchBody scroll container",
+        "shot": "strip-{01..20}.png"
+      },
+      {
+        "n": 8,
+        "beat": 66,
+        "action": "capture only",
+        "target": "section#gapSection",
+        "forbid": "#gapExpand",
+        "shot": "gap-base.png"
+      },
+      {
+        "n": 9,
+        "beat": 74,
+        "action": "click tab",
+        "target": "button[data-tab=assess]",
+        "waitFor": "section#assess 可見",
+        "shot": "assess-base.png"
+      },
+      {
+        "n": 10,
+        "beat": 78,
+        "action": "fill 11 controls per formFields order",
+        "target": "F01→F12",
+        "shot": "assess-{field}.png"
+      },
+      {
+        "n": 11,
+        "beat": 105,
+        "action": "click submit",
+        "target": "#assessBtn",
+        "waitFor": "#assessResult 可見 且 #scoreValue != 0",
+        "shot": "result.png"
+      },
+      {
+        "n": 12,
+        "beat": 106,
+        "action": "dump",
+        "target": "bboxes.json + 全部 PNG",
+        "shot": null
+      }
+    ]
+  },
+  "checks": [
+    "片長 ≤ 1800 幀，每鏡起止與 storyboard 一致",
+    "所有切點落在整拍或半拍",
+    "同一拍最多兩個元素在動；元件落地後 0.5 拍才起推鏡",
+    "推鏡任何時刻 ≤ 1.40×，推鏡後有效解析度 ≥ 1920 px",
+    "全片零 scroll",
+    "hover 高亮為真實渲染；後製光框僅用於強調層",
+    "11 個控制項全部填妥；結果為 99.0 / P1（或依實際值回填）",
+    "「已知被利用但未收錄」全程未點「顯示全部」",
+    "顏色只用 palette 8 色；字級只用 6 級",
+    "顆粒 0.2、暗角 0.4H→1.05H、發光僅限 cyan",
+    "每鏡文案與 storyboard 一字不差，數值類文案取自抓頁實測",
+    "交付 film.mp4（H.264 crf 18–20）+ 原始碼 + 檔頭 SPEC 表"
+  ],
+  "openItems": [
+    {
+      "item": "prompt.md 撰寫規範",
+      "status": "waiting",
+      "note": "Feishu 文件需登入，待用戶導出 PDF/MD 到工作區後校準"
+    },
+    {
+      "item": "BGM",
+      "status": "default",
+      "note": "無配樂，按 120 BPM 定拍"
+    },
+    {
+      "item": "logo",
+      "status": "default",
+      "note": "站上 shield favicon + 純文字字標"
+    },
+    {
+      "item": "情資地區按鈕選擇器",
+      "status": "verify-at-runtime",
+      "note": "無 id，首次執行抓頁腳本時驗證文字比對"
+    }
+  ]
+}

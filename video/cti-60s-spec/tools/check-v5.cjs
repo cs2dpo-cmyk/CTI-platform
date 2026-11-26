@@ -1,0 +1,16 @@
+const cp = require("node:child_process");
+const fs = require("node:fs");
+const path = require("node:path");
+const root = path.resolve(__dirname, "..");
+const ffmpeg = path.join(root, "node_modules", "@remotion", "compositor-win32-x64-msvc", "ffmpeg.exe");
+const out = path.join(root, "out", "check8");
+fs.mkdirSync(out, { recursive: true });
+const logFd = fs.openSync(path.join(out, "log.txt"), "w");
+const film = path.join(root, "out", "film.mp4");
+cp.spawnSync(ffmpeg, ["-hide_banner", "-i", film], { stdio: ["ignore", logFd, logFd] });
+console.log(fs.readFileSync(path.join(out, "log.txt"), "utf8").split("\n").filter((l) => /Duration|Stream/.test(l)).join("\n"));
+console.log("size " + (fs.statSync(film).size / 1048576).toFixed(1) + " MB");
+const grab = (t, name) => cp.spawnSync(ffmpeg, ["-hide_banner", "-loglevel", "error", "-y", "-ss", String(t), "-i", film, "-frames:v", "1", path.join(out, name)], { stdio: ["ignore", logFd, logFd] });
+for (const [t, n] of [[3.0, "s02.png"], [7.5, "s03.png"], [11.5, "s04.png"], [41.9, "s10-end.png"]]) grab(t, n);
+for (let i = 0; i <= 24; i++) grab((14.2 + i * 0.1).toFixed(2), "scan" + String(i).padStart(2, "0") + ".png");
+console.log("ok");

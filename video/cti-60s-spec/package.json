@@ -1,0 +1,32 @@
+{
+  "name": "cti-ciso-dashboard-60s",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "remotion studio",
+    "typecheck": "tsc --noEmit",
+    "render": "remotion render Master out/film.mp4 --codec=h264 --crf=19",
+    "still": "node tools/stills.mjs",
+    "timing": "node tools/dump-timing.mjs",
+    "capture": "node capture/capture.mjs",
+    "build": "node tools/build.cjs",
+    "stills": "node tools/stills.cjs",
+    "film": "node tools/render.cjs video Master out/film.mp4 19"
+  },
+  "dependencies": {
+    "@remotion/bundler": "4.0.532",
+    "@remotion/cli": "4.0.532",
+    "@remotion/google-fonts": "4.0.532",
+    "@remotion/media": "4.0.532",
+    "@remotion/renderer": "4.0.532",
+    "react": "19.2.3",
+    "react-dom": "19.2.3",
+    "remotion": "4.0.532"
+  },
+  "devDependencies": {
+    "@types/react": "19.2.7",
+    "@types/web": "0.0.166",
+    "puppeteer-core": "^24.43.1",
+    "typescript": "5.9.3"
+  }
+}
